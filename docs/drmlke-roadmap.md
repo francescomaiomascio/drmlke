@@ -1,127 +1,899 @@
 # drmlke Roadmap and Master Spine
 
-This document is the canonical project spine for drmlke after DOCS.SPINE.2.
+This document is the canonical single source of truth for drmlke product shape,
+system boundaries, delivery order, and future implementation waves.
 
-## Current Bootstrap Status
+This version is `DOCS.SPINE.3`. It completes the master spine before any new
+code implementation, MacBook setup execution, Tailscale configuration, Spark
+attachment, runtime deployment, trading feature, wallet feature, exchange
+connection, mobile client scaffold, or AI model download.
 
-- Local repo path: `/home/mothx/code/drmlke`
-- Remote: `https://github.com/francescomaiomascio/drmlke.git`
-- Bootstrap commit: `e68a51b Bootstrap drmlke skeleton`
-- Provider local health: ok
-- Provider local models: ok, empty list
-- `uv sync --dev`: ok
-- `make check`: ok
-- Docker base: ok with `--network=host`
-- Compose provider build/up: ok
-- Provider still active on `localhost:8781`
-- Environment issue from bootstrap: `.node-version` required Node 24 while shell used Node 20.19.6 from nvm.
-- Current correction: Node 24 alignment is handled in ENV.NODE.SPARK.2; acceptance is `node -v` returning v24.x.
-- Spark status: SSH alias `spark` is not currently configured/reachable from this workstation.
+## 1. Current Project State
 
-## Product Spine
+Current repository facts:
 
-drmlke is a private/family, local-first crypto intelligence, paper-trading, wallet-ledger, and agentic runtime project.
+- Canonical Linux repo path: `/home/mothx/code/drmlke`.
+- Current active workspace for this edit: `/Users/mothx/Developer/drmlke`.
+- Remote: `https://github.com/francescomaiomascio/drmlke.git`.
+- Bootstrap commit: `e68a51b Bootstrap drmlke skeleton`.
+- Current docs commit before this wave: `f824a62 DOCS.SPINE.2: correct treasury model and expand master spine`.
+- Current canonical file: `docs/drmlke-roadmap.md`.
+- Current wave: `DOCS.SPINE.3`.
+- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`.
+- Next wave: `MAC.SETUP.1`.
+
+Current provider status:
+
+- The provider stub works locally.
+- Provider local health is expected to return ok.
+- Provider local models are expected to return an empty list.
+- The provider does not load a real AI model.
+- The provider does not call an exchange.
+- The provider does not execute orders.
+
+Current environment status:
+
+- Python is pinned to 3.12.
+- Node is pinned to 24.
+- Node 24 alignment is resolved for the current development path.
+- `uv`, `pnpm`, Docker, Docker Compose, Makefile validation, and provider checks
+  are the expected local development tools.
+
+Current Spark status:
+
+- Spark is not attached yet for drmlke runtime work.
+- Spark runtime deployment has not started.
+- `/srv/drmlke` is not assumed to exist yet.
+- The preferred future Spark access path is Tailscale or an explicit private SSH
+  path, not a fragile local hostname dependency.
+- MacBook development setup comes before Spark runtime deployment.
+
+What is implemented now:
+
+- A Python monorepo workspace.
+- `apps/api` FastAPI placeholder.
+- `apps/provider` FastAPI provider stub.
+- `apps/worker` worker heartbeat placeholder.
+- `packages/core` shared settings and path helpers.
+- Placeholder packages for storage, wallet, agents, and risk.
+- Dockerfiles for base, API, provider, and worker.
+- Docker Compose profiles for local services.
+- A Makefile with sync, lint, test, check, Docker, and doctor targets.
+- Documentation for architecture, environment, deployment, and Spark planning.
+
+What is not implemented now:
+
+- No live trading.
+- No exchange connection.
+- No exchange API keys.
+- No real wallet custody.
+- No seed phrase generation.
+- No private key storage.
+- No withdrawal support.
+- No market data collector.
+- No treasury ledger implementation.
+- No account and identity implementation.
+- No capability enforcement implementation.
+- No mobile client scaffold.
+- No web admin console.
+- No strategy engine.
+- No backtesting engine.
+- No paper execution engine.
+- No news or retrieval augmented generation system.
+- No AI model download or inference.
+- No Spark runtime deployment.
+
+Sequencing correction:
+
+1. `DOCS.SPINE.3` completes this master document.
+2. `MAC.SETUP.1` prepares the MacBook as an alternate development machine.
+3. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
+4. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
+   the access path is verified.
+
+## 2. Product Definition
+
+Product name: `drmlke`.
+
+Meaning: `dreamlike`.
+
+drmlke is a private and family-scoped, local-first crypto intelligence,
+paper-trading, treasury ledger, strategy research, and agentic runtime system.
+It is designed to help Francesco observe markets, research conservative
+strategies, simulate treasury behavior, and eventually operate a tightly gated
+private runtime.
 
 drmlke is not initially:
 
-- a public financial service
-- a custodial wallet
-- a public fund-management platform
-- an exchange
 - a live trading bot
+- a custodial wallet
+- a public fund-management service
+- an exchange
+- a public financial advisory product
 - a system that manages public user funds
 
-If drmlke ever becomes a public app/service or manages money for others beyond the private family context, legal and regulatory review becomes mandatory. No legal claim beyond this private/family boundary is assumed.
+The foundational product model is one treasury managed by Francesco. Francesco
+is the owner and operator. Padre and Zio are initial observer users. They can
+see permitted information, but they do not manage strategies, approve actions,
+configure runtime behavior, or control funds.
 
-## Foundational Correction
+The product has one application surface. It is not three different products and
+not three independently traded portfolios. The same app serves all roles. The
+difference between users is capability, not product identity.
 
-drmlke is not "three people, three portfolios".
+If drmlke ever leaves private and family use, becomes public, provides public
+financial service behavior, or manages money for people outside the private
+family context, legal and regulatory review becomes mandatory before that
+behavior is designed, shipped, marketed, or enabled.
 
-Correct model:
+## 3. Non-Negotiable Safety Boundary
 
-- one managed treasury / account / portfolio
-- Francesco is the owner and operator
-- Francesco manages runtime, strategy configuration, trading decisions, gates, and risk controls
-- Padre and Zio initially have observer accounts
-- Padre and Zio can see permitted portfolio/account/runtime state during the day
-- Padre and Zio do not trade manually
-- Padre and Zio do not manage strategies
-- Padre and Zio do not control exchange keys, wallet settings, runtime, risk policy, or live gates
+drmlke must be built paper first. Paper first means simulated treasury state,
+simulated orders, simulated fills, and reviewable research before any real money
+path exists. The initial runtime must assume that live trading is disabled.
 
-The client is the same product for all users. Different users receive different permissions and capability locks.
+Hard rules:
 
-## Account and Permission Spine
+- Paper trading comes before any live or shadow trading work.
+- Live trading is disabled by default.
+- No leverage.
+- No futures.
+- No margin.
+- No withdrawals.
+- No private keys in the repository.
+- No seed phrases in the repository.
+- No exchange API keys in the repository.
+- No exchange API keys in the client.
+- No AI model can execute orders.
+- No AI model can override risk.
+- Backend permissions are mandatory for every critical action.
+- UI locks are helpful communication, not security.
+- All future live actions require explicit gates.
+- Family viewer accounts cannot trade.
+- Family viewer accounts cannot configure strategies.
+- Family viewer accounts cannot manage runtime state.
+- Family viewer accounts cannot approve actions.
+- Emergency stop must always be auditable.
 
-drmlke uses one shared product interface with capability-based access.
+The risk engine is a boundary, not a suggestion engine. A strategy, model, or
+manual action can propose a candidate action, but the risk engine may reduce,
+delay, or veto that action. Nothing below the risk layer may bypass it.
+
+Every future operation that mutates treasury state, runtime state, user access,
+strategy configuration, risk policy, or exchange connection state must be
+enforced server-side. A modified client must never be enough to perform a
+forbidden action.
+
+The first real capital ceiling is 200 EUR. That ceiling is not permission to
+trade aggressively. Small capital makes fees, spread, and overtrading more
+dangerous. Capital preservation is more important than excitement.
+
+## 4. Machine and Network Topology
+
+drmlke has three planned machine roles.
+
+### Linux Workstation
+
+Role:
+
+- primary development machine
+- Codex work
+- local provider and API tests
+- Docker development tests
+- repository authoring
+- terminal and VS Code work
+
+Known:
+
+- Arch Linux target for initial local runtime.
+- amd64 architecture.
+- Studio workstation used for active development.
+- This machine currently represents the primary repo authoring path.
+
+The Linux workstation is allowed to run local development services and
+validation. It is not the permanent runtime storage target.
+
+### MacBook
+
+Role:
+
+- alternate development machine
+- home and evening work
+- clone, pull, and push the GitHub repo
+- VS Code editing
+- future iOS packaging path
+- Tailscale already available or expected to be available according to user
+  context
+- setup before Spark runtime deployment
+
+The MacBook must become a clean secondary development environment before Spark
+runtime work begins. This wave documents the plan only. It does not configure
+the MacBook.
+
+### Spark
+
+Role:
+
+- runtime, storage, and provider node
+- Ubuntu 24.04 aarch64
+- NVIDIA DGX Spark
+- Ethernet 24H
+- accessed later through Tailscale or an explicit SSH path
+- not the primary development machine
+- persistent root: `/srv/drmlke`
+
+Important correction:
+
+Spark access must not rely only on fragile LAN hostname resolution. The
+preferred future path is Tailscale-based private access once the MacBook
+workflow is prepared. Spark remains a private runtime node, not a public server.
+
+## 5. Repository Spine
+
+GitHub is the current source remote. The Linux workstation currently has the
+working repo. The MacBook will clone from GitHub during `MAC.SETUP.1`. Spark
+will later receive a deploy copy under `/srv/drmlke/app`; Spark does not become
+the primary authoring repo.
+
+Expected tree and responsibilities:
+
+### `apps/api`
+
+Purpose: backend API service for client, admin console, identity, runtime,
+treasury, strategy, risk, reporting, and audit surfaces.
+
+What belongs there:
+
+- FastAPI app entrypoint.
+- Route modules when backend API surfaces are implemented.
+- Request and response schemas that are API specific.
+- Server-side permission checks.
+- Runtime-facing command endpoints.
+
+What does not belong there yet:
+
+- Exchange secrets.
+- Trading execution logic.
+- Wallet custody.
+- Client UI code.
+- Long-running worker jobs.
+
+### `apps/worker`
+
+Purpose: background runtime process for scheduled work, event processing,
+market data collection, feature generation, strategy evaluation, paper
+execution, reporting, and maintenance jobs.
+
+What belongs there:
+
+- Worker entrypoint.
+- Job runners.
+- Event consumers.
+- Scheduled tasks.
+- Runtime heartbeats.
+
+What does not belong there yet:
+
+- Direct UI code.
+- Secrets committed to source.
+- Live execution.
+- Model downloads during bootstrap.
+
+### `apps/provider`
+
+Purpose: local provider service boundary. During bootstrap it is a stub. Later
+it may expose local model, embedding, sentiment, or compute capabilities through
+a narrow contract.
+
+What belongs there:
+
+- Provider health endpoint.
+- Provider capability endpoint.
+- Model registry reads after models are intentionally installed.
+- Local inference boundary only after a later wave approves it.
+
+What does not belong there yet:
+
+- Real AI model downloads.
+- Exchange connections.
+- Order execution.
+- Wallet custody.
+- Business logic that belongs in API or worker.
+
+### `apps/client`
+
+Purpose: future shared product client for mobile packaging and possibly web
+preview.
+
+What belongs there later:
+
+- Shared UI shell.
+- Capability-aware screens.
+- Client-side API calls.
+- Mobile packaging integration after framework choice.
+
+What does not belong there yet:
+
+- A scaffold before the Node 24 and client framework decisions are ready.
+- Exchange API keys.
+- Wallet private keys.
+- Permission enforcement that is treated as security.
+
+### `packages/core`
+
+Purpose: shared core settings, constants, path helpers, common types, and
+cross-service contracts.
+
+What belongs there:
+
+- Pydantic settings.
+- Shared enums.
+- Capability names.
+- Event names.
+- Common schema primitives.
+
+What does not belong there yet:
+
+- Service-specific route implementations.
+- Heavy runtime jobs.
+- Secrets.
+
+### `packages/storage`
+
+Purpose: storage access layer for SQLite operational state, DuckDB and Parquet
+analytical data, backups, and future migrations.
+
+What belongs there later:
+
+- Database connection helpers.
+- Migration helpers.
+- Repository classes.
+- Backup and restore primitives.
+
+What does not belong there yet:
+
+- Trading decisions.
+- UI code.
+- Secrets.
+
+### `packages/wallet`
+
+Purpose: paper treasury ledger and future read-only wallet or exchange account
+tracking boundaries.
+
+What belongs there:
+
+- Paper treasury types.
+- Ledger entry types.
+- Position accounting.
+- Read-only future tracking adapters after review.
+
+What does not belong there:
+
+- Seed phrase generation.
+- Private key custody.
+- On-chain signing.
+- Withdrawal support.
+- Exchange private key storage.
+
+### `packages/agents`
+
+Purpose: agent orchestration helpers for future research, reporting,
+summarization, and controlled operator assistance.
+
+What belongs there later:
+
+- Agent task contracts.
+- Report generation helpers.
+- Retrieval and explanation workflows.
+- Strictly non-executing advisory agents.
+
+What does not belong there:
+
+- Autonomous order execution.
+- Risk override behavior.
+- Secret management.
+
+### `packages/risk`
+
+Purpose: risk policy, veto logic, exposure checks, drawdown locks, stale data
+checks, and emergency state rules.
+
+What belongs there:
+
+- Deterministic risk policy.
+- Sizing constraints.
+- Veto reasons.
+- Drawdown and exposure checks.
+- Audit-friendly risk decisions.
+
+What does not belong there:
+
+- UI rendering.
+- Exchange adapters.
+- Non-deterministic model behavior that can override policy.
+
+### `infra/docker`
+
+Purpose: Dockerfiles and container build assets.
+
+What belongs there:
+
+- Base image.
+- Service Dockerfiles.
+- Build-time dependency wiring.
+
+What does not belong there:
+
+- Runtime data.
+- Secrets.
+- Machine-specific environment files.
+
+### `deploy/spark`
+
+Purpose: Spark-specific deployment documentation and later deployment helpers.
+
+What belongs there later:
+
+- Spark preparation scripts after explicit wave approval.
+- Systemd or Compose deployment notes.
+- Storage layout docs.
+- Operational checklists.
+
+What does not belong there yet:
+
+- A live deploy script that runs without review.
+- Secrets.
+- Private keys.
+
+### `scripts`
+
+Purpose: local developer and operator helper scripts.
+
+What belongs there:
+
+- Doctor checks.
+- Validation helpers.
+- Future backup and migration helpers.
+- Future deployment preflight checks.
+
+What does not belong there:
+
+- Destructive maintenance commands without explicit safeguards.
+- Secret material.
+
+### `docs`
+
+Purpose: canonical planning, architecture, environment, deployment, and review
+records.
+
+What belongs there:
+
+- Master spine.
+- Architecture notes.
+- Environment setup.
+- Deployment plans.
+- Future runbooks.
+
+What does not belong there:
+
+- Credentials.
+- Seed phrases.
+- Private keys.
+- Undecided details written as if they were final decisions.
+
+## 6. Development Environment Spine
+
+### Linux
+
+The Linux workstation is the current primary development target.
+
+Expected tools:
+
+- Python 3.12.
+- `uv`.
+- Node 24.
+- `corepack`.
+- `pnpm`.
+- Docker.
+- Docker Compose v2.
+- Docker buildx.
+- Makefile.
+- git.
+- openssh.
+- vim.
+- curl.
+- VS Code if desired.
+
+Expected validation:
+
+```sh
+uv sync --dev
+make doctor
+make check
+docker compose --profile provider up provider
+curl http://localhost:8781/health
+curl http://localhost:8781/models
+```
+
+Current status:
+
+- Python 3.12 is the pinned Python version.
+- Node 24 alignment is resolved.
+- The provider stub is expected to validate locally.
+- The Linux workstation remains the main authoring machine until MacBook setup
+  is complete.
+
+### MacBook
+
+This is plan only. Do not execute MacBook setup in `DOCS.SPINE.3`.
+
+Planned checks:
+
+- Install or verify git.
+- Install or verify vim.
+- Install or verify `uv`.
+- Install or verify Python 3.12.
+- Install or verify Node 24.
+- Enable `corepack`.
+- Verify `pnpm`.
+- Clone the GitHub repo.
+- Verify the branch and remote.
+- Run `make doctor`.
+- Run `make check`.
+- Decide whether Docker Desktop is required immediately.
+- Open the repo in VS Code.
+- Confirm Tailscale availability.
+- Leave iOS tooling for a later wave.
+- Leave Android tooling for a later wave.
+
+Planned commands, to be reviewed during `MAC.SETUP.1` and not executed in this
+docs wave:
+
+```sh
+git clone https://github.com/francescomaiomascio/drmlke.git
+cd drmlke
+git status --short --branch
+uv sync --dev
+node -v
+corepack enable
+pnpm -v
+make doctor
+make check
+code .
+```
+
+### Spark
+
+This is plan only. Do not attach Spark or deploy runtime in `DOCS.SPINE.3`.
+
+Future checks:
+
+- Verify SSH over the selected private path.
+- Verify Tailscale reachability.
+- Verify Docker.
+- Verify Docker Compose.
+- Verify NVIDIA runtime visibility if model or GPU work is later approved.
+- Prepare `/srv/drmlke`.
+- Deploy the provider only after `TAILSCALE.SPARK.1`.
+
+Spark must not receive secrets through the repository. Runtime data, env files,
+models, logs, and backups live outside source control.
+
+## 7. MacBook Setup Spine
+
+### Purpose
+
+The MacBook must become a clean alternate development machine so work can
+continue from home without relying on the Linux workstation terminal.
+
+### Target State
+
+- Repository cloned.
+- Current branch visible.
+- GitHub remote working.
+- Node 24 active.
+- `uv` working.
+- Python 3.12 working.
+- `pnpm` working.
+- `make doctor` passes or clearly documents missing Docker.
+- `make check` passes.
+- Provider can run locally if Docker is available.
+- VS Code can open the repo.
+- The roadmap can be edited from MacBook.
+
+### Non-Goals
+
+- No Spark deployment.
+- No Tailscale production routing changes.
+- No client implementation.
+- No trading logic.
+- No model downloads.
+- No wallet custody.
+- No exchange connections.
+
+### Future Wave Name
+
+`MAC.SETUP.1 - MacBook development environment and repo clone`
+
+## 8. Tailscale and Spark Access Spine
+
+### Purpose
+
+Use Tailscale as the preferred private network path between MacBook,
+workstation, and Spark, instead of relying only on fragile local hostname
+resolution.
+
+### Target Future Behavior
+
+- MacBook can reach Spark through Tailscale.
+- Linux workstation may also use Tailscale if configured later.
+- Spark provider and API remain private.
+- No public internet exposure.
+- drmlke mobile and admin clients connect through LAN, VPN, or Tailscale later.
+- Spark access uses an explicit, documented address or SSH alias.
+
+### Non-Goals Now
+
+- Do not configure Tailscale in this docs wave.
+- Do not expose the provider publicly.
+- Do not create Cloudflare tunnels.
+- Do not open router ports.
+- Do not deploy drmlke runtime.
+
+### Future Wave Name
+
+`TAILSCALE.SPARK.1 - verify Spark private network access path`
+
+## 9. Spark Runtime and Storage Spine
+
+Spark is a future runtime and storage target. It is not the current authoring
+machine.
+
+Target root:
+
+```text
+/srv/drmlke
+```
+
+Target tree:
+
+```text
+/srv/drmlke/env
+/srv/drmlke/app
+/srv/drmlke/state
+/srv/drmlke/lake/parquet
+/srv/drmlke/lake/duckdb
+/srv/drmlke/vector/lancedb
+/srv/drmlke/models/embeddings
+/srv/drmlke/models/llm
+/srv/drmlke/models/timeseries
+/srv/drmlke/logs/api
+/srv/drmlke/logs/worker
+/srv/drmlke/logs/provider
+/srv/drmlke/backups/daily
+/srv/drmlke/backups/weekly
+/srv/drmlke/runtime/sockets
+/srv/drmlke/runtime/pids
+```
+
+Rules:
+
+- Runtime data lives outside the repository.
+- Environment files live outside the repository.
+- Secrets are never committed.
+- Environment files are backed up before overwrite.
+- Source deploy copy goes to `/srv/drmlke/app`.
+- Spark is a deploy target, not the authoring source.
+- Provider and API must remain private to LAN, VPN, or Tailscale.
+- Live trading remains disabled on Spark until a future live gate wave.
+- Withdrawals remain disabled on Spark.
+
+Future wave:
+
+`SPARK.RUNTIME.1 - prepare Spark storage and deploy provider`
+
+## 10. Container and Runtime Spine
+
+Docker Compose is the initial orchestrator.
+
+drmlke will not use these in the early runtime:
+
+- Kubernetes.
+- Docker Swarm.
+- Cloud-managed orchestration.
+- Public cloud dependency.
+
+Current services:
+
+- `provider`: FastAPI provider stub.
+- `api`: FastAPI API placeholder.
+- `worker`: background worker placeholder.
+
+Future services:
+
+- `client`: local preview or packaged web surface later.
+- `db-tools`: migration, backup, restore, and analytical maintenance helpers.
+
+Expected Compose profiles:
+
+- `provider`: run the provider service only.
+- `dev`: run API and worker for local development.
+- `spark`: run the private Spark runtime profile later.
+- `full`: run the full local stack when it exists.
+
+Ports:
+
+- `8780`: API.
+- `8781`: provider.
+- `8782`: client preview later.
+- `8783`: worker metrics later.
+
+Current runtime truth:
+
+- The local provider is a stub.
+- API and worker are placeholders.
+- No market data flows.
+- No execution flows.
+- No models are loaded.
+
+Future runtime direction:
+
+- Define a provider contract.
+- Add API runtime surfaces with server-side permission enforcement.
+- Add a worker and event bus.
+- Keep containers portable between LAN nodes by using environment variables and
+  a configurable storage root.
+- Bind ports cautiously on Spark so services remain private.
+
+## 11. Account, Role, and Capability Spine
+
+Correct account model:
+
+- One treasury.
+- One owner and operator.
+- Padre and Zio are viewer family accounts.
+- Same app for everyone.
+- Capability-driven UI.
+- Server-side enforcement.
+- Disabled UI is not security.
 
 ### Roles
 
-1. `owner_operator`
+#### `owner_operator`
 
-Francesco.
+Primary user: Francesco.
 
-Can:
+Allowed actions:
 
-- configure runtime
-- manage strategies
-- view all data
-- approve future gated actions
-- pause and resume runtime
-- use emergency controls
-- configure accounts, devices, and permissions
-- view audit and logs
+- View all treasury, position, runtime, risk, audit, provider, and strategy
+  data.
+- Configure runtime behavior.
+- Manage strategies.
+- Manage risk policy.
+- Pause runtime.
+- Resume runtime when gates allow.
+- Trigger emergency stop.
+- Manage users.
+- Manage devices.
+- Manage exchange connections only in future reviewed waves.
+- Approve future paper actions where approval is required.
+- Approve future live actions only after live gates exist.
 
-2. `viewer_family`
+Forbidden actions:
 
-Padre and Zio initially.
+- Bypass risk.
+- Enable live trading before the live gate exists.
+- Store secrets in the repository.
+- Enable withdrawals during early development.
 
-Can:
+UI behavior:
 
-- see portfolio state
-- see PnL and daily status if allowed
-- see current paper/live mode
-- see relevant alerts
+- Owner sees all product sections.
+- Mutating controls are enabled only when the backend capability and runtime
+  gate allow them.
+- Locked controls explain the lock reason.
 
-Cannot:
+API enforcement:
 
-- change strategies
-- approve trades
-- change risk limits
-- add exchange keys
-- access secrets
-- start live trading
-- modify wallet or treasury settings
+- Every owner action is checked server-side.
+- Denied owner actions produce safe responses and audit records.
 
-3. `emergency_only`, future optional
+#### `viewer_family`
 
-Can:
+Initial users: Padre and Zio.
 
-- see critical status
-- trigger emergency stop if explicitly allowed
+Allowed actions:
 
-Cannot:
+- View permitted treasury state.
+- View positions.
+- View PnL if allowed.
+- View runtime status.
+- View news.
+- View alerts.
+- View explanatory summaries.
 
-- resume trading
-- change configuration
+Forbidden actions:
 
-4. `admin_technical`, future optional
+- Trade.
+- Approve trades.
+- Configure strategies.
+- Change risk policy.
+- Pause or resume runtime unless a future emergency permission explicitly grants
+  a narrow action.
+- Manage exchange connections.
+- Add secrets.
+- Manage users.
+- Manage devices.
+- View sensitive logs.
 
-For technical maintenance if needed. This role does not imply trading authority unless explicitly granted.
+UI behavior:
 
-### Permission Rules
+- Viewer sees the same app and same general navigation.
+- Mutating actions are hidden, disabled, or replaced with a clear lock reason.
+- Viewer can understand status without seeing sensitive controls.
 
-- UI permissions are capability-driven.
-- The API returns both data and allowed actions.
-- The UI renders the same screens for all users but disables, locks, or hides actions based on capability.
-- Critical actions must be blocked server-side even if a client is modified.
-- Disabled UI buttons are not security.
-- Every denied action should produce a safe response and may be audited.
-- Role changes are owner-only.
-- Device trust and session validity are separate from trading permission.
+API enforcement:
 
-### Capability Model
+- Viewer requests for forbidden actions are denied server-side.
+- Permission denial may be audited.
 
-Initial capabilities:
+#### `emergency_only`
+
+Future optional role.
+
+Allowed actions:
+
+- View critical status.
+- Trigger emergency stop if explicitly granted.
+
+Forbidden actions:
+
+- Resume runtime.
+- Change configuration.
+- Approve trades.
+- Manage strategies.
+- Manage risk.
+
+UI behavior:
+
+- This role sees a minimal emergency surface.
+- The emergency action requires clear confirmation and produces an audit record.
+
+API enforcement:
+
+- Emergency action is checked by capability and runtime state.
+- Resume remains owner-only.
+
+#### `admin_technical`
+
+Future optional role.
+
+Allowed actions:
+
+- Perform technical maintenance if explicitly granted.
+- View system health if allowed.
+- Assist with deployment and logs if allowed.
+
+Forbidden actions:
+
+- Trading authority by default.
+- Strategy authority by default.
+- Risk policy authority by default.
+- Exchange connection authority by default.
+
+UI behavior:
+
+- Technical surfaces appear only if capability grants them.
+- Trading and treasury controls remain locked unless separately granted.
+
+API enforcement:
+
+- Technical authority and trading authority are separate capabilities.
+
+### Capabilities
+
+Initial capability names:
 
 - `view_treasury`
 - `view_positions`
@@ -144,354 +916,442 @@ Initial capabilities:
 - `manage_exchange_connections`
 - `view_sensitive_logs`
 
-Initial assignment:
+Capability assignment:
 
-- Francesco: all owner/operator capabilities, except future live actions remain locked until live gates exist.
-- Padre: `view_treasury`, `view_positions`, `view_pnl`, `view_runtime_status`, `view_news`, `view_alerts`.
-- Zio: same as Padre.
-- Live trading capabilities: disabled globally.
+- Francesco starts with owner and operator capabilities, while future live
+  actions remain globally locked until live gates exist.
+- Padre starts with family viewer capabilities.
+- Zio starts with family viewer capabilities.
+- Live trading capabilities are globally disabled.
 
-## Treasury and Capital Spine
+## 12. Treasury and Capital Spine
 
 Correct capital model:
 
-- Future real capital ceiling: 200 EUR
-- Current live capital: 0 EUR
-- Current implementation: paper only
-- Paper treasury: one simulated 200 EUR treasury
-- No per-person trading allocation initially
+- Future real capital ceiling: 200 EUR.
+- Current live capital: 0 EUR.
+- Current implementation: paper only.
+- Paper treasury: one simulated 200 EUR treasury.
+- No per-person budget split.
+- Padre and Zio are viewers, not independent portfolio managers.
 
-Rejected obsolete split:
+Contribution metadata may exist later, but it is accounting metadata. It is not
+trading authority and does not create independent family portfolios.
 
-- Francesco 100 EUR
-- Padre 50 EUR
-- Zio 50 EUR
+Useful treasury splits:
 
-Replacement model:
-
-- Treasury paper balance: 200 EUR
-- Owner/operator: Francesco
-- Viewers: Padre, Zio
-- Member-specific allocation: not part of initial model
-- Contribution accounting: future optional
-- Per-strategy ledger: useful
-- Per-member trading portfolio: not initial
-
-The system may later record contribution/source metadata, but that is accounting metadata, not independent trading authority.
-
-Capital ownership/accounting model:
-
-- one treasury
-- one owner/operator
-- multiple viewer accounts
-- optional future contribution records
-- optional future internal reporting per contributor
-- trading strategy decisions apply to the treasury, not to individual family-member strategy accounts
-
-The most useful internal split is not by family member at first. The useful split is by:
-
-- treasury cash
-- asset positions
-- strategy attribution
-- paper/live mode
-- realized/unrealized PnL
-- fees/slippage
-- risk exposure
-- audit events
-
-The ledger can still record ownership, source, and contribution metadata later. Trading control remains owner/operator-controlled.
-
-## Public Client / Private Capability Model
-
-The drmlke client may be public/installable, but the runtime data and actions are private.
-
-Client model:
-
-- one app name: drmlke
-- one UI codebase
-- same screens for all roles
-- iPhone and Android packaging later
-- account permissions determine available actions
-- the client never contains exchange keys
-- the client never contains wallet seed/private keys
-- the client talks to the Spark/API backend
-- the backend enforces all permissions
-- Spark/backend remains private and LAN/VPN-controlled unless explicitly changed in the future
-
-Locked actions show clear explanations, for example:
-
-- "Viewer account: action locked"
-- "Live trading globally disabled"
-- "Owner approval required"
-- "Risk engine locked this action"
-- "Shadow mode only"
-
-Owner view:
-
-- same app
-- all sections visible
-- action buttons enabled only when gates allow
-- can pause/resume runtime
-- can emergency stop
-- can inspect strategies
-- can inspect risk
-- can approve future manual micro-live only after that gate exists
-
-Viewer view:
-
-- same app
-- portfolio and status visible
-- buttons that mutate state are locked or absent
-- can read explanations
-- can receive alerts
-- cannot approve, trade, configure, or unlock
-
-The UI must not fork into "owner app" and "viewer app". It is one client with role/capability gating.
-
-## Interface Final Shape
-
-### 1. Mobile Client
-
-Purpose:
-
-- daily monitoring
-- father/uncle observer access
-- owner emergency control
-- owner quick approval in future gates
-
-Users:
-
-- Francesco
-- Padre
-- Zio
-
-Screens:
-
-- Login
-- Home
-- Treasury
-- Positions
-- PnL
-- Signals
-- News
-- Runtime
-- Risk
-- Alerts
-- Settings
-- Emergency
-
-Home screen should show:
-
-- current mode: paper / shadow / live locked
-- treasury value
-- today PnL
-- open positions
-- risk state
-- runtime state
-- latest important alert
-- emergency stop access for permitted users
-
-Treasury screen should show:
-
-- total paper treasury
 - cash
 - positions
 - realized PnL
 - unrealized PnL
-- fees/slippage
+- fees
+- slippage
 - strategy attribution
-- recent ledger entries
+- risk exposure
+- audit events
 
-Viewer mode:
+The 200 EUR ceiling is a constraint, not an invitation to trade aggressively.
+Small capital makes fees, spread, and overtrading more dangerous. Any strategy
+that depends on frequent trading must show realistic fee and spread assumptions
+before it can even become paper-enabled.
 
-- same screens
-- no mutating actions
-- locked controls explain missing permission
+The ledger should eventually answer:
 
-### 2. Web Admin Console
+- What cash does the paper treasury hold?
+- Which positions are open?
+- What is the realized result?
+- What is the unrealized result?
+- What fees and slippage were simulated?
+- Which strategy caused each candidate action?
+- Which risk decision allowed, reduced, delayed, or vetoed it?
+- Which user or runtime job caused each mutation?
+- What audit record proves the sequence?
+
+## 13. Wallet Boundary Spine
+
+drmlke is initially a ledger and paper treasury. It is not initially a
+custodial wallet.
+
+Hard wallet boundaries:
+
+- No seed phrase generation.
+- No private key custody.
+- No withdrawals.
+- No on-chain signing.
+- No exchange private key in the client.
+- No wallet seed in the client.
+- No wallet secret in the repository.
+
+Future possibilities, only after review:
+
+- Read-only exchange adapter.
+- Shadow exchange mode.
+- Future trading adapter behind explicit gates.
+- On-chain read-only tracking.
+- WalletConnect or on-chain interaction as a future optional surface.
+
+The wallet package may contain paper treasury and ledger code. It must not
+contain custody behavior during early development.
+
+## 14. Interface and Product Surface Spine
+
+drmlke has one product interface with capability-aware behavior. The owner and
+viewers use the same product. The backend decides what data and actions are
+available.
+
+### Mobile Client
 
 Purpose:
 
-- owner control from browser
-- LAN/VPN access
-- richer than mobile
-- not exposed publicly
+- Daily monitoring.
+- Viewer family access.
+- Owner emergency control.
+- Future owner approval flows.
+
+Same app for all roles.
+
+#### Login
+
+- Purpose: authenticate the user and establish a session.
+- Visible to owner: yes.
+- Visible to viewer: yes.
+- Owner actions: sign in, manage trusted device later.
+- Viewer locked actions: device management unless granted.
+- Key data shown: app name, connection target, session status, safe error
+  messages.
+
+#### Home
+
+- Purpose: show the day status at a glance.
+- Visible to owner: yes.
+- Visible to viewer: yes.
+- Owner actions: inspect runtime, pause if allowed, open emergency.
+- Viewer locked actions: pause, resume, configure, approve.
+- Key data shown: current mode, treasury value, today PnL, open positions, risk
+  state, runtime state, latest important alert.
+
+#### Treasury
+
+- Purpose: show cash, positions, and ledger state for the one treasury.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_treasury` is granted.
+- Owner actions: inspect ledger details and future approved manual paper
+  actions.
+- Viewer locked actions: mutate treasury, approve orders, change settings.
+- Key data shown: paper balance, cash, positions, realized PnL, unrealized PnL,
+  fees, slippage, strategy attribution, recent ledger entries.
+
+#### Positions
+
+- Purpose: show open and historical asset exposure.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_positions` is granted.
+- Owner actions: inspect attribution and risk details.
+- Viewer locked actions: close, rebalance, or modify exposure.
+- Key data shown: asset, quantity, average simulated price, current mark, PnL,
+  exposure share, source strategy.
+
+#### PnL
+
+- Purpose: explain performance without hiding fees and slippage.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_pnl` is granted.
+- Owner actions: inspect periods, strategy attribution, and report details.
+- Viewer locked actions: change evaluation settings.
+- Key data shown: daily PnL, realized PnL, unrealized PnL, drawdown, fees,
+  slippage, benchmark comparison.
+
+#### Signals
+
+- Purpose: show strategy candidate signals and their review status.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_signals` is granted.
+- Owner actions: inspect signal details and future approve paper action if
+  enabled.
+- Viewer locked actions: approve, reject, tune, or create signals.
+- Key data shown: asset, strategy, direction, confidence, model score, risk
+  status, created time.
+
+#### News
+
+- Purpose: show market news relevant to treasury risk.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_news` is granted.
+- Owner actions: inspect source, severity, related assets, and retrieval memory.
+- Viewer locked actions: tune news model or source policy.
+- Key data shown: headline, source, time, severity, affected assets, summary,
+  risk relevance.
+
+#### Runtime
+
+- Purpose: show whether the system is running, paused, stopped, or locked.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_runtime_status` is granted.
+- Owner actions: pause, resume, inspect jobs, inspect provider, future restart
+  flows.
+- Viewer locked actions: pause, resume, restart, configure.
+- Key data shown: mode, runtime state, last heartbeat, jobs, service health,
+  current locks.
+
+#### Risk
+
+- Purpose: show risk policy and current risk state.
+- Visible to owner: yes.
+- Visible to viewer: limited view if allowed.
+- Owner actions: inspect policy and manage policy in future.
+- Viewer locked actions: change limits, unlock drawdown, override veto.
+- Key data shown: exposure, drawdown, vetoes, stale data state, liquidity state,
+  news severity locks.
+
+#### Alerts
+
+- Purpose: show important system, market, risk, and permission events.
+- Visible to owner: yes.
+- Visible to viewer: yes if `view_alerts` is granted.
+- Owner actions: acknowledge alerts, inspect audit details.
+- Viewer locked actions: change alert rules.
+- Key data shown: severity, time, source, affected entity, action required,
+  acknowledgement state.
+
+#### Settings
+
+- Purpose: account, device, notification, and owner configuration.
+- Visible to owner: yes.
+- Visible to viewer: yes in limited form.
+- Owner actions: manage users, devices, notifications, and future connections.
+- Viewer locked actions: role changes, device trust changes beyond self, runtime
+  configuration, exchange configuration.
+- Key data shown: account, role, capabilities, device state, notification
+  preferences.
+
+#### Emergency
+
+- Purpose: provide a clear, auditable stop path.
+- Visible to owner: yes.
+- Visible to viewer: only if `emergency_stop` is granted.
+- Owner actions: trigger emergency stop and inspect stop state.
+- Viewer locked actions: resume, clear lock, change policy.
+- Key data shown: current runtime state, last stop event, confirmation text,
+  audit summary.
+
+### Web Admin Console
+
+Purpose:
+
+- Richer owner browser console.
+- LAN, VPN, or Tailscale only.
+- Not public.
+- Designed for repeated operational use, not marketing.
 
 Sections:
 
-- dashboard
-- runtime
-- provider
-- storage
-- strategies
-- paper trading
-- treasury
-- signals
-- risk
-- news/RAG
-- reports
-- audit
-- users/devices
-- settings
+- Dashboard.
+- Runtime.
+- Provider.
+- Storage.
+- Treasury.
+- Strategies.
+- Signals.
+- Paper Trading.
+- Risk.
+- News and retrieval memory.
+- Reports.
+- Audit.
+- Users and Devices.
+- Settings.
 
-### 3. Terminal/Makefile
+Layout:
 
-Purpose:
+- Dark-first console.
+- Dense information layout.
+- Left rail for primary navigation.
+- Top status bar for mode, runtime, provider health, risk state, and emergency
+  status.
+- Main workspace for the selected section.
+- Right inspector for selected entity details.
+- Event timeline or log strip for recent important events.
 
-- development
-- deployment
-- doctor
-- validation
-- Spark operations
-- migrations and backups later
+The web admin console is for owner operation and deeper inspection. It does not
+replace backend enforcement.
 
-### 4. VS Code
-
-Purpose:
-
-- source editing
-- roadmap editing
-- tests
-- Codex work
-- docs review
-
-### 5. Future Desktop Console
+### Terminal and Makefile
 
 Purpose:
 
-- richer owner dashboard
-- strategy lab
-- backtest lab
-- model registry
-- audit timeline
-- data lake browser
+- Diagnostics.
+- Deployment.
+- Tests.
+- Backup and restore later.
+- Migrations later.
+- Spark operations later.
+
+Make targets should remain safe, explicit, and reviewable. Destructive or
+stateful targets must explain what they affect and must not hide secret
+movement.
+
+### VS Code
+
+Purpose:
+
+- Code editing.
+- Documentation editing.
+- Roadmap editing.
+- Tests.
+- Codex review.
+- Git workflow.
+
+The roadmap is expected to be open during major implementation waves.
+
+### Future Desktop Console
+
+Purpose:
+
+- Richer owner desktop app.
+- Strategy lab.
+- Backtest lab.
+- Model registry.
+- Audit timeline.
+- Data lake browser.
 
 Technology preference:
 
-- Tauri/Rust shell for lightweight desktop
-- TypeScript UI
-- talks to Spark API
-- no local exchange secrets
-- no private keys
+- Tauri and Rust shell.
+- TypeScript UI.
+- Talks to Spark API.
+- No local secrets.
+- No local exchange keys.
+- No local wallet private keys.
 
-Do not implement desktop now. This is a documented direction only.
+Do not implement desktop now.
 
-## Trading Strategy Spine
+## 15. Trading Strategy Spine
 
-Capital premise:
-
-- 200 EUR future live ceiling
-- paper first
-- small capital means fees and spread matter
-- overtrading is dangerous
-- preservation comes before excitement
-- no leverage
-- no futures
-- no margin
-- no low-liquidity assets
-- no martingale
-- no autonomous LLM trading
+All strategies start as research or paper-only behavior. A strategy creates a
+candidate signal. It does not directly execute real orders.
 
 Initial paper universe:
 
-- BTC/EUR or BTC/USDT depending exchange/data availability
-- ETH/EUR or ETH/USDT depending exchange/data availability
-- later high-liquidity large caps only after review
+- BTC/EUR or BTC/USDT, pending exchange and data source decisions.
+- ETH/EUR or ETH/USDT, pending exchange and data source decisions.
+- Later high-liquidity large caps only after review.
 
-### Strategy Families
+### 1. Buy and Hold Benchmark
 
-1. Buy and hold benchmark
+- Purpose: measure whether any active strategy is better than doing nothing.
+- Inputs: start date, asset, initial simulated allocation, mark prices, fees if
+  a simulated buy is modeled.
+- Behavior: simulate buying once and holding through the evaluation period.
+- Outputs: benchmark equity curve, PnL, drawdown, volatility, comparison
+  metrics.
+- Risk interaction: not a trading strategy; used to judge whether active logic
+  earns its complexity.
+- Non-goals: no timing, no prediction, no frequent trading.
+- Acceptance before promotion: benchmark is reproducible, fee assumptions are
+  explicit, and comparison reports can reference it.
 
-Purpose:
+### 2. Scheduled Accumulation Benchmark
 
-- baseline
-- compare every active strategy against doing nothing
+- Purpose: compare complex timing against a simple periodic accumulation plan.
+- Inputs: schedule, amount, asset, price history, fees, slippage assumption.
+- Behavior: simulate recurring buys on a fixed schedule.
+- Outputs: equity curve, average cost, PnL, drawdown, fee load.
+- Risk interaction: risk engine may cap paper exposure and flag over-allocation.
+- Non-goals: no prediction, no short-term timing, no leverage.
+- Acceptance before promotion: schedule is deterministic, cost model is
+  explicit, and benchmark is easy to reproduce.
 
-2. Scheduled accumulation benchmark
+### 3. Trend Following
 
-Purpose:
+- Purpose: participate only when trend and market conditions support long-only
+  exposure.
+- Inputs: moving average slope, multi-timeframe alignment, realized volatility,
+  volume, liquidity, regime label, stale data state.
+- Behavior: emit long-only candidate signals when trend is aligned and market
+  state is acceptable.
+- Outputs: candidate signal with direction, confidence, invalidation condition,
+  expected holding window, and evidence.
+- Risk interaction: risk can reduce size, delay entry, or veto for exposure,
+  volatility shock, stale data, liquidity, or news severity.
+- Non-goals: no shorting, no futures, no margin, no high-frequency entries.
+- Acceptance before promotion: improves risk-adjusted paper performance after
+  fees and slippage across multiple regimes and does not depend on overtrading.
 
-- simple periodic buy simulation
-- compare complex timing against a low-complexity family-friendly baseline
+### 4. Mean Reversion
 
-3. Trend following
+- Purpose: test whether temporary dislocations can be paper-traded without
+  fighting strong adverse regimes.
+- Inputs: RSI, Bollinger distance, rolling z-score, volatility state, trend
+  filter, liquidity, regime label.
+- Behavior: emit long-only candidate signals when price appears stretched and
+  the regime does not indicate panic or persistent breakdown.
+- Outputs: candidate signal with entry reason, invalidation threshold, maximum
+  holding window, and expected reversion zone.
+- Risk interaction: risk vetoes stale data, panic regimes, poor liquidity,
+  excessive exposure, or drawdown lock.
+- Non-goals: no falling-knife averaging, no martingale, no leverage.
+- Acceptance before promotion: drawdowns are controlled, invalidation is
+  explicit, and paper results beat a simple benchmark after costs.
 
-Inputs:
+### 5. Volatility Breakout
 
-- moving average slope
-- multi-timeframe alignment
-- volatility
-- volume
-- liquidity
-- regime
+- Purpose: test whether volatility compression followed by expansion can create
+  controlled paper opportunities.
+- Inputs: ATR, realized volatility, volatility compression, volume z-score,
+  breakout level, liquidity, regime state.
+- Behavior: emit candidate signals only after clear breakout confirmation and
+  strict invalidation.
+- Outputs: breakout signal, trigger level, invalidation level, expected holding
+  horizon, evidence bundle.
+- Risk interaction: risk limits size, blocks illiquid breakouts, blocks severe
+  news, and blocks excessive volatility shocks.
+- Non-goals: no chasing thin assets, no leverage, no scalping.
+- Acceptance before promotion: false breakout cost is understood, slippage is
+  modeled, and the strategy remains robust across volatility regimes.
 
-Behavior:
+### 6. News Risk Avoidance
 
-- long-only
-- spot only
-- no shorting
-- no leverage
-- trade only in paper
+- Purpose: block or reduce risk when severe news increases uncertainty.
+- Inputs: news items, source credibility, sentiment, severity, affected assets,
+  entity extraction, similar historical events from retrieval memory.
+- Behavior: create risk context and possible veto conditions. News does not
+  create buy orders by itself.
+- Outputs: severity labels, affected assets, risk annotations, suggested lock or
+  caution state.
+- Risk interaction: risk uses news severity to veto, reduce, or delay candidate
+  actions.
+- Non-goals: no autonomous trading from headlines, no rumor chasing.
+- Acceptance before promotion: false positives and false negatives are tracked,
+  severe news handling is auditable, and news blocks more risky behavior than it
+  creates.
 
-4. Mean reversion
+### 7. Portfolio and Risk Rebalancing
 
-Inputs:
+- Purpose: future treasury-level exposure management after the ledger and paper
+  engine are stable.
+- Inputs: cash, positions, target exposure ranges, risk state, strategy
+  attribution, fees, slippage, volatility.
+- Behavior: recommend paper rebalancing only when exposure drift or risk policy
+  requires it.
+- Outputs: candidate rebalance actions, rationale, estimated cost, risk impact.
+- Risk interaction: risk owns final approval and can veto rebalancing.
+- Non-goals: no aggressive tactical churn, no per-family-member portfolio split.
+- Acceptance before promotion: reduces risk or improves benchmark comparison
+  after costs without creating overtrading.
 
-- RSI
-- Bollinger distance
-- rolling z-score
-- volatility state
-- trend filter
+### 8. Ensemble Decision Matrix
 
-Rules:
-
-- no panic regime
-- no stale data
-- no illiquid market
-
-5. Volatility breakout
-
-Inputs:
-
-- volatility compression
-- ATR expansion
-- volume z-score
-- breakout level
-
-Rules:
-
-- strict invalidation
-- paper-only until enough samples
-
-6. News risk avoidance
-
-Purpose:
-
-- news blocks trades before it creates trades
-
-Inputs:
-
-- sentiment
-- severity
-- affected assets
-- source credibility
-- similar events from RAG
-
-7. Portfolio/risk rebalancing
-
-Future only:
-
-- treasury allocation management
-- avoid overtrading
-- include fees
-
-8. Ensemble decision matrix
-
-Purpose:
-
-- combine strategy scores
-- create candidate signal only
-- risk engine decides
+- Purpose: combine strategy signals, model scores, news context, and risk
+  context into one candidate action.
+- Inputs: strategy signals, feature state, regime state, news state, model
+  scores, treasury state, existing exposure.
+- Behavior: produce candidate action, hold decision, reduce decision, or no-op.
+- Outputs: decision record with inputs, weights, reason codes, confidence, and
+  audit references.
+- Risk interaction: the matrix does not override risk. Risk makes the final
+  allow, reduce, delay, or veto decision.
+- Non-goals: no autonomous live trading, no hidden black-box authority.
+- Acceptance before promotion: outputs are explainable, reproducible, and
+  evaluated against benchmarks and risk outcomes.
 
 ### Forbidden Early Strategies
 
@@ -500,7 +1360,8 @@ Purpose:
 - HFT
 - futures
 - leverage
-- grid/martingale
+- grid
+- martingale
 - meme coin chasing
 - autonomous LLM trading
 - market making with 200 EUR
@@ -509,154 +1370,363 @@ Purpose:
 
 Pipeline:
 
-`idea -> specified -> backtest_ready -> backtested -> paper_enabled -> paper_observed -> blocked/deprecated/future_live_candidate`
+```text
+idea -> specified -> backtest_ready -> backtested -> paper_enabled -> paper_observed -> blocked/deprecated/future_live_candidate
+```
 
 Promotion requires:
 
-- out-of-sample validation
-- walk-forward validation
-- realistic fees/slippage
-- acceptable drawdown
-- stable performance across regimes
-- benchmark comparison
-- owner review
-- risk review
-- auditability
+- Clear specification.
+- Realistic fees.
+- Realistic slippage.
+- No lookahead.
+- Out-of-sample validation.
+- Walk-forward validation.
+- Acceptable drawdown.
+- Stable behavior across regimes.
+- Benchmark comparison.
+- Risk review.
+- Owner review.
+- Auditability.
 
-## Algorithmic Spine
+Hard rule:
 
-The following algorithmic layers will be evaluated over time. They are not implemented in the bootstrap.
+Accuracy is not enough. A strategy must improve risk-adjusted paper performance
+after fees, slippage, drawdown, and regime analysis.
 
-### Layer 1: Deterministic Features
+## 16. Algorithmic and Model Spine
 
-- log returns
-- rolling returns
-- realized volatility
-- ATR
-- RSI
-- MACD
-- moving average slopes
-- Bollinger distance
-- volume z-score
-- spread/liquidity estimate
-- multi-timeframe alignment
-- drawdown from local high
+Every model and algorithm is a candidate until evaluated. No model is chosen
+permanently in this document.
 
-### Layer 2: Statistical Baselines
+### Layer 1. Deterministic Features
 
-- buy-and-hold
-- scheduled accumulation
-- simple momentum
-- simple mean reversion
-- moving average crossover
-- EWMA volatility
-- rolling z-score
-- ARIMA/SARIMAX optional later
-- GARCH optional later
+- Purpose: create transparent market and treasury features that can be audited.
+- Inputs: candles, trades if available, spreads if available, volume, treasury
+  state, position state.
+- Outputs: feature rows with timestamp, asset, timeframe, and calculation
+  metadata.
+- Candidate algorithms: log returns, rolling returns, realized volatility, ATR,
+  RSI, MACD, moving average slope, Bollinger distance, volume z-score,
+  spread/liquidity estimates.
+- First implementation: deterministic pandas or Polars style feature functions
+  over stored candles.
+- Future candidates: multi-timeframe feature stores, microstructure features,
+  and richer liquidity metrics.
+- Non-goals: no prediction, no order execution, no opaque model behavior.
+- Evaluation: unit tests, known-value examples, no leakage, stable output schema.
 
-### Layer 3: Classical ML
+### Layer 2. Statistical Baselines
 
-- logistic regression
-- random forest
-- ExtraTrees
-- LightGBM
-- XGBoost
-- CatBoost
-- probability calibration
+- Purpose: provide simple baselines that every complex strategy must beat.
+- Inputs: price history, fees, slippage assumptions, schedule configuration.
+- Outputs: benchmark curves and metrics.
+- Candidate algorithms: buy-and-hold, scheduled accumulation, simple momentum,
+  mean reversion, moving average crossover, EWMA volatility, rolling z-score.
+- First implementation: reproducible backtest baselines with fixed parameters.
+- Future candidates: ARIMA, SARIMAX, and GARCH if useful.
+- Non-goals: no black-box optimization, no live execution.
+- Evaluation: reproducibility, benchmark report integration, cost realism.
 
-### Layer 4: Regime Detection
+### Layer 3. Classical ML
 
-- rule-based regime labels first
-- Hidden Markov Models later
-- Gaussian Mixture Models
-- KMeans on trend/volatility/liquidity
-- change point detection later
+- Purpose: test whether tabular features improve signal quality.
+- Inputs: deterministic features, labels created from future returns without
+  leakage, regime labels, cost assumptions.
+- Outputs: calibrated probabilities, feature importance, evaluation metrics.
+- Candidate algorithms: logistic regression, random forest, ExtraTrees,
+  LightGBM, XGBoost, CatBoost, probability calibration.
+- First implementation: logistic regression or tree baseline only after feature
+  storage and labels are reliable.
+- Future candidates: calibrated gradient boosting and stacked simple models.
+- Non-goals: no autonomous trading, no model that bypasses rule checks.
+- Evaluation: chronological splits, calibration, precision and recall by regime,
+  paper PnL after costs.
 
-### Layer 5: Compact Time-Series Models
+### Layer 4. Regime Detection
 
-- TinyTimeMixer / Granite TTM candidate
-- TimesFM candidate
-- PatchTST candidate
-- N-BEATS / N-HiTS candidate
-- LSTM/GRU only as simple reference, not main plan
+- Purpose: classify market state so strategies know when to stand down or
+  reduce activity.
+- Inputs: trend features, volatility features, liquidity features, drawdown
+  features, volume features.
+- Outputs: regime label, confidence, reason codes.
+- Candidate algorithms: rule-based regime labels, HMM, GMM, KMeans, change point
+  detection later.
+- First implementation: rule-based labels such as calm trend, volatile trend,
+  chop, panic, stale, and illiquid.
+- Future candidates: Hidden Markov Models, Gaussian Mixture Models, clustering,
+  and change point detection.
+- Non-goals: no regime label can force execution.
+- Evaluation: stability, interpretability, transition behavior, strategy
+  performance by regime.
 
-### Layer 6: News/Sentiment
+### Layer 5. Compact Time-Series Models
 
-- FinBERT or similar financial sentiment baseline
-- entity/asset extraction
-- severity classifier
-- source credibility
-- deduplication
+- Purpose: evaluate whether compact forecasting models add value over simple
+  baselines.
+- Inputs: normalized time-series windows, features, calendar context, regime
+  labels.
+- Outputs: forecasts, uncertainty estimates if available, evaluation records.
+- Candidate algorithms: TinyTimeMixer or Granite TTM, TimesFM, PatchTST,
+  N-BEATS, N-HiTS.
+- First implementation: none until baselines, features, and evaluation are
+  mature.
+- Future candidates: small reference LSTM or GRU only as comparison, not as a
+  main plan.
+- Non-goals: no large model download during bootstrap, no live order path.
+- Evaluation: walk-forward validation, cost-aware paper impact, robustness by
+  regime.
 
-### Layer 7: RAG/Embeddings
+### Layer 6. News and Sentiment
 
-- Qwen/BGE/E5 style embeddings to evaluate
-- LanceDB initially
-- sqlite-vec possible later
-- used for news memory, decision memory, backtest memory
+- Purpose: detect news that should reduce or block risk.
+- Inputs: news items, source, timestamp, assets, entities, text, historical
+  related items.
+- Outputs: sentiment, severity, affected assets, summary, confidence, source
+  credibility.
+- Candidate algorithms: FinBERT-style sentiment, rule-based severity, entity
+  extraction, deduplication, source credibility scoring.
+- First implementation: deterministic source and severity rules before local
+  model inference.
+- Future candidates: financial sentiment models and richer event classifiers.
+- Non-goals: no headline-driven buy orders, no public advice.
+- Evaluation: human review of severe events, false positive tracking, veto
+  usefulness.
 
-### Layer 8: Small LLM
+### Layer 7. Retrieval and Embeddings
 
-- 3B-4B class local model later if needed
-- summarization
-- explanations
-- RAG Q&A
-- report generation
-- never order execution
+- Purpose: create memory for news, decisions, reports, and historical context.
+- Inputs: news text, audit records, reports, strategy notes, model evaluation
+  summaries.
+- Outputs: vector records, retrieved context, citations or source references.
+- Candidate algorithms: Qwen, BGE, and E5 style embedding candidates.
+- First implementation: no embedding model until model download is approved.
+- Future candidates: LanceDB, sqlite-vec, or another local vector store after
+  evaluation.
+- Non-goals: no secret indexing, no private key indexing, no order execution.
+- Evaluation: retrieval relevance, latency, storage size, source traceability.
 
-### Layer 9: Risk Model
+### Layer 8. Small LLM
 
-- fixed fractional sizing
-- max exposure
-- stale-data veto
-- spread/liquidity veto
-- news severity veto
-- volatility shock veto
-- drawdown lock
-- manual/emergency lock
+- Purpose: summarize, explain, and help the owner inspect the system.
+- Inputs: retrieved context, strategy reports, audit summaries, news summaries,
+  runtime state.
+- Outputs: explanations, summaries, report drafts, operator Q&A.
+- Candidate algorithms: small 3B to 4B local LLM later if needed.
+- First implementation: none during bootstrap.
+- Future candidates: local instruction model selected after hardware, memory,
+  and quality review.
+- Non-goals: no order execution, no risk override, no secret handling.
+- Evaluation: factuality, source grounding, refusal to exceed authority, latency.
 
-### Layer 10: Evaluation/Governance
+### Layer 9. Decision Matrix
 
-- chronological splits
-- walk-forward
-- no leakage
-- no lookahead
-- fee/slippage
-- PnL
-- max drawdown
-- expectancy
-- profit factor
-- Sharpe/Sortino with caution
-- performance by regime
-- model registry
+- Purpose: combine deterministic strategy evidence into one candidate decision.
+- Inputs: strategy outputs, model scores, regime labels, news severity, treasury
+  state, exposure, risk context.
+- Outputs: candidate action, no-op decision, confidence, reason codes, audit
+  references.
+- Candidate algorithms: deterministic scoring, weighted rules, calibrated model
+  blending later.
+- First implementation: deterministic rules with transparent weights.
+- Future candidates: learned ranking only after sufficient paper history.
+- Non-goals: no direct execution, no hidden model authority.
+- Evaluation: reproducibility, auditability, paper performance, veto frequency.
 
-Hard rule: accuracy is not enough. A strategy or model must improve risk-adjusted paper performance after fees, slippage, drawdown, and regime analysis.
+### Layer 10. Risk Model
 
-## Expanded Delivery Spine
+- Purpose: protect the treasury from unacceptable exposure, stale data, and
+  unsafe market conditions.
+- Inputs: candidate action, treasury state, position state, market state, news
+  state, runtime locks, user action context.
+- Outputs: allow, reduce, delay, veto, reason codes, audit record.
+- Candidate algorithms: fixed fractional sizing, max exposure, stale-data veto,
+  spread/liquidity veto, news severity veto, volatility shock veto, drawdown
+  lock, manual and emergency locks.
+- First implementation: deterministic policy with explicit thresholds.
+- Future candidates: adaptive thresholds only after review.
+- Non-goals: no black-box risk override, no live trading enablement by default.
+- Evaluation: scenario tests, veto tests, drawdown behavior, audit completeness.
 
-Each wave must be verbose enough to execute without guessing.
+### Layer 11. Evaluation and Governance
 
-Each wave must include:
+- Purpose: prove that strategy and model changes are real improvements.
+- Inputs: backtest results, paper results, benchmark results, risk decisions,
+  audit records.
+- Outputs: promotion recommendations, rejection reasons, evaluation reports.
+- Candidate algorithms: chronological splits, walk-forward, fee and slippage
+  modeling, PnL, max drawdown, expectancy, profit factor, Sharpe and Sortino
+  with caution, performance by regime.
+- First implementation: deterministic evaluation reports after backtesting.
+- Future candidates: richer experiment tracking and model comparison.
+- Non-goals: no metric-only promotion without review.
+- Evaluation: governance rules are followed and no leakage is present.
+
+### Layer 12. Model Registry
+
+- Purpose: track model candidates, artifacts, evaluations, and allowed runtime
+  status.
+- Inputs: artifact metadata, training or download source, checksums, evaluation
+  results, hardware notes.
+- Outputs: model registry entries, active or inactive status, approval record.
+- Candidate algorithms: not applicable; this is governance and storage.
+- First implementation: metadata-only registry before real models.
+- Future candidates: artifact checksum verification and runtime compatibility
+  checks.
+- Non-goals: no automatic download, no unreviewed activation.
+- Evaluation: every model has provenance, evaluation, and approval state.
+
+## 17. Data, Storage, and Schema Spine
+
+Primary stores:
+
+- SQLite operational state: source for users, sessions, runtime state, current
+  treasury state, and small transactional records.
+- DuckDB and Parquet analytical lake: source for candles, features, reports,
+  backtests, and larger analytical tables.
+- LanceDB or vector store later: source for embeddings and retrieval memory
+  after model download is approved.
+- Model artifacts later: local files for evaluated models, outside the repo.
+- Logs and audit: append-friendly records for service behavior and security
+  review.
+- Backups: daily and weekly copies of operational and analytical state.
+
+Future categories:
+
+- `users`: stores account identity, role, display name, and status.
+- `devices`: stores trusted device records, labels, and trust state.
+- `sessions`: stores active and historical login sessions.
+- `treasury`: stores one treasury summary and current paper mode state.
+- `ledger_entries`: stores immutable accounting entries for paper treasury
+  changes.
+- `positions`: stores open and closed asset exposure.
+- `paper_orders`: stores simulated order intents.
+- `paper_fills`: stores simulated fills with price, fee, and slippage.
+- `market_feeds`: stores source configuration and feed health.
+- `candles`: stores OHLCV market data by asset, source, and timeframe.
+- `features`: stores deterministic features derived from market data.
+- `news_items`: stores normalized news records and source metadata.
+- `embeddings`: stores vector references for retrieval memory after approval.
+- `strategy_signals`: stores candidate signals emitted by strategies.
+- `risk_decisions`: stores allow, reduce, delay, or veto outcomes.
+- `audit_records`: stores security, permission, runtime, and treasury audit
+  events.
+- `runtime_jobs`: stores scheduled or running worker job state.
+- `agent_events`: stores future agent task events, summaries, and decisions.
+
+Storage rules:
+
+- Operational mutations must be auditable.
+- Analytical data should be append-friendly when possible.
+- Runtime data must remain outside the repository.
+- Backups must be restorable and documented.
+- Sensitive data must not be written to logs unless explicitly reviewed and
+  redacted.
+
+## 18. Execution Flow Spine
+
+Future full flow:
+
+1. Market data arrives from an approved source.
+2. Data is normalized into a consistent asset, timestamp, and candle schema.
+3. Features are generated from normalized data.
+4. Regime is identified from feature state.
+5. Strategies generate candidate signals.
+6. News and retrieval context is attached to the market and strategy context.
+7. Models score the setup if evaluated models are approved for that role.
+8. Decision matrix creates a candidate action or no-op decision.
+9. Risk engine approves, reduces, delays, or vetoes the candidate action.
+10. Paper execution simulates order creation and fill behavior.
+11. Treasury ledger updates from the simulated fill.
+12. Audit records all relevant inputs, outputs, decisions, and reason codes.
+13. Client receives an update through API polling or future events.
+14. Reports and evaluation records update.
+15. Strategy promotion state changes only after review.
+
+Current implementation flow:
+
+- Provider stub starts.
+- Provider health can be checked.
+- Provider models endpoint returns an empty list.
+- API placeholder can report health.
+- Worker placeholder can emit a heartbeat.
+- No market data arrives.
+- No features are generated.
+- No regime is identified.
+- No strategy creates a signal.
+- No decision matrix runs.
+- No risk engine runs.
+- No execution happens.
+
+## 19. API and Event Spine
+
+Do not implement new API surfaces in `DOCS.SPINE.3`. This section plans future
+contracts.
+
+Future API surfaces:
+
+- Provider API: exposes provider health, capabilities, and future approved local
+  compute operations.
+- Runtime API: exposes runtime state, pause, resume, emergency stop, and job
+  status.
+- Treasury API: exposes treasury summary, positions, ledger, paper orders, and
+  paper fills.
+- Identity API: exposes login, sessions, users, devices, roles, and
+  capabilities.
+- Strategy API: exposes strategy definitions, signals, backtests, and promotion
+  state.
+- Risk API: exposes risk policy, risk state, veto reasons, and locked states.
+- Report API: exposes daily, weekly, and strategy evaluation reports.
+- Audit API: exposes filtered audit records according to capability.
+
+Future events:
+
+- `runtime.started`: records that the runtime started.
+- `runtime.stopped`: records that the runtime stopped normally.
+- `provider.healthy`: records that provider health is ok.
+- `provider.unhealthy`: records that provider health failed.
+- `treasury.updated`: records that treasury summary or ledger state changed.
+- `signal.created`: records that a strategy emitted a candidate signal.
+- `risk.vetoed`: records that risk blocked a candidate action.
+- `paper.order_created`: records that a simulated paper order was created.
+- `paper.fill_created`: records that a simulated paper fill was created.
+- `news.severe`: records that severe news affected risk context.
+- `model.evaluated`: records that a model candidate was evaluated.
+- `emergency.stop`: records that emergency stop was triggered.
+- `permission.denied`: records that a user attempted a forbidden action.
+- `audit.recorded`: records that an audit entry was written.
+
+Event rules:
+
+- Events must be typed.
+- Events must be timestamped.
+- Events must reference actor or system source.
+- Events that affect money, risk, runtime, or permissions must be auditable.
+
+## 20. Delivery Spine Rules
+
+Every future wave must have:
 
 - wave id
 - title
 - purpose
 - previous state
 - target state
-- allowed changes
-- forbidden changes
+- scope
+- non-goals
 - target files
+- target modules
 - database changes
 - API changes
 - UI changes
 - runtime changes
-- security boundary
+- security boundaries
 - validation commands
 - acceptance criteria
 - expected completion report
 - roadmap update requirement
 
-Each sub-wave must include:
+Every sub-wave must have:
 
 - sub-wave id
 - purpose
@@ -666,117 +1736,795 @@ Each sub-wave must include:
 - acceptance
 - non-goals
 
-Do not use vague sub-waves. Make every delivery executable.
+Standard delivery box:
 
-## Environment Issue: Node Version Alignment
+```text
+Wave:
+Title:
+Purpose:
+Previous state:
+Target state:
+Scope:
+Non-goals:
+Target files:
+Target modules:
+Database changes:
+API changes:
+UI changes:
+Runtime changes:
+Security boundaries:
+Validation commands:
+Acceptance criteria:
+Expected completion report:
+Roadmap update requirement:
+```
 
-Problem from bootstrap:
+Standard sub-wave box:
 
-- `.node-version` says 24.
-- The terminal used Node 20.19.6 via nvm.
-- pnpm/corepack environment should be aligned before client work.
-
-Resolution options:
-
-- use nvm to install/use Node 24
-- or use mise/fnm later if preferred
-- do not install random global npm packages
-- do not scaffold client until Node 24 is active
-
+```text
+Sub-wave:
+Purpose:
+Tasks:
+Files:
+Output:
 Acceptance:
+Non-goals:
+```
 
-- `node -v` returns v24.x
-- `corepack enable` works
-- `pnpm -v` works
-- no global npm pollution
+Freeze rules:
 
-Current resolution:
+- Do not start Spark runtime work before `MAC.SETUP.1` and
+  `TAILSCALE.SPARK.1`.
+- Do not scaffold the mobile client before the client framework decision is
+  ready.
+- Do not add exchange keys, wallet custody, live trading, withdrawals, or AI
+  model downloads during bootstrap waves.
+- Do not promote a strategy without evaluation and review.
+- Do not treat UI locks as security.
+- Do not convert open decisions into fake decisions.
+- Do not implement public service behavior without legal and regulatory review.
 
-- Node v24.16.0 installed through nvm.
-- nvm default alias points to Node 24.
-- zsh login environment loads nvm default for terminal commands.
-- Corepack and pnpm are available without installing random global npm packages.
+## 21. Full Phase Roadmap
 
-## Phase Map
+This phase map is designed so a future coding agent can copy a wave and execute
+without reinventing architecture. Each phase includes sub-waves A through F.
 
-- Phase 0 - Repo, environment, provider skeleton, master spine
-- Phase 1 - Spark attachment and provider deployment
-- Phase 2 - Node/toolchain alignment and dev ergonomics
-- Phase 3 - Identity, accounts, roles, capability model
-- Phase 4 - Treasury and paper ledger
-- Phase 5 - Mobile/public client shell and permission-locked UI
-- Phase 6 - Web admin console shell
-- Phase 7 - Runtime control and event bus
-- Phase 8 - Market data collector
-- Phase 9 - Feature and regime engine
-- Phase 10 - Strategy lab and backtesting
-- Phase 11 - Paper trading engine
-- Phase 12 - News/RAG and sentiment engine
-- Phase 13 - Baseline and time-series model lab
-- Phase 14 - Decision matrix and risk integration
-- Phase 15 - Reporting, audit, and evaluation
-- Phase 16 - Family viewer experience hardening
-- Phase 17 - Shadow exchange mode
-- Phase 18 - Manual micro-live gate, future only
-- Phase 19 - Desktop console / Tauri Studio, future
-- Phase 20 - Limited auto-live, future only
+### Phase 0. Repo, environment, provider skeleton, master spine
 
-## Next Wave
+Outcome: drmlke has a safe repository skeleton, local provider stub, validated
+development commands, and a complete master spine.
 
-### ENV.NODE.SPARK.2 - Node 24 alignment, Spark storage, provider deployment, and master spine correction
+- P0.A - Repository bootstrap. Purpose: create the monorepo skeleton. Tasks:
+  create app and package folders, workspace config, Makefile, Docker files.
+  Output: initial repo structure. Acceptance: repo installs and basic commands
+  work. Non-goals: product features.
+- P0.B - Provider stub. Purpose: create a safe local provider boundary. Tasks:
+  implement health and empty models endpoint. Output: provider stub. Acceptance:
+  health ok and models empty. Non-goals: model inference.
+- P0.C - Environment doctor. Purpose: validate local tools. Tasks: add doctor
+  script and Make targets. Output: repeatable checks. Acceptance: doctor reports
+  required tools. Non-goals: installing remote machines.
+- P0.D - Safety documentation. Purpose: document hard safety boundaries. Tasks:
+  write AGENTS, architecture, environment, deployment notes. Output: bootstrap
+  docs. Acceptance: boundaries are explicit. Non-goals: implementation.
+- P0.E - Treasury correction. Purpose: correct the model to one owner-managed
+  treasury. Tasks: update roadmap and product language. Output:
+  `DOCS.SPINE.2`. Acceptance: no per-family-member portfolio model remains.
+  Non-goals: ledger code.
+- P0.F - Master spine completion. Purpose: make roadmap execution-grade. Tasks:
+  expand the canonical spine and correct sequencing. Output: `DOCS.SPINE.3`.
+  Acceptance: this document passes validation and is committed. Non-goals:
+  code features.
+
+### Phase 1. MacBook development setup
+
+Outcome: MacBook is a clean alternate development machine with the repo cloned
+and local validation working.
+
+- P1.A - Toolchain check. Purpose: learn current MacBook state. Tasks: check
+  git, vim, Python, `uv`, Node, corepack, pnpm, Docker, VS Code, Tailscale.
+  Output: setup report. Acceptance: missing tools are listed. Non-goals: Spark
+  access.
+- P1.B - Repository clone. Purpose: create a working checkout. Tasks: clone the
+  GitHub remote, check branch, check remote, run git status. Output: local repo.
+  Acceptance: repo matches remote. Non-goals: code changes.
+- P1.C - Node 24 setup. Purpose: align frontend toolchain. Tasks: choose nvm,
+  mise, fnm, or Homebrew node@24; activate Node 24; enable corepack; verify
+  pnpm. Output: Node 24 ready. Acceptance: `node -v` returns v24.x. Non-goals:
+  client scaffold.
+- P1.D - Python and uv setup. Purpose: align backend toolchain. Tasks: verify
+  Python 3.12, install or configure `uv`, run `uv sync --dev`. Output: Python
+  workspace ready. Acceptance: dependencies install. Non-goals: new packages.
+- P1.E - Docker option check. Purpose: decide whether Docker Desktop is needed
+  now. Tasks: inspect Docker availability, document optional status. Output:
+  Docker status. Acceptance: doctor either passes or clearly documents missing
+  Docker. Non-goals: production deployment.
+- P1.F - Local validation and VS Code. Purpose: prove the MacBook can work.
+  Tasks: run `make doctor`, run `make check`, optionally run provider, open VS
+  Code. Output: validation report. Acceptance: checks pass or documented
+  exceptions are understood. Non-goals: Spark deployment.
+
+### Phase 2. Tailscale and Spark access planning
+
+Outcome: Spark private access path is verified and documented before runtime
+deployment begins.
+
+- P2.A - Access inventory. Purpose: identify available Spark addresses. Tasks:
+  inspect Tailscale status, SSH config, known aliases, and expected user.
+  Output: access inventory. Acceptance: candidate paths are documented.
+  Non-goals: runtime deployment.
+- P2.B - Tailscale reachability. Purpose: confirm private network reachability.
+  Tasks: ping Spark over Tailscale and record address. Output: reachability
+  report. Acceptance: Tailscale path works or blocker is documented. Non-goals:
+  public exposure.
+- P2.C - SSH verification. Purpose: confirm an explicit SSH path. Tasks: use
+  selected alias or address, verify host key, verify user. Output: SSH result.
+  Acceptance: login succeeds or clear remediation exists. Non-goals: changing
+  production routing.
+- P2.D - Remote preflight. Purpose: inspect Spark without deploying. Tasks:
+  check OS, architecture, disk, Docker, Compose, GPU visibility if appropriate.
+  Output: preflight report. Acceptance: runtime blockers are known. Non-goals:
+  creating `/srv/drmlke`.
+- P2.E - Private service policy. Purpose: define how services stay private.
+  Tasks: document bind addresses, firewall expectations, VPN route, and no
+  public tunnels. Output: access policy. Acceptance: no public internet exposure
+  is required. Non-goals: firewall changes unless explicitly approved.
+- P2.F - Roadmap update. Purpose: lock the Spark access decision. Tasks: update
+  docs with chosen path and next runtime wave. Output: roadmap delta.
+  Acceptance: `SPARK.RUNTIME.1` can start with clear access. Non-goals:
+  deployment.
+
+### Phase 3. Spark storage and provider runtime deployment
+
+Outcome: Spark has `/srv/drmlke`, a deploy copy, private provider runtime, and
+repeatable validation.
+
+- P3.A - Storage root preparation. Purpose: create persistent runtime layout.
+  Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
+  storage tree. Acceptance: directories exist with correct owner. Non-goals:
+  secrets.
+- P3.B - Environment file setup. Purpose: create runtime env outside repo.
+  Tasks: create env file from example, force live trading and withdrawals off,
+  back up before overwrite. Output: Spark env. Acceptance: env is outside git.
+  Non-goals: exchange keys.
+- P3.C - Deploy copy. Purpose: place source under `/srv/drmlke/app`. Tasks:
+  clone or sync repo, verify commit, avoid authoring there. Output: deploy copy.
+  Acceptance: source version is known. Non-goals: editing on Spark.
+- P3.D - Compose profile. Purpose: run provider privately. Tasks: build or pull
+  images, run provider profile, bind only to private path. Output: provider
+  runtime. Acceptance: health ok from approved network. Non-goals: public port.
+- P3.E - Logs and restart policy. Purpose: make runtime observable. Tasks:
+  configure logs, inspect process, document restart. Output: operation notes.
+  Acceptance: logs are in `/srv/drmlke/logs/provider`. Non-goals: full worker.
+- P3.F - Spark report. Purpose: record deploy state. Tasks: run health, models,
+  Docker status, git status, and update docs. Output: completion report.
+  Acceptance: provider stub runs privately. Non-goals: live trading.
+
+### Phase 4. Provider contract and backend adapter boundary
+
+Outcome: provider and API have explicit contracts for health, capabilities, and
+future compute without hidden execution authority.
+
+- P4.A - Contract spec. Purpose: define provider requests and responses. Tasks:
+  write schemas for health, capabilities, model list, and errors. Output:
+  provider contract. Acceptance: schemas are documented. Non-goals: real models.
+- P4.B - API adapter. Purpose: let API query provider safely. Tasks: add client
+  wrapper, timeouts, and safe errors. Output: provider adapter. Acceptance:
+  tests cover success and failure. Non-goals: model inference.
+- P4.C - Capability endpoint. Purpose: expose what provider can do. Tasks:
+  return stub capabilities and no active models. Output: capability response.
+  Acceptance: live execution is absent. Non-goals: downloads.
+- P4.D - Runtime config. Purpose: configure provider URL and timeouts. Tasks:
+  add settings and env docs. Output: config entries. Acceptance: defaults are
+  local and safe. Non-goals: secrets.
+- P4.E - Error and audit hooks. Purpose: make failures inspectable. Tasks:
+  define error shape and audit hook points. Output: typed failures. Acceptance:
+  no raw stack leaks to clients. Non-goals: full audit store.
+- P4.F - Validation. Purpose: prove boundary behavior. Tasks: run unit tests,
+  API health, provider health. Output: validation report. Acceptance: contract
+  stable. Non-goals: strategy logic.
+
+### Phase 5. Identity, accounts, roles, capability model
+
+Outcome: API can represent users, roles, sessions, devices, and capabilities
+with server-side enforcement.
+
+- P5.A - Capability definitions. Purpose: define all initial capabilities.
+  Tasks: add enums and role defaults. Output: capability module. Acceptance:
+  owner and viewer mappings match this spine. Non-goals: UI.
+- P5.B - User schema. Purpose: store users and roles. Tasks: add storage schema
+  and seed records for Francesco, Padre, and Zio. Output: user store.
+  Acceptance: one owner and two viewers exist. Non-goals: public signup.
+- P5.C - Session skeleton. Purpose: represent authenticated sessions. Tasks:
+  define session model and simple dev auth path. Output: session state.
+  Acceptance: tests verify role resolution. Non-goals: final auth.
+- P5.D - Permission guard. Purpose: enforce capabilities server-side. Tasks:
+  add reusable guard and denial response. Output: permission boundary.
+  Acceptance: forbidden viewer action is denied. Non-goals: relying on UI lock.
+- P5.E - Audit permission denials. Purpose: record security-relevant denials.
+  Tasks: write audit records for denied actions. Output: denial audit.
+  Acceptance: denial is inspectable. Non-goals: full audit UI.
+- P5.F - Validation. Purpose: prove corrected account model. Tasks: unit tests
+  for owner, viewer, emergency, technical roles. Output: test report.
+  Acceptance: no per-person trading portfolio exists. Non-goals: ledger.
+
+### Phase 6. Treasury and paper ledger
+
+Outcome: one simulated 200 EUR treasury, ledger entries, positions, and PnL are
+represented safely.
+
+- P6.A - Treasury schema. Purpose: define one paper treasury. Tasks: create
+  treasury table or model with mode and currency. Output: treasury record.
+  Acceptance: exactly one active treasury. Non-goals: real funds.
+- P6.B - Ledger entries. Purpose: record immutable accounting events. Tasks:
+  define entry types, amounts, asset, source, and audit reference. Output:
+  ledger model. Acceptance: entries are append-only. Non-goals: withdrawals.
+- P6.C - Position accounting. Purpose: derive holdings from ledger and fills.
+  Tasks: implement position summaries. Output: positions view. Acceptance:
+  known examples reconcile. Non-goals: exchange balances.
+- P6.D - PnL accounting. Purpose: show realized and unrealized results. Tasks:
+  calculate PnL with fees and slippage. Output: PnL summary. Acceptance:
+  tests cover fee effects. Non-goals: tax reporting.
+- P6.E - Treasury API. Purpose: expose read-only treasury state. Tasks: add
+  endpoints guarded by capabilities. Output: treasury read API. Acceptance:
+  viewer can read permitted data. Non-goals: mutating UI.
+- P6.F - Validation. Purpose: prove paper ledger safety. Tasks: run unit tests
+  and API tests. Output: validation report. Acceptance: live capital remains 0
+  EUR. Non-goals: exchange integration.
+
+### Phase 7. Mobile public client shell with permission-locked UI
+
+Outcome: shared client shell exists with login, navigation, role-aware state,
+and locked controls, without trading implementation.
+
+- P7.A - Framework decision. Purpose: choose SvelteKit or React. Tasks: compare
+  fit for mobile packaging and shared UI. Output: decision record. Acceptance:
+  choice is documented. Non-goals: scaffold before decision.
+- P7.B - Client scaffold. Purpose: create app shell. Tasks: initialize project,
+  wire lint and build. Output: client app. Acceptance: build passes. Non-goals:
+  trading logic.
+- P7.C - Auth shell. Purpose: represent session and role. Tasks: add login view
+  and mock or API-backed session. Output: login flow. Acceptance: owner and
+  viewer states render. Non-goals: final auth.
+- P7.D - Navigation and screens. Purpose: create listed mobile screens. Tasks:
+  add Home, Treasury, Positions, PnL, Signals, News, Runtime, Risk, Alerts,
+  Settings, Emergency. Output: navigable shell. Acceptance: screens fit mobile.
+  Non-goals: real data.
+- P7.E - Capability locks. Purpose: communicate permissions. Tasks: render
+  disabled or hidden actions from API capability state. Output: locked UI.
+  Acceptance: viewer cannot trigger mutating actions. Non-goals: treating UI as
+  security.
+- P7.F - Validation. Purpose: verify shell quality. Tasks: run client tests,
+  responsive checks, and API permission checks. Output: validation report.
+  Acceptance: one shared app for roles. Non-goals: packaging release.
+
+### Phase 8. Web admin console shell
+
+Outcome: private owner console shell exists for dense runtime inspection.
+
+- P8.A - Admin route plan. Purpose: define sections and layout. Tasks: map left
+  rail, top status bar, workspace, inspector, event strip. Output: UI plan.
+  Acceptance: all required sections covered. Non-goals: public landing page.
+- P8.B - Shell implementation. Purpose: create admin console frame. Tasks: add
+  layout and routing. Output: admin shell. Acceptance: owner navigation works.
+  Non-goals: full data.
+- P8.C - Status bar. Purpose: show runtime essentials. Tasks: display mode,
+  runtime, provider, risk, emergency state. Output: status bar. Acceptance:
+  stale and loading states exist. Non-goals: live controls.
+- P8.D - Inspector pattern. Purpose: support detailed entity review. Tasks:
+  create right inspector for selected rows or cards. Output: inspector
+  component. Acceptance: works with placeholder entities. Non-goals: nested
+  card clutter.
+- P8.E - Permission handling. Purpose: enforce owner-only surfaces. Tasks:
+  guard admin routes and show safe denial. Output: admin guard. Acceptance:
+  viewer cannot access admin actions. Non-goals: client-only security.
+- P8.F - Validation. Purpose: test console shell. Tasks: run frontend and API
+  checks. Output: validation report. Acceptance: console remains private.
+  Non-goals: public deployment.
+
+### Phase 9. Runtime control and event bus
+
+Outcome: runtime state, commands, jobs, and events have a safe operational
+foundation.
+
+- P9.A - Runtime state model. Purpose: represent stopped, running, paused, and
+  emergency states. Tasks: add state schema and transitions. Output: runtime
+  model. Acceptance: invalid transitions are rejected. Non-goals: trading.
+- P9.B - Command API. Purpose: expose pause, resume, and emergency stop. Tasks:
+  add guarded endpoints. Output: runtime API. Acceptance: viewer denied,
+  owner audited. Non-goals: live execution.
+- P9.C - Event table. Purpose: store runtime events. Tasks: define event schema
+  and writer. Output: event store. Acceptance: events are typed. Non-goals:
+  distributed streaming.
+- P9.D - Worker job model. Purpose: represent scheduled jobs. Tasks: define job
+  states and heartbeat. Output: job records. Acceptance: worker heartbeat is
+  visible. Non-goals: market collection.
+- P9.E - Client updates. Purpose: show runtime state in UI. Tasks: wire API
+  reads to mobile and admin shells. Output: runtime views. Acceptance: pause
+  state is visible. Non-goals: real-time sockets unless needed.
+- P9.F - Validation. Purpose: prove command safety. Tasks: tests for state
+  transitions, permissions, audit. Output: validation report. Acceptance:
+  emergency stop is auditable. Non-goals: resume after live lock.
+
+### Phase 10. Market data collector
+
+Outcome: approved public market data can be collected, normalized, stored, and
+monitored without exchange trading keys.
+
+- P10.A - Source decision. Purpose: choose first public data source. Tasks:
+  evaluate source reliability, symbols, rate limits, and terms. Output:
+  decision record. Acceptance: source is approved. Non-goals: private exchange
+  keys.
+- P10.B - Symbol model. Purpose: normalize asset notation. Tasks: define BTC/EUR
+  or BTC/USDT notation and mapping. Output: symbol schema. Acceptance: notation
+  is consistent. Non-goals: all assets.
+- P10.C - Collector job. Purpose: fetch market data. Tasks: implement scheduled
+  public data collection. Output: collector. Acceptance: stores candles.
+  Non-goals: trading.
+- P10.D - Normalization. Purpose: produce stable candle schema. Tasks: validate
+  timestamps, price fields, volume, source metadata. Output: normalized candles.
+  Acceptance: malformed data is rejected. Non-goals: predictions.
+- P10.E - Feed health. Purpose: detect stale data. Tasks: add feed status and
+  stale thresholds. Output: feed health records. Acceptance: stale source is
+  visible. Non-goals: risk engine integration yet.
+- P10.F - Validation. Purpose: prove data collection. Tasks: unit tests, sample
+  fetch, storage checks. Output: validation report. Acceptance: no exchange keys
+  required. Non-goals: live order book trading.
+
+### Phase 11. Feature and regime engine
+
+Outcome: deterministic features and rule-based regimes are generated from stored
+market data.
+
+- P11.A - Feature schema. Purpose: define feature rows and metadata. Tasks: add
+  feature table or parquet schema. Output: schema. Acceptance: asset/timeframe
+  keys are stable. Non-goals: ML model.
+- P11.B - Feature functions. Purpose: calculate transparent indicators. Tasks:
+  implement returns, volatility, ATR, RSI, MACD, moving average slope,
+  Bollinger distance, volume z-score. Output: feature library. Acceptance:
+  known-value tests pass. Non-goals: prediction.
+- P11.C - Feature job. Purpose: generate features on schedule. Tasks: add worker
+  job from candles to features. Output: feature pipeline. Acceptance: idempotent
+  reruns. Non-goals: trading.
+- P11.D - Regime rules. Purpose: classify market state. Tasks: implement calm,
+  trend, chop, volatile, panic, stale, illiquid labels. Output: regime labels.
+  Acceptance: reason codes are present. Non-goals: HMM first.
+- P11.E - API and views. Purpose: expose feature and regime summaries. Tasks:
+  add read endpoints and UI summaries. Output: inspectable state. Acceptance:
+  owner can inspect calculations. Non-goals: strategy approval.
+- P11.F - Validation. Purpose: prevent leakage and instability. Tasks: tests for
+  windows, timestamps, missing data. Output: validation report. Acceptance: no
+  future data is used. Non-goals: backtest engine.
+
+### Phase 12. Strategy lab and backtesting
+
+Outcome: strategies can be specified, backtested, compared to benchmarks, and
+kept out of execution until promoted.
+
+- P12.A - Strategy spec model. Purpose: define strategy metadata and parameters.
+  Tasks: add strategy definitions and states. Output: strategy registry.
+  Acceptance: promotion pipeline states exist. Non-goals: live trading.
+- P12.B - Benchmark backtests. Purpose: implement buy-and-hold and scheduled
+  accumulation. Tasks: run deterministic simulations. Output: benchmark
+  results. Acceptance: reproducible reports. Non-goals: complex ML.
+- P12.C - Strategy backtest engine. Purpose: test candidate signals over
+  history. Tasks: implement chronological runner with fees and slippage. Output:
+  backtest engine. Acceptance: no lookahead. Non-goals: real orders.
+- P12.D - Strategy families. Purpose: specify trend, mean reversion, breakout,
+  and news avoidance. Tasks: implement paper signal logic or specs. Output:
+  strategy candidates. Acceptance: outputs include reason codes. Non-goals:
+  promotion without review.
+- P12.E - Reports. Purpose: compare strategy to benchmarks. Tasks: produce PnL,
+  drawdown, expectancy, profit factor, and regime breakdown. Output: report.
+  Acceptance: costs included. Non-goals: public claims.
+- P12.F - Validation. Purpose: prove backtest integrity. Tasks: tests for
+  splits, costs, signal timing, and metrics. Output: validation report.
+  Acceptance: strategy remains paper-only. Non-goals: exchange adapter.
+
+### Phase 13. Paper trading engine
+
+Outcome: candidate actions can become simulated paper orders and fills that
+update the single treasury ledger.
+
+- P13.A - Paper order model. Purpose: represent simulated order intent. Tasks:
+  add order fields, source signal, status, and audit link. Output: paper order
+  schema. Acceptance: no real venue fields imply execution. Non-goals: exchange
+  order.
+- P13.B - Fill simulator. Purpose: simulate fills realistically. Tasks: model
+  mark price, slippage, fee, partial fill policy if needed. Output: simulated
+  fills. Acceptance: fill math is tested. Non-goals: live order book.
+- P13.C - Ledger integration. Purpose: update treasury from fills. Tasks: write
+  ledger entries and positions. Output: paper accounting. Acceptance: cash and
+  position reconcile. Non-goals: withdrawal.
+- P13.D - Order lifecycle. Purpose: model created, filled, cancelled, rejected.
+  Tasks: implement state transitions and audit. Output: lifecycle logic.
+  Acceptance: invalid transitions fail. Non-goals: broker integration.
+- P13.E - UI inspection. Purpose: show orders and fills. Tasks: add mobile and
+  admin read views. Output: paper trading views. Acceptance: viewer read rules
+  apply. Non-goals: viewer actions.
+- P13.F - Validation. Purpose: prove paper safety. Tasks: run unit, integration,
+  and permission tests. Output: validation report. Acceptance: no live path.
+  Non-goals: shadow exchange.
+
+### Phase 14. News, retrieval, and sentiment engine
+
+Outcome: news can be collected, normalized, scored, stored, and used for risk
+context without creating autonomous trades.
+
+- P14.A - News source decision. Purpose: choose initial source. Tasks: evaluate
+  RSS, APIs, rate limits, and terms. Output: source decision. Acceptance:
+  source is approved. Non-goals: paid integrations unless decided.
+- P14.B - News ingestion. Purpose: collect and normalize news. Tasks: fetch,
+  deduplicate, store source and timestamp. Output: news items. Acceptance:
+  duplicates collapse. Non-goals: trading.
+- P14.C - Severity rules. Purpose: classify risk severity. Tasks: implement
+  deterministic rules and affected asset extraction. Output: severity labels.
+  Acceptance: severe items are visible. Non-goals: LLM first.
+- P14.D - Sentiment candidate. Purpose: evaluate financial sentiment. Tasks:
+  define model candidate and offline evaluation plan. Output: candidate record.
+  Acceptance: no download without approval. Non-goals: model runtime now.
+- P14.E - Retrieval memory. Purpose: plan or implement embedding storage after
+  approval. Tasks: store source text and retrieval metadata. Output: retrieval
+  ready data. Acceptance: source traceability. Non-goals: secret indexing.
+- P14.F - Validation. Purpose: prove news blocks risk safely. Tasks: test
+  severity, dedupe, and risk context handoff. Output: validation report.
+  Acceptance: news creates veto context, not buy orders. Non-goals: autonomous
+  LLM.
+
+### Phase 15. Baseline and time-series model lab
+
+Outcome: model candidates can be evaluated offline against baselines without
+runtime authority.
+
+- P15.A - Model registry metadata. Purpose: track candidates before artifacts.
+  Tasks: define registry schema and statuses. Output: registry. Acceptance:
+  inactive by default. Non-goals: downloads.
+- P15.B - Evaluation dataset. Purpose: create leakage-safe windows. Tasks:
+  build chronological splits and labels. Output: dataset builder. Acceptance:
+  tests prevent future leakage. Non-goals: production inference.
+- P15.C - Classical baseline. Purpose: test simple models first. Tasks: train or
+  evaluate logistic regression or tree baselines. Output: baseline metrics.
+  Acceptance: cost-aware comparison. Non-goals: live decisions.
+- P15.D - Time-series candidates. Purpose: evaluate TTM, TimesFM, PatchTST, or
+  N-BEATS later. Tasks: document requirements and run only approved candidates.
+  Output: candidate evaluation. Acceptance: no unapproved downloads. Non-goals:
+  permanent model choice.
+- P15.E - Provider integration plan. Purpose: define how evaluated models become
+  provider capabilities. Tasks: map registry status to provider response.
+  Output: integration plan. Acceptance: inactive models cannot run. Non-goals:
+  execution.
+- P15.F - Validation. Purpose: prove governance. Tasks: verify registry,
+  metrics, and approval state. Output: validation report. Acceptance: no model
+  can trade. Non-goals: risk override.
+
+### Phase 16. Decision matrix and risk integration
+
+Outcome: signals, models, news, treasury state, and risk policy combine into
+auditable candidate decisions and final paper-only risk outcomes.
+
+- P16.A - Decision schema. Purpose: define candidate action record. Tasks: add
+  fields for signal, score, reason codes, confidence, and audit refs. Output:
+  decision model. Acceptance: explainable record. Non-goals: order execution.
+- P16.B - Matrix rules. Purpose: combine evidence. Tasks: implement
+  deterministic weights or rules. Output: matrix function. Acceptance:
+  reproducible output. Non-goals: black box.
+- P16.C - Risk policy. Purpose: enforce hard safety. Tasks: implement exposure,
+  stale data, liquidity, news, volatility, drawdown, and emergency checks.
+  Output: risk engine. Acceptance: veto tests pass. Non-goals: live enable.
+- P16.D - Paper handoff. Purpose: allow approved paper decisions to create
+  paper orders. Tasks: connect decision to paper engine. Output: paper handoff.
+  Acceptance: risk decision is required. Non-goals: exchange handoff.
+- P16.E - UI and audit. Purpose: show decision and risk reasons. Tasks: add
+  detail views and audit records. Output: inspectable decisions. Acceptance:
+  owner can see why. Non-goals: hidden scoring.
+- P16.F - Validation. Purpose: prove risk cannot be bypassed. Tasks: permission,
+  scenario, and integration tests. Output: validation report. Acceptance: all
+  candidate actions pass through risk. Non-goals: live gate.
+
+### Phase 17. Reporting, audit, and evaluation
+
+Outcome: owner can review performance, risk, events, permission denials, and
+strategy promotion evidence.
+
+- P17.A - Audit schema. Purpose: define immutable audit records. Tasks: include
+  actor, action, target, result, reason, and timestamp. Output: audit store.
+  Acceptance: critical actions audited. Non-goals: editable audit.
+- P17.B - Report jobs. Purpose: generate daily and weekly summaries. Tasks:
+  compute treasury, PnL, risk, signals, news, and runtime summaries. Output:
+  reports. Acceptance: report job is repeatable. Non-goals: public advice.
+- P17.C - Evaluation reports. Purpose: compare strategy and model performance.
+  Tasks: produce benchmark and regime-aware reports. Output: evaluation view.
+  Acceptance: costs included. Non-goals: metric-only promotion.
+- P17.D - Audit API. Purpose: expose records by capability. Tasks: add filters
+  and pagination. Output: audit endpoint. Acceptance: viewer sees only allowed
+  summary. Non-goals: sensitive logs to viewers.
+- P17.E - UI surfaces. Purpose: show reports and audit. Tasks: add mobile
+  summary and admin detail views. Output: report UI. Acceptance: owner can
+  inspect evidence. Non-goals: public dashboard.
+- P17.F - Validation. Purpose: prove audit and report integrity. Tasks: tests
+  for critical events, filters, and report math. Output: validation report.
+  Acceptance: emergency and permission denials are auditable. Non-goals:
+  compliance claims.
+
+### Phase 18. Viewer experience hardening
+
+Outcome: Padre and Zio have a calm, clear observer experience without access to
+controls that mutate state.
+
+- P18.A - Viewer journey review. Purpose: map daily viewer use. Tasks: inspect
+  Home, Treasury, PnL, News, Alerts, and Runtime. Output: journey checklist.
+  Acceptance: viewers can understand status. Non-goals: owner controls.
+- P18.B - Lock copy. Purpose: make locked actions understandable. Tasks: write
+  clear reasons such as viewer account, live disabled, risk locked. Output:
+  copy system. Acceptance: no confusing dead buttons. Non-goals: security by
+  copy.
+- P18.C - Sensitive data filter. Purpose: prevent accidental exposure. Tasks:
+  audit API responses and UI fields. Output: viewer-safe data map. Acceptance:
+  sensitive logs hidden. Non-goals: hiding permitted data.
+- P18.D - Alert tuning. Purpose: show useful alerts without noise. Tasks:
+  categorize alerts for viewer relevance. Output: alert policy. Acceptance:
+  severe states visible. Non-goals: notification spam.
+- P18.E - Device and session UX. Purpose: make access reliable. Tasks: review
+  login, trusted device, session expiry. Output: UX fixes. Acceptance: viewer
+  access is predictable. Non-goals: public signup.
+- P18.F - Validation. Purpose: prove viewer cannot mutate. Tasks: permission
+  tests and UI tests. Output: validation report. Acceptance: every mutating API
+  denies viewer. Non-goals: new roles.
+
+### Phase 19. Shadow exchange mode
+
+Outcome: drmlke can read or mirror exchange-like market/account context without
+placing real orders.
+
+- P19.A - Exchange decision. Purpose: choose first exchange or data venue.
+  Tasks: review public data, account read needs, pairs, and fees. Output:
+  decision record. Acceptance: no secret committed. Non-goals: live trading.
+- P19.B - Read-only adapter. Purpose: connect safely if approved. Tasks:
+  implement public or read-only calls with env-only secrets if needed. Output:
+  adapter. Acceptance: no withdrawal scope. Non-goals: order placement.
+- P19.C - Shadow mapping. Purpose: map paper orders to hypothetical venue
+  behavior. Tasks: compare fills to venue prices and fees. Output: shadow
+  records. Acceptance: no real orders sent. Non-goals: trading.
+- P19.D - Secret handling. Purpose: protect credentials if read-only keys are
+  used. Tasks: env outside repo, redaction, no client exposure. Output: secret
+  policy. Acceptance: scans find no keys. Non-goals: custody.
+- P19.E - Risk comparison. Purpose: compare paper assumptions to venue reality.
+  Tasks: analyze spread, slippage, availability. Output: comparison report.
+  Acceptance: differences are visible. Non-goals: promotion to live.
+- P19.F - Validation. Purpose: prove shadow cannot trade. Tasks: tests and
+  adapter scope checks. Output: validation report. Acceptance: no order endpoint
+  exists. Non-goals: live gate.
+
+### Phase 20. Manual micro-live gate, future only
+
+Outcome: a future reviewed path may allow manual, tiny, explicitly approved
+live actions after legal, risk, and safety review.
+
+- P20.A - Legal and scope review. Purpose: confirm private family boundary.
+  Tasks: review intended behavior and regulatory implications. Output: review
+  record. Acceptance: approval exists before work. Non-goals: public service.
+- P20.B - Gate design. Purpose: define live enable conditions. Tasks: specify
+  global locks, owner confirmations, capital ceiling, and rollback. Output:
+  gate spec. Acceptance: disabled by default. Non-goals: automation.
+- P20.C - Adapter design. Purpose: design minimal order adapter. Tasks: define
+  order types, venue, limits, and error handling. Output: adapter spec.
+  Acceptance: no withdrawals. Non-goals: margin.
+- P20.D - Manual approval UI. Purpose: owner-only approval. Tasks: design
+  confirmation, risk summary, and audit. Output: approval flow. Acceptance:
+  viewer denied. Non-goals: autonomous approval.
+- P20.E - Dry-run and kill switch. Purpose: prove safety before real use.
+  Tasks: simulate live path, emergency stop, disable controls. Output: dry-run
+  report. Acceptance: kill switch works. Non-goals: repeated live trading.
+- P20.F - Validation. Purpose: prove gate discipline. Tasks: tests, secrets
+  scan, audit review, owner signoff. Output: validation report. Acceptance:
+  capital ceiling enforced. Non-goals: auto-live.
+
+### Phase 21. Desktop console / Tauri Studio, future
+
+Outcome: a richer desktop owner console may exist after core runtime and web
+surfaces are mature.
+
+- P21.A - Timing review. Purpose: decide whether desktop is worth building.
+  Tasks: review web console gaps and operator needs. Output: decision record.
+  Acceptance: clear reason to proceed. Non-goals: premature app.
+- P21.B - Tauri scaffold. Purpose: create lightweight desktop shell. Tasks:
+  initialize Tauri and TypeScript UI. Output: desktop app. Acceptance: opens and
+  talks to API. Non-goals: local secrets.
+- P21.C - Strategy lab UI. Purpose: improve research workflow. Tasks: build
+  richer charts, tables, and inspectors. Output: lab surface. Acceptance:
+  owner can inspect backtests. Non-goals: trading.
+- P21.D - Data lake browser. Purpose: inspect stored data. Tasks: add safe
+  browser for candles, features, reports. Output: browser. Acceptance:
+  read-only by default. Non-goals: direct DB mutation.
+- P21.E - Packaging. Purpose: package for local machine. Tasks: sign or package
+  as appropriate. Output: desktop build. Acceptance: no secrets included.
+  Non-goals: public app store.
+- P21.F - Validation. Purpose: verify desktop safety. Tasks: API permission
+  tests and packaged build checks. Output: validation report. Acceptance:
+  desktop cannot bypass API. Non-goals: mobile replacement.
+
+### Phase 22. Limited auto-live, future only
+
+Outcome: only after extensive evidence and review, a limited automated live path
+could be considered. This is intentionally far away.
+
+- P22.A - Evidence review. Purpose: decide whether auto-live is even justified.
+  Tasks: review paper history, shadow history, drawdown, risk, and legal scope.
+  Output: go or no-go record. Acceptance: explicit approval required.
+  Non-goals: assuming this will happen.
+- P22.B - Live policy. Purpose: define strict automatic limits. Tasks: set
+  capital ceiling, asset universe, frequency, max loss, and kill switch. Output:
+  policy. Acceptance: safer than manual path. Non-goals: leverage.
+- P22.C - Adapter hardening. Purpose: make execution robust. Tasks: handle
+  idempotency, retries, exchange errors, reconciliation. Output: hardened
+  adapter. Acceptance: failures are safe. Non-goals: withdrawals.
+- P22.D - Monitoring. Purpose: watch live behavior constantly. Tasks: add
+  alerts, logs, metrics, and emergency paths. Output: monitoring. Acceptance:
+  severe issues stop runtime. Non-goals: silent automation.
+- P22.E - Phased rollout. Purpose: start with tiny limits if approved. Tasks:
+  run controlled sessions and review after each. Output: rollout records.
+  Acceptance: owner review after every session. Non-goals: unattended growth.
+- P22.F - Validation. Purpose: prove strict controls. Tasks: scenario tests,
+  failure injection, audit review, secret scan. Output: validation report.
+  Acceptance: auto-live can be disabled instantly. Non-goals: public fund
+  management.
+
+## 22. Current Wave Detail
+
+Current wave:
+
+`DOCS.SPINE.3 - complete master spine before new implementation`
 
 Purpose:
 
-- fix Node version mismatch
-- prepare Spark storage
-- deploy provider stub to Spark if reachable
-- rewrite master spine with corrected treasury/account/client model
-- keep live trading disabled
-- keep wallet custody absent
-- keep AI models absent
+- Review current roadmap.
+- Expand missing sections.
+- Correct sequencing.
+- Stop inventing new scope before the document is complete.
+- Make future waves executable.
 
 Allowed:
 
-- docs
-- README
-- AGENTS
-- Makefile
-- doctor script
-- env examples
-- Spark deployment helpers
-- Node version setup notes
+- `docs/drmlke-roadmap.md`.
+- README link or status if needed.
+- AGENTS guidance if needed.
+- `docs/environment.md` if needed.
+- `docs/deployment.md` if needed.
 
 Forbidden:
 
-- trading logic
-- exchange keys
-- real wallet
-- model downloads
-- client scaffold beyond docs unless explicitly requested
-- live trading
+- Code implementation.
+- Spark deploy.
+- Mac setup execution.
+- Model downloads.
+- Client scaffold.
+- Trading logic.
+- Wallet custody.
+- Exchange keys.
 
-Validation:
+Acceptance:
 
-- `node -v` shows v24.x or issue clearly documented
-- `make doctor`
-- `make check`
-- local provider health
-- local provider models
-- Spark check if reachable
-- Spark deploy if reachable
-- roadmap updated
-- commit created
+- Roadmap is self-contained.
+- Next sequence is docs, then MacBook, then Tailscale, then Spark.
+- Treasury model is correct.
+- Account and capability model is correct.
+- Interface surfaces are clear.
+- Strategy and algorithm sections are detailed.
+- Every phase has sub-waves.
+- Delivery rules are explicit.
+- Open decisions are captured.
+- Commit is created.
+
+Validation for this wave:
+
+```sh
+git status --short
+git diff --check
+make doctor
+make check
+```
+
+Spark checks are not required in this wave.
 
 Commit message:
 
-`DOCS.SPINE.2: correct treasury model and expand master spine`
+`DOCS.SPINE.3: complete master spine and correct next sequence`
 
-Final report must include:
+Expected final report:
 
 - files changed
 - validation results
-- Node version result
-- Spark status
-- provider status
 - commit hash
-- next recommended wave
+- whether `docs/drmlke-roadmap.md` was fully expanded
+- next wave: `MAC.SETUP.1`
+
+## 23. Next Wave Detail
+
+Next wave:
+
+`MAC.SETUP.1 - MacBook development environment and repo clone`
+
+Purpose:
+
+- Prepare MacBook as alternate development machine.
+- Clone the GitHub repo.
+- Verify Node 24, `uv`, `pnpm`, git, vim, and VS Code.
+- Run `make doctor`.
+- Run `make check`.
+- Open the project in VS Code.
+- Do not deploy Spark yet.
+
+Sub-waves:
+
+- M1.A toolchain check. Purpose: check installed tools. Tasks: inspect git,
+  vim, Python, `uv`, Node, corepack, pnpm, Docker, VS Code, and Tailscale.
+  Output: tool status. Acceptance: missing tools listed. Non-goals: Spark.
+- M1.B repo clone. Purpose: create local checkout. Tasks: clone remote, inspect
+  branch, inspect remote. Output: MacBook repo. Acceptance: git status clean.
+  Non-goals: edits.
+- M1.C Node 24, corepack, and pnpm. Purpose: align JavaScript toolchain. Tasks:
+  choose version manager, activate Node 24, enable corepack, verify pnpm.
+  Output: JS tools ready. Acceptance: Node returns v24.x. Non-goals: client
+  scaffold.
+- M1.D uv and Python setup. Purpose: align Python toolchain. Tasks: verify
+  Python 3.12, install or configure `uv`, run sync. Output: Python workspace.
+  Acceptance: `uv sync --dev` succeeds. Non-goals: dependency changes.
+- M1.E Docker Desktop optional check. Purpose: decide if Docker is required now.
+  Tasks: inspect Docker and Compose availability. Output: Docker status.
+  Acceptance: doctor passes or records missing Docker. Non-goals: Spark
+  containers.
+- M1.F make doctor and make check. Purpose: validate repo. Tasks: run required
+  Make targets. Output: check report. Acceptance: checks pass or blockers are
+  documented. Non-goals: feature implementation.
+- M1.G VS Code open and roadmap review. Purpose: confirm practical editing.
+  Tasks: open repo in VS Code, inspect roadmap, confirm workflow. Output:
+  editor-ready state. Acceptance: roadmap can be edited on MacBook. Non-goals:
+  client implementation.
+
+Non-goals:
+
+- No Spark deployment.
+- No client implementation.
+- No trading logic.
+- No model downloads.
+- No exchange integration.
+- No wallet custody.
+
+## 24. Open Decisions
+
+Current open decisions:
+
+- Exact MacBook setup method for Node 24: nvm, mise, fnm, or Homebrew node@24.
+- Whether Docker Desktop is required immediately on MacBook.
+- Tailscale hostname or address for Spark.
+- Final Spark access route.
+- Final provider backend.
+- Final embedding model.
+- Final sentiment model.
+- First exchange or public source for market data.
+- First trading pair notation: EUR or USDT.
+- Client framework: SvelteKit or React.
+- Web admin and mobile shared UI strategy.
+- Tauri desktop timing.
+- Auth method: passkey, PIN, password fallback, or a staged combination.
+- Notification strategy.
+- Backup cadence.
+- Paper treasury initial strategy order.
+- Exact risk default thresholds.
+- Whether the Linux workstation also needs Tailscale as a first-class path.
+- Whether Spark provider ports bind to localhost behind a private proxy or bind
+  directly to a Tailscale interface.
+- Whether analytical feature storage starts in SQLite, DuckDB, Parquet, or a
+  staged combination.
+
+Open decision rule:
+
+If a detail is not decided, keep it here. Do not write it elsewhere as a final
+decision until the relevant wave makes and records the decision.
+
+## 25. Change Log
+
+- `BOOTSTRAP.0`: repo skeleton and provider stub.
+- `DOCS.SPINE.2`: treasury model correction and initial expanded spine.
+- `DOCS.SPINE.3`: full master spine completion before further implementation,
+  with next sequence corrected to docs, MacBook, Tailscale, and Spark runtime.
