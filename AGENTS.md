@@ -2,6 +2,17 @@
 
 drmlke is a private/family local-first crypto intelligence and paper-trading platform.
 
+Canonical spine: `docs/drmlke-roadmap.md`.
+
+Foundational model:
+
+- one treasury / portfolio managed by Francesco
+- Francesco is the owner/operator
+- Padre and Zio are initial viewer accounts
+- not three independently traded family portfolios
+- one client UI, different capabilities
+- API permissions are the real security boundary
+
 Hard boundaries for early development:
 
 - no live trading implementation

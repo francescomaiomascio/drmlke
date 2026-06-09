@@ -26,4 +26,15 @@ else
   exit_code=1
 fi
 
+node_version="$(node -v 2>/dev/null || true)"
+case "$node_version" in
+  v24.*)
+    printf "ok: node major -> %s\n" "$node_version"
+    ;;
+  *)
+    printf "wrong-version: node expected v24.x, got %s\n" "${node_version:-missing}"
+    exit_code=1
+    ;;
+esac
+
 exit "${exit_code:-0}"

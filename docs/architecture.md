@@ -1,5 +1,16 @@
 # Architecture
 
+The canonical project spine is [drmlke-roadmap.md](drmlke-roadmap.md).
+
+Architecture must follow the corrected account model:
+
+- one owner-managed treasury
+- Francesco as owner/operator
+- Padre and Zio as initial viewer accounts
+- one shared client with capability-based locks
+- server-side permission enforcement for every critical action
+- no per-family-member trading portfolios in the initial model
+
 drmlke bootstrap modules:
 
 - `apps/api`: FastAPI backend placeholder
@@ -8,7 +19,7 @@ drmlke bootstrap modules:
 - `apps/client`: future SvelteKit/Vite + Capacitor client
 - `packages/core`: shared settings and paths
 - `packages/storage`: storage placeholder
-- `packages/wallet`: wallet/ledger placeholder
+- `packages/wallet`: treasury/ledger placeholder
 - `packages/agents`: agent placeholder
 - `packages/risk`: risk placeholder
 

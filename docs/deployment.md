@@ -9,3 +9,5 @@ Future Spark deployment should use:
 - live trading disabled by default
 - withdrawals disabled
 - no secrets in the client
+
+The Spark/backend remains private and LAN/VPN-controlled unless explicitly changed in a future reviewed wave.
