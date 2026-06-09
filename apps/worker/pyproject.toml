@@ -1,0 +1,15 @@
+[project]
+name = "drmlke-worker"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "drmlke-core",
+  "structlog",
+]
+
+[project.scripts]
+drmlke-worker = "drmlke_worker.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

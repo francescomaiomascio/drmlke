@@ -1,0 +1,10 @@
+.git
+.venv
+.local
+node_modules
+__pycache__
+.pytest_cache
+.ruff_cache
+*.sqlite
+*.duckdb
+*.parquet

@@ -1,0 +1,42 @@
+services:
+  api:
+    profiles: ["dev", "full"]
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    environment:
+      DRMLKE_NODE_NAME: ${DRMLKE_NODE_NAME:-local-dev}
+      DRMLKE_API_PORT: ${DRMLKE_API_PORT:-8780}
+      DRMLKE_STORAGE_ROOT: /data/drmlke
+      DRMLKE_LIVE_TRADING_ENABLED: "false"
+    ports:
+      - "${DRMLKE_API_PORT:-8780}:8780"
+    volumes:
+      - ${DRMLKE_STORAGE_ROOT:-.local/drmlke}:/data/drmlke
+
+  worker:
+    profiles: ["dev", "full"]
+    build:
+      context: .
+      dockerfile: infra/docker/worker.Dockerfile
+    environment:
+      DRMLKE_NODE_NAME: ${DRMLKE_NODE_NAME:-local-dev}
+      DRMLKE_STORAGE_ROOT: /data/drmlke
+      DRMLKE_LIVE_TRADING_ENABLED: "false"
+    volumes:
+      - ${DRMLKE_STORAGE_ROOT:-.local/drmlke}:/data/drmlke
+
+  provider:
+    profiles: ["provider", "full"]
+    build:
+      context: .
+      dockerfile: infra/docker/provider.Dockerfile
+    environment:
+      DRMLKE_NODE_NAME: ${DRMLKE_NODE_NAME:-local-dev}
+      DRMLKE_PROVIDER_PORT: 8781
+      DRMLKE_STORAGE_ROOT: /data/drmlke
+      DRMLKE_LIVE_TRADING_ENABLED: "false"
+    ports:
+      - "${DRMLKE_PROVIDER_PORT:-8781}:8781"
+    volumes:
+      - ${DRMLKE_STORAGE_ROOT:-.local/drmlke}:/data/drmlke
