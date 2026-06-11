@@ -3,10 +3,10 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version is `DOCS.SPINE.3`. It completes the master spine before any new
-code implementation, MacBook setup execution, Tailscale configuration, Spark
-attachment, runtime deployment, trading feature, wallet feature, exchange
-connection, mobile client scaffold, or AI model download.
+This version is `DOCS.SPINE.3` with `MAC.SETUP.1-CLOSE` status recorded. It
+completes the master spine and records the MacBook as an active development
+node before any Spark attachment, runtime deployment, trading feature, wallet
+feature, exchange connection, mobile client scaffold, or AI model download.
 
 ## 1. Current Project State
 
@@ -14,13 +14,16 @@ Current repository facts:
 
 - Canonical Linux repo path: `/home/mothx/code/drmlke`.
 - Current active workspace for this edit: `/Users/mothx/Developer/drmlke`.
+- MacBook repo path: `/Users/mothx/Developer/drmlke`.
+- MacBook role: secondary active development node.
 - Remote: `https://github.com/francescomaiomascio/drmlke.git`.
 - Bootstrap commit: `e68a51b Bootstrap drmlke skeleton`.
-- Current docs commit before this wave: `f824a62 DOCS.SPINE.2: correct treasury model and expand master spine`.
+- Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
+- `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `DOCS.SPINE.3`.
-- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`.
-- Next wave: `MAC.SETUP.1`.
+- Current wave: `MAC.SETUP.1-CLOSE`.
+- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`.
+- Next recommended wave: `DOCS.REVIEW.1`.
 
 Current provider status:
 
@@ -35,9 +38,15 @@ Current environment status:
 
 - Python is pinned to 3.12.
 - Node is pinned to 24.
-- Node 24 alignment is resolved for the current development path.
-- `uv`, `pnpm`, Docker, Docker Compose, Makefile validation, and provider checks
-  are the expected local development tools.
+- MacBook Node 24 is active as `v24.16.0`.
+- MacBook `uv` is active as `uv 0.11.17`.
+- MacBook `pnpm` works through Corepack as `10.12.1`.
+- MacBook Docker-compatible runtime is active through OrbStack on the
+  `orbstack` Docker context.
+- MacBook `make doctor`, `make check`, and local provider health/model checks
+  pass.
+- The MacBook system `python3` may be newer than 3.12; project validation uses
+  the `uv` managed Python 3.12 environment.
 
 Current Spark status:
 
@@ -46,7 +55,8 @@ Current Spark status:
 - `/srv/drmlke` is not assumed to exist yet.
 - The preferred future Spark access path is Tailscale or an explicit private SSH
   path, not a fragile local hostname dependency.
-- MacBook development setup comes before Spark runtime deployment.
+- Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
+- Documentation review comes before Spark runtime deployment.
 
 What is implemented now:
 
@@ -86,9 +96,10 @@ What is not implemented now:
 Sequencing correction:
 
 1. `DOCS.SPINE.3` completes this master document.
-2. `MAC.SETUP.1` prepares the MacBook as an alternate development machine.
-3. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
-4. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
+2. `MAC.SETUP.1-CLOSE` records the MacBook as an active development node.
+3. `DOCS.REVIEW.1` inspects and hardens this spine before infrastructure work.
+4. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
+5. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
    the access path is verified.
 
 ## 2. Product Definition
@@ -197,18 +208,19 @@ validation. It is not the permanent runtime storage target.
 
 Role:
 
-- alternate development machine
+- secondary active development machine
 - home and evening work
 - clone, pull, and push the GitHub repo
 - VS Code editing
 - future iOS packaging path
-- Tailscale already available or expected to be available according to user
-  context
-- setup before Spark runtime deployment
+- Tailscale available for later private network verification
+- setup completed before Spark runtime deployment
 
-The MacBook must become a clean secondary development environment before Spark
-runtime work begins. This wave documents the plan only. It does not configure
-the MacBook.
+The MacBook is now a clean secondary development environment. The active repo is
+`/Users/mothx/Developer/drmlke`, `origin/main` is synced, Node 24 is active,
+`uv` and `pnpm` work, Docker is available through OrbStack, and the provider
+stub validates locally. This closeout does not configure Spark and does not
+deploy runtime services to Spark.
 
 ### Spark
 
@@ -230,10 +242,10 @@ workflow is prepared. Spark remains a private runtime node, not a public server.
 
 ## 5. Repository Spine
 
-GitHub is the current source remote. The Linux workstation currently has the
-working repo. The MacBook will clone from GitHub during `MAC.SETUP.1`. Spark
-will later receive a deploy copy under `/srv/drmlke/app`; Spark does not become
-the primary authoring repo.
+GitHub is the current source remote. The Linux workstation remains a primary
+authoring path. The MacBook is also an active development node at
+`/Users/mothx/Developer/drmlke`. Spark will later receive a deploy copy under
+`/srv/drmlke/app`; Spark does not become the primary authoring repo.
 
 Expected tree and responsibilities:
 
@@ -526,41 +538,46 @@ Current status:
 
 ### MacBook
 
-This is plan only. Do not execute MacBook setup in `DOCS.SPINE.3`.
+`MAC.SETUP.1-CLOSE` has verified the MacBook as an active development node.
 
-Planned checks:
+Verified state:
 
-- Install or verify git.
-- Install or verify vim.
-- Install or verify `uv`.
-- Install or verify Python 3.12.
-- Install or verify Node 24.
-- Enable `corepack`.
-- Verify `pnpm`.
-- Clone the GitHub repo.
-- Verify the branch and remote.
-- Run `make doctor`.
-- Run `make check`.
-- Decide whether Docker Desktop is required immediately.
-- Open the repo in VS Code.
-- Confirm Tailscale availability.
-- Leave iOS tooling for a later wave.
-- Leave Android tooling for a later wave.
+- Repo path: `/Users/mothx/Developer/drmlke`.
+- Remote: `https://github.com/francescomaiomascio/drmlke`.
+- Branch: `main`.
+- GitHub sync: `82f8fae DOCS.SPINE.3` pushed to `origin/main`.
+- Host: macOS arm64.
+- Shell: `/bin/zsh`.
+- Node: `v24.16.0`.
+- Corepack: `0.35.0`.
+- pnpm: `10.12.1`.
+- uv: `0.11.17`.
+- Project Python: Python 3.12 through `uv`.
+- System `python3`: may be newer and is not the project interpreter.
+- Docker runtime: OrbStack Docker context.
+- VS Code CLI: available.
+- `make doctor`: passes.
+- `make check`: passes.
+- Provider container: validates locally on port `8781`.
+- Provider health: `status=ok`, `provider=stub`,
+  `live_trading_enabled=false`.
+- Provider models: empty list.
+- Spark: intentionally untouched.
 
-Planned commands, to be reviewed during `MAC.SETUP.1` and not executed in this
-docs wave:
+Useful MacBook commands:
 
 ```sh
-git clone https://github.com/francescomaiomascio/drmlke.git
-cd drmlke
+cd /Users/mothx/Developer/drmlke
 git status --short --branch
 uv sync --dev
 node -v
-corepack enable
 pnpm -v
 make doctor
 make check
-code .
+make docker-base
+docker compose --profile provider up -d provider
+curl -sS http://127.0.0.1:8781/health
+curl -sS http://127.0.0.1:8781/models
 ```
 
 ### Spark
@@ -614,7 +631,7 @@ continue from home without relying on the Linux workstation terminal.
 
 ### Future Wave Name
 
-`MAC.SETUP.1 - MacBook development environment and repo clone`
+`MAC.SETUP.1-CLOSE - finalize MacBook development node`
 
 ## 8. Tailscale and Spark Access Spine
 
@@ -1773,7 +1790,7 @@ Non-goals:
 
 Freeze rules:
 
-- Do not start Spark runtime work before `MAC.SETUP.1` and
+- Do not start Spark runtime work before `MAC.SETUP.1-CLOSE` and
   `TAILSCALE.SPARK.1`.
 - Do not scaffold the mobile client before the client framework decision is
   ready.
@@ -1835,10 +1852,11 @@ and local validation working.
 - P1.D - Python and uv setup. Purpose: align backend toolchain. Tasks: verify
   Python 3.12, install or configure `uv`, run `uv sync --dev`. Output: Python
   workspace ready. Acceptance: dependencies install. Non-goals: new packages.
-- P1.E - Docker option check. Purpose: decide whether Docker Desktop is needed
-  now. Tasks: inspect Docker availability, document optional status. Output:
-  Docker status. Acceptance: doctor either passes or clearly documents missing
-  Docker. Non-goals: production deployment.
+- P1.E - Docker runtime option check. Purpose: decide whether Docker Desktop,
+  OrbStack, or another Docker-compatible runtime is needed now. Tasks: inspect
+  Docker availability, document runtime status. Output: Docker status.
+  Acceptance: doctor either passes or clearly documents missing Docker.
+  Non-goals: production deployment.
 - P1.F - Local validation and VS Code. Purpose: prove the MacBook can work.
   Tasks: run `make doctor`, run `make check`, optionally run provider, open VS
   Code. Output: validation report. Acceptance: checks pass or documented
@@ -2369,9 +2387,9 @@ could be considered. This is intentionally far away.
   Acceptance: auto-live can be disabled instantly. Non-goals: public fund
   management.
 
-## 22. Current Wave Detail
+## 22. DOCS.SPINE.3 Wave Detail
 
-Current wave:
+Previous spine wave:
 
 `DOCS.SPINE.3 - complete master spine before new implementation`
 
@@ -2436,25 +2454,26 @@ Expected final report:
 - validation results
 - commit hash
 - whether `docs/drmlke-roadmap.md` was fully expanded
-- next wave: `MAC.SETUP.1`
+- historical next wave at the time of `DOCS.SPINE.3`: `MAC.SETUP.1`
 
-## 23. Next Wave Detail
+## 23. Current Closeout and Next Wave Detail
 
-Next wave:
+Current closeout:
 
-`MAC.SETUP.1 - MacBook development environment and repo clone`
+`MAC.SETUP.1-CLOSE - finalize MacBook development node`
 
 Purpose:
 
-- Prepare MacBook as alternate development machine.
-- Clone the GitHub repo.
-- Verify Node 24, `uv`, `pnpm`, git, vim, and VS Code.
+- Record the MacBook as a secondary active development node.
+- Push `82f8fae DOCS.SPINE.3` to GitHub.
+- Verify Node 24, `uv`, `pnpm`, git, vim, VS Code, and Docker-compatible
+  runtime access.
 - Run `make doctor`.
 - Run `make check`.
-- Open the project in VS Code.
+- Run the provider locally through Docker Compose.
 - Do not deploy Spark yet.
 
-Sub-waves:
+Completed checks:
 
 - M1.A toolchain check. Purpose: check installed tools. Tasks: inspect git,
   vim, Python, `uv`, Node, corepack, pnpm, Docker, VS Code, and Tailscale.
@@ -2469,7 +2488,7 @@ Sub-waves:
 - M1.D uv and Python setup. Purpose: align Python toolchain. Tasks: verify
   Python 3.12, install or configure `uv`, run sync. Output: Python workspace.
   Acceptance: `uv sync --dev` succeeds. Non-goals: dependency changes.
-- M1.E Docker Desktop optional check. Purpose: decide if Docker is required now.
+- M1.E Docker runtime optional check. Purpose: decide if Docker is required now.
   Tasks: inspect Docker and Compose availability. Output: Docker status.
   Acceptance: doctor passes or records missing Docker. Non-goals: Spark
   containers.
@@ -2481,9 +2500,33 @@ Sub-waves:
   editor-ready state. Acceptance: roadmap can be edited on MacBook. Non-goals:
   client implementation.
 
+Closeout acceptance:
+
+- `origin/main` includes `82f8fae DOCS.SPINE.3`.
+- `main` is synced with `origin/main` after the closeout commit is pushed.
+- MacBook Node is `v24.16.0`.
+- MacBook pnpm is `10.12.1`.
+- MacBook uv is `0.11.17`.
+- Docker-compatible runtime is available through OrbStack.
+- Local provider health returns ok with live trading disabled.
+- Local provider models returns an empty list.
+- Spark remains intentionally untouched.
+
+Next recommended wave:
+
+`DOCS.REVIEW.1 - inspect and harden master spine before Spark/Tailscale work`
+
+Purpose:
+
+- Read the master spine carefully as an operating document.
+- Close ambiguity before further infrastructure work.
+- Verify open decisions are honestly represented.
+- Keep Spark deployment blocked until the spine is reviewed.
+
 Non-goals:
 
 - No Spark deployment.
+- No Tailscale production routing changes.
 - No client implementation.
 - No trading logic.
 - No model downloads.
@@ -2494,8 +2537,8 @@ Non-goals:
 
 Current open decisions:
 
-- Exact MacBook setup method for Node 24: nvm, mise, fnm, or Homebrew node@24.
-- Whether Docker Desktop is required immediately on MacBook.
+- Whether the MacBook Docker runtime remains OrbStack long-term or later moves
+  to Docker Desktop.
 - Tailscale hostname or address for Spark.
 - Final Spark access route.
 - Final provider backend.
@@ -2528,3 +2571,6 @@ decision until the relevant wave makes and records the decision.
 - `DOCS.SPINE.2`: treasury model correction and initial expanded spine.
 - `DOCS.SPINE.3`: full master spine completion before further implementation,
   with next sequence corrected to docs, MacBook, Tailscale, and Spark runtime.
+- `MAC.SETUP.1-CLOSE`: MacBook recorded as a secondary active development node,
+  `DOCS.SPINE.3` pushed to GitHub, local toolchain validated, and provider
+  stub verified locally without touching Spark.

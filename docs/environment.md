@@ -2,6 +2,9 @@
 
 Bootstrap target: Linux/Arch.
 
+Secondary active development node: MacBook at
+`/Users/mothx/Developer/drmlke`.
+
 Required tools:
 
 - git
@@ -32,3 +35,42 @@ pnpm -v
 ```
 
 Do not install random global npm packages.
+
+## MacBook Status
+
+`MAC.SETUP.1-CLOSE` verified the MacBook as a working development node:
+
+- macOS arm64 host.
+- Shell: `/bin/zsh`.
+- Repo path: `/Users/mothx/Developer/drmlke`.
+- Remote: `https://github.com/francescomaiomascio/drmlke`.
+- Branch: `main`.
+- GitHub sync: `DOCS.SPINE.3` pushed to `origin/main`.
+- Node: `v24.16.0`.
+- Corepack: `0.35.0`.
+- pnpm: `10.12.1`.
+- uv: `0.11.17`.
+- Docker-compatible runtime: OrbStack Docker context.
+- VS Code `code` command is available.
+- `make doctor` passes.
+- `make check` passes.
+- Provider stub runs locally through Docker Compose on port `8781`.
+
+The project Python is the `uv` managed Python 3.12 environment. The MacBook
+system `python3` may be newer and should not be treated as the project
+interpreter.
+
+MacBook validation commands:
+
+```sh
+cd /Users/mothx/Developer/drmlke
+make doctor
+make check
+make docker-base
+docker compose --profile provider up -d provider
+curl -sS http://127.0.0.1:8781/health
+curl -sS http://127.0.0.1:8781/models
+```
+
+Spark remains intentionally untouched by MacBook setup. Tailscale and Spark
+runtime work belong to later reviewed waves.

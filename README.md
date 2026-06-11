@@ -22,6 +22,13 @@ This repository is in bootstrap state. It intentionally does not include:
 
 ## Development
 
+Active development checkouts:
+
+- Linux workstation canonical path: `/home/mothx/code/drmlke`
+- MacBook secondary active node: `/Users/mothx/Developer/drmlke`
+
+Spark is a future runtime/deploy target and is not the authoring repo.
+
 ```sh
 uv sync --dev
 make check
