@@ -3,11 +3,12 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `DOCS.REVIEW.1` product, decision, math, and strategy
-hardening on top of `DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`.
-It refocuses the roadmap on the decision core before any Spark attachment,
-runtime deployment, trading feature, wallet feature, exchange connection,
-mobile client scaffold, or AI model download.
+This version includes `DOCS.REVIEW.2` MVP, promotion gate, and risk policy
+numeric draft on top of `DOCS.REVIEW.1`, `DOCS.SPINE.3`,
+`MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the roadmap on the
+decision core before any Spark attachment, runtime deployment, trading feature,
+wallet feature, exchange connection, mobile client scaffold, or AI model
+download.
 
 ## 1. Current Project State
 
@@ -22,10 +23,10 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `DOCS.REVIEW.1`.
+- Current wave: `DOCS.REVIEW.2`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
-  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`.
-- Next recommended wave: `DOCS.REVIEW.2`.
+  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`.
+- Next recommended wave: `CORE.0`.
 
 Current provider status:
 
@@ -65,9 +66,9 @@ Current Spark status:
   path, not a fragile local hostname dependency.
 - Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
 - Spark remains intentionally untouched by `LINUX.SETUP.1`.
-- `DOCS.REVIEW.1` keeps Spark reserved until the product core is no longer
-  blocked by identity, paper treasury, market data, benchmarks, and decision
-  records.
+- `DOCS.REVIEW.1` and `DOCS.REVIEW.2` keep Spark reserved until the product
+  core is no longer blocked by identity, paper treasury, market data,
+  benchmarks, and decision records.
 
 What is implemented now:
 
@@ -397,9 +398,9 @@ Small-capital constraints:
 Every strategy report must show performance before costs and after costs. The
 after-cost result is the promotion-relevant result.
 
-`DOCS.REVIEW.2` must draft initial numeric assumptions for simulated costs,
-maximum weekly decision count, conservative strategy definition, and promotion
-thresholds.
+`DOCS.REVIEW.2` records the initial numeric draft for simulated costs, maximum
+weekly decision count, conservative strategy definition, and promotion
+thresholds below.
 
 ## 2C. Strategy Specification and Backtest Integrity Spine
 
@@ -449,6 +450,338 @@ promotion or rejection status.
 
 Negative results are project assets. They prevent repeated mistakes and help
 calibrate future decisions.
+
+## 2D. DOCS.REVIEW.2 Numeric Draft Spine
+
+This section is a conservative numeric draft for `MVP.1`, strategy promotion,
+strategy rejection, and paper-mode risk policy. These numbers are placeholders
+for local paper simulation. They are not exchange-specific truth, brokerage
+configuration, live trading permission, or a promise that real orders will ever
+be enabled.
+
+### MVP.1 Exact Cut
+
+`MVP.1 - Decision Journal and Paper Treasury` includes:
+
+- 200 EUR paper treasury.
+- BTC and ETH only.
+- Paper-only ledger.
+- Public/read-only market data ingestion boundary.
+- Candle storage with source, timestamp, asset, timeframe, and feed health.
+- Buy-and-hold benchmark.
+- Scheduled accumulation benchmark.
+- Decision records.
+- No-action records.
+- Risk veto records.
+- Weekly report.
+- Simple dashboard/reporting surface later.
+- Owner and viewer capability boundaries later.
+
+`MVP.1` excludes:
+
+- ML.
+- LLM.
+- embeddings.
+- RAG.
+- Spark dependency.
+- Tailscale dependency.
+- live trading.
+- exchange integration.
+- real provider integration.
+- wallet custody.
+- credentials.
+- model downloads.
+
+Market data ingestion boundary:
+
+- use public or local test data only
+- no trading API keys
+- no private exchange account access
+- no account balance reads
+- no order book dependency for MVP.1
+- store enough source metadata to audit stale or missing data
+- block decisions when data is stale beyond the draft freshness policy
+
+Primary product outcome:
+
+- improve decision quality and capital preservation before seeking returns
+- keep benchmark comparison visible at all times
+- preserve no-action decisions and negative results
+- do not promote a strategy when a simple benchmark is better after costs
+
+### Initial Decision Cadence
+
+Default cadence:
+
+- weekly owner review: 1 required review per week
+- daily market check: optional, observation-only
+- weekly report: 1 generated report per week
+
+Decision limits:
+
+- maximum decision records per week: 3
+- maximum no-action records per week: unlimited
+- maximum simulated trades per week: 2
+- maximum simulated trades per asset per week: 1
+- maximum same-day simulated trades: 1
+- minimum cool-off after a veto or losing simulated trade: 24 hours
+
+Forbidden cadence:
+
+- no high-frequency behavior
+- no scalping
+- no reactionary same-day overtrading
+- no strategy that requires continuous screen watching
+- no repeated re-entry after a loss without a new decision record
+
+### Initial Timeframe Policy
+
+Allowed initial timeframes:
+
+- 1d candles as the primary decision timeframe
+- 4h candles as context only
+- 1w candles as regime context
+
+Out of scope for MVP.1:
+
+- sub-hour candles
+- tick data
+- order book microstructure
+- intraday scalping signals
+- same-candle execution when signal uses that candle close
+
+Stale data policy:
+
+- 1d data is stale if the latest expected daily candle is more than 36 hours
+  old.
+- 4h context is stale if the latest expected 4h candle is more than 8 hours
+  old.
+- Weekly context is stale if the latest expected weekly candle is more than 10
+  days old.
+- Any decision using stale required data must be marked stale or vetoed.
+- A strategy cannot be promoted if its backtest ignores missing or stale data.
+
+### Cost Model Assumptions
+
+All values are conservative paper placeholders. They must be revisited before
+any exchange-specific modeling.
+
+Fee assumptions:
+
+- simulated entry fee: 0.40% of notional
+- simulated exit fee: 0.40% of notional
+- simulated minimum fee: 0.10 EUR per side
+
+Spread assumptions:
+
+- BTC spread placeholder: 0.20%
+- ETH spread placeholder: 0.30%
+- severe-liquidity spread placeholder: 0.75%
+
+Slippage assumptions:
+
+- normal simulated slippage: 0.10% per side
+- volatile simulated slippage: 0.25% per side
+- severe-liquidity simulated slippage: 0.50% per side
+
+Rounding and precision assumptions:
+
+- EUR ledger precision: 0.01 EUR
+- BTC precision: 0.00000001 BTC
+- ETH precision: 0.00000001 ETH
+- position value reports round to cents
+- rounding loss must be included in after-cost results
+
+Minimum trade size assumptions:
+
+- minimum simulated trade size: 20 EUR notional
+- preferred simulated trade size for strategy tests: at least 25 EUR notional
+- no simulated trade below 10% of the 200 EUR paper treasury
+
+Break-even move required:
+
+```text
+break_even_move_required =
+  entry_fee
+  + exit_fee
+  + spread
+  + entry_slippage
+  + exit_slippage
+  + rounding_buffer
+```
+
+Draft normal break-even placeholders:
+
+- BTC normal round trip: at least 1.30%
+- ETH normal round trip: at least 1.40%
+- severe-liquidity round trip: at least 2.50%
+
+Any strategy whose expected move is below the relevant break-even placeholder
+is not eligible for paper execution.
+
+### Conservative Strategy Numeric Definition
+
+A conservative MVP.1/MVP.2 strategy must satisfy these draft limits:
+
+- maximum total crypto exposure: 60% of paper treasury
+- maximum single-asset exposure: 40% of paper treasury
+- maximum strategy exposure: 25% of paper treasury
+- maximum single simulated trade size: 25% of paper treasury
+- maximum weekly turnover: 50% of paper treasury
+- maximum simulated trades per week: 2
+- maximum strategy drawdown warning: 3% of paper treasury
+- maximum strategy drawdown lock: 5% of paper treasury
+- maximum weekly realized loss lock: 2.5% of paper treasury
+- maximum unresolved stale-data decisions: 0
+
+With a 200 EUR paper treasury, these imply:
+
+- maximum total crypto exposure: 120 EUR
+- maximum single-asset exposure: 80 EUR
+- maximum strategy exposure: 50 EUR
+- maximum single simulated trade size: 50 EUR
+- maximum weekly turnover: 100 EUR
+- strategy drawdown warning: 6 EUR
+- strategy drawdown lock: 10 EUR
+- weekly realized loss lock: 5 EUR
+
+Forbidden strategy behavior:
+
+- martingale
+- leverage
+- futures
+- margin
+- grid trading
+- averaging down unless explicitly specified, capped, and tested
+- increasing size after a loss without a new owner-reviewed decision record
+- trading during stale required data
+
+### Promotion Gates
+
+Promotion to `backtest_ready` requires:
+
+- strategy spec complete
+- hypothesis clear
+- regime where it should work defined
+- regime where it should not trade defined
+- benchmark defined
+- cost assumptions defined
+- stale-data behavior defined
+- invalidation condition defined
+
+Promotion to `backtested` requires:
+
+- benchmark comparison complete
+- no lookahead bias
+- no survivorship bias
+- no repainting indicators
+- no same-candle execution flaw
+- chronological train/test split
+- separate tuning and final test
+- costs, spread, slippage, and rounding included
+- missing and stale data handled explicitly
+- negative results preserved
+
+Promotion to `paper_enabled` requires:
+
+- after-cost result is positive relative to the selected benchmark
+- candidate active strategy beats benchmark by at least 2 percentage points
+  after costs, or reduces max drawdown by at least 20% while trailing benchmark
+  return by no more than 1 percentage point
+- max drawdown does not exceed the strategy drawdown lock
+- drawdown duration is acceptable and explained
+- average weekly turnover is at or below 50% of paper treasury
+- trade count stays within cadence limits
+- behavior works across more than one regime or is explicitly regime-scoped
+- risk policy does not veto the strategy in normal expected conditions
+- owner review is recorded
+
+Promotion to `future_live_candidate` is not part of MVP.1, MVP.2, or MVP.3.
+It can only be considered by a later reviewed wave.
+
+### Rejection and Deprecation Gates
+
+Reject or deprecate a strategy when any of these are true:
+
+- fails after costs
+- fails to beat the selected benchmark after costs
+- excessive turnover
+- excessive drawdown
+- drawdown duration is unexplained or unacceptable
+- only works in a cherry-picked period
+- only works before costs
+- depends on stale data
+- depends on missing data being silently ignored
+- has unclear hypothesis
+- lacks completed post-mortems
+- creates decisions without reasons not to act
+- encourages overtrading
+- violates cadence limits
+- violates exposure limits
+- violates loss locks
+- cannot be explained from stored source data
+
+### Paper-Mode Risk Policy Draft
+
+Risk policy is a hard boundary in paper mode. It does not become permission for
+live mode.
+
+Always veto:
+
+- live trading request
+- withdrawal request
+- wallet custody request
+- exchange credential request
+- missing required benchmark
+- missing required cost model
+- missing strategy spec
+- stale required data
+- total exposure above 60%
+- single-asset exposure above 40%
+- strategy exposure above 25%
+- weekly turnover above 50%
+- weekly simulated trades above 2
+- strategy drawdown at or above 5%
+- weekly realized loss at or above 2.5%
+- emergency stop active
+
+Reduce or delay:
+
+- volatile regime without explicit volatility handling
+- 4h context stale but 1d decision data still fresh
+- weekly report not yet reviewed
+- recent veto within the last 24 hours
+- severe news context without completed owner review
+
+Record as risk event:
+
+- every veto
+- every reduction
+- every delay
+- every stale-data block
+- every exposure block
+- every cost-model block
+- every emergency block
+
+### Minimum Paper Duration Before Manual Live Consideration
+
+Manual live remains locked. Passing paper gates does not automatically enable
+live trading.
+
+Minimum future review candidate:
+
+- at least 90 calendar days of paper operation
+- at least 12 completed weekly reports
+- at least 30 decision or no-action records
+- at least 1 full strategy post-mortem
+- no unresolved data integrity issue
+- no unresolved risk policy violation
+- benchmark comparison complete after costs
+- owner review complete
+- new legal, safety, and operational review wave approved
+
+Even if all evidence is positive, a later wave must still explicitly decide
+whether manual live is worth considering. Auto-live remains out of scope.
 
 ## 3. Non-Negotiable Safety Boundary
 
@@ -2159,19 +2492,18 @@ Freeze rules:
 This phase map is designed so a future coding agent can copy a wave and execute
 without reinventing architecture. Each phase includes sub-waves A through F.
 
-Current near-term sequence after `DOCS.REVIEW.1`:
+Current near-term sequence after `DOCS.REVIEW.2`:
 
-1. `DOCS.REVIEW.2 - MVP, Promotion Gates, and Risk Policy Numeric Draft`
-2. `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
-3. `CORE.1 - Paper Treasury Ledger`
-4. `CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
-5. `CORE.3 - Decision Journal`
+1. `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
+2. `CORE.1 - Paper Treasury Ledger`
+3. `CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
+4. `CORE.3 - Decision Journal`
 
 This product core path overrides the older Spark-first infrastructure sequence
 where they conflict. Tailscale and Spark sections below remain useful future
 infrastructure references, but they are not the next execution path.
 
-`DOCS.REVIEW.2` must draft:
+`DOCS.REVIEW.2` establishes candidate paper-mode defaults for:
 
 - first true MVP cut
 - primary product outcome
@@ -2954,7 +3286,7 @@ Closeout acceptance:
 - Local provider models returns an empty list.
 - Spark remains intentionally untouched.
 
-Current review wave:
+Completed review wave:
 
 `DOCS.REVIEW.1 - Product, Decision, Math, and Strategy Hardening`
 
@@ -3013,17 +3345,81 @@ Closeout acceptance:
 - Spark remains untouched.
 - No application code changes are required.
 
-Next recommended wave:
+Current review wave:
 
 `DOCS.REVIEW.2 - MVP, Promotion Gates, and Risk Policy Numeric Draft`
 
 Purpose:
 
-- Convert this review into initial numeric gates.
-- Draft MVP 1 acceptance tightly enough for implementation.
-- Draft first promotion thresholds and deprecation thresholds.
-- Draft first risk policy numbers for paper mode only.
-- Keep Spark reserved until the decision core is no longer blocked.
+- Convert `DOCS.REVIEW.1` doctrine into candidate paper-mode numbers.
+- Define the exact `MVP.1` cut.
+- Draft initial decision cadence and timeframe rules.
+- Draft conservative fee, spread, slippage, rounding, and break-even
+  assumptions.
+- Draft conservative strategy limits.
+- Draft promotion and rejection gates.
+- Draft paper-mode risk policy.
+- Keep manual live locked.
+- Keep Spark and Tailscale reserved for later infrastructure work.
+
+Completed tasks:
+
+- D2.A MVP cut. Purpose: make `MVP.1` implementable. Tasks: define 200 EUR
+  paper treasury, BTC/ETH only, paper ledger, market data boundary, benchmarks,
+  decision records, veto records, and weekly report. Output: exact MVP cut.
+  Acceptance: no ML, LLM, Spark dependency, live trading, exchange integration,
+  or credentials are included. Non-goals: implementation.
+- D2.B outcome and cadence. Purpose: make decision behavior conservative.
+  Tasks: define primary outcome, weekly review, maximum decisions, maximum
+  simulated trades, and cool-off rules. Output: cadence draft. Acceptance:
+  high-frequency, scalping, and same-day overtrading are out of scope.
+  Non-goals: scheduler code.
+- D2.C timeframe and stale data. Purpose: define initial timeframes and data
+  freshness rules. Tasks: define 1d primary, 4h context, 1w regime context, and
+  stale thresholds. Output: timeframe policy. Acceptance: stale data decisions
+  are marked or vetoed. Non-goals: data collector code.
+- D2.D cost model. Purpose: force conservative after-cost evaluation. Tasks:
+  draft fee, spread, slippage, rounding, minimum size, and break-even
+  assumptions. Output: cost model draft. Acceptance: all values are
+  placeholders and not exchange-specific truth. Non-goals: real provider.
+- D2.E conservative strategy and risk policy. Purpose: bound paper behavior.
+  Tasks: define exposure, turnover, drawdown, trade count, loss locks, veto
+  rules, and delay rules. Output: paper-mode risk draft. Acceptance: risk
+  policy remains a boundary and does not enable live mode. Non-goals: risk
+  engine code.
+- D2.F promotion and rejection gates. Purpose: define what evidence is required
+  before strategy advancement. Tasks: define gates for `backtest_ready`,
+  `backtested`, `paper_enabled`, rejection, deprecation, and future manual-live
+  review evidence. Output: promotion gate draft. Acceptance: passing paper
+  gates does not automatically enable live trading. Non-goals: live gate.
+
+Closeout acceptance:
+
+- `MVP.1` exact cut is explicit.
+- Primary product outcome is explicit.
+- Initial decision cadence is explicit.
+- Initial timeframe policy is explicit.
+- Cost model assumptions are explicit and conservative.
+- Conservative strategy numeric definition is explicit.
+- Promotion gates are explicit.
+- Rejection and deprecation gates are explicit.
+- Paper-mode risk policy draft is explicit.
+- Minimum paper duration before manual live consideration is explicit.
+- Spark remains untouched.
+- No application code changes are required.
+
+Next recommended wave:
+
+`CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
+
+Purpose:
+
+- Implement identity, account roles, capabilities, and the one-paper-treasury
+  boundary required before ledger or decision records mutate state.
+- Keep the implementation narrow and paper-only.
+- Preserve server-side permission enforcement as the real security boundary.
+- Keep Spark reserved until the Product Core path no longer depends on local
+  identity, treasury, benchmark, and decision objects.
 
 Non-goals:
 
@@ -3039,22 +3435,16 @@ Non-goals:
 
 Current open decisions:
 
-- Primary product outcome for MVP 1.
-- Expected decision frequency.
-- Initial trading/research timeframe.
-- Primary benchmark for BTC and ETH evaluation.
-- Simulated fee assumptions.
-- Simulated spread assumptions.
-- Simulated slippage assumptions.
-- Rounding and minimum-order assumptions.
-- Max decisions or trades per week.
-- Conservative strategy numeric definition.
-- Strategy promotion metric.
-- Strategy deprecation metric.
-- Behavior if no strategy beats benchmark.
-- Minimum paper duration before any manual live consideration.
-- Trusted-enough data criteria.
-- First true MVP cut.
+- Whether `DOCS.REVIEW.2` candidate thresholds need revision after the first
+  paper reports.
+- Whether the primary benchmark should remain buy-and-hold plus scheduled
+  accumulation after first data-source selection.
+- Whether BTC/ETH should use EUR pairs directly or normalized quote conversion
+  if the first data source is stronger in USDT.
+- Whether stale-data thresholds need adjustment after real feed behavior is
+  observed.
+- Whether the minimum 90-day paper observation candidate is too short, too long,
+  or sufficient before any later manual-live review.
 - Whether the MacBook Docker runtime remains OrbStack long-term or later moves
   to Docker Desktop.
 - Tailscale hostname or address for Spark.
@@ -3071,7 +3461,6 @@ Current open decisions:
 - Notification strategy.
 - Backup cadence.
 - Paper treasury initial strategy order.
-- Exact risk default thresholds.
 - Whether the Linux workstation also needs Tailscale as a first-class path.
 - Whether Spark provider ports bind to localhost behind a private proxy or bind
   directly to a Tailscale interface.
@@ -3098,3 +3487,6 @@ decision until the relevant wave makes and records the decision.
 - `DOCS.REVIEW.1`: roadmap refocused on product thesis, decision quality,
   small-capital math, strategy specification, backtest integrity, MVP sequence,
   and Product Core before Spark.
+- `DOCS.REVIEW.2`: `MVP.1` exact cut, candidate paper-mode cost assumptions,
+  conservative strategy limits, promotion gates, rejection gates, risk policy
+  draft, and minimum paper duration before any manual-live review.
