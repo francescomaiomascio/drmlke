@@ -3,12 +3,12 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `CORE.3` paper position boundary contracts on top of
-`CORE.2`, `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`, `DOCS.SPINE.3`,
-`MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the roadmap on the
-decision core before any Spark attachment, runtime deployment, trading feature,
-wallet feature, exchange connection, mobile client scaffold, or AI model
-download.
+This version includes `CORE.4` paper portfolio snapshot contracts on top of
+`CORE.3`, `CORE.2`, `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`,
+`DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the
+roadmap on the decision core before any Spark attachment, runtime deployment,
+trading feature, wallet feature, exchange connection, mobile client scaffold,
+or AI model download.
 
 ## 1. Current Project State
 
@@ -23,11 +23,11 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `CORE.3`.
+- Current wave: `CORE.4`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
   `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
-  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`.
-- Next recommended wave: `CORE.4`.
+  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`, `CORE.3`.
+- Next recommended wave: `CORE.5`.
 
 Current provider status:
 
@@ -86,6 +86,8 @@ What is implemented now:
   append-only ledger.
 - `packages/core` paper position boundary contracts for initial BTC and ETH
   simulated long-only positions.
+- `packages/core` paper portfolio snapshot contracts combining treasury cash
+  snapshots and paper position books.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -109,6 +111,7 @@ What is not implemented now:
 - No persisted paper positions, position transitions, paper orders, or fills.
 - No market valuation.
 - No realized or unrealized PnL calculation.
+- No persisted portfolio snapshot.
 - No mobile client scaffold.
 - No web admin console.
 - No strategy engine.
@@ -132,7 +135,8 @@ Sequencing correction:
 8. `CORE.2` implements ledger projection and treasury snapshot contracts.
 9. `CORE.3` defines the paper position boundary.
 10. `CORE.4` defines a paper portfolio snapshot boundary.
-11. Tailscale and Spark remain infrastructure-only future work until they do
+11. `CORE.5` defines the paper decision record boundary.
+12. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -1004,7 +1008,8 @@ What belongs there:
 - Event names.
 - Common schema primitives.
 - Identity, capability, safety, paper treasury, append-only ledger, treasury
-  projection, and paper position contracts while they remain pure domain logic.
+  projection, paper position, and paper portfolio snapshot contracts while they
+  remain pure domain logic.
 
 What does not belong there yet:
 
@@ -1013,6 +1018,7 @@ What does not belong there yet:
 - Persistence adapters.
 - Paper execution.
 - Position valuation.
+- Portfolio valuation.
 - Market data ingestion.
 - Secrets.
 
@@ -1697,6 +1703,24 @@ Correct capital model:
   calculate PnL, create orders, create fills, mutate the ledger, reserve cash,
   release cash, persist state, expose API routes, or change provider/runtime
   behavior.
+
+`CORE.4` implementation:
+
+- `drmlke_core.portfolio.PaperPortfolioSnapshot` defines a frozen structural
+  paper portfolio read model.
+- `project_paper_portfolio_snapshot` combines a `CORE.2` treasury cash snapshot
+  with a `CORE.3` paper position book.
+- The snapshot reports available cash, reserved cash, total cash, open position
+  count, closed position count, total position count, open cost basis, position
+  fees, total structural exposure, and open cost basis ratio.
+- Total structural exposure is cash plus open position cost basis. This is not
+  market value.
+- Open cost basis ratio is open cost basis divided by initial paper capital.
+- CORE.4 does not subtract position cost from cash. Future paper execution must
+  create ledger entries before treasury cash changes.
+- The portfolio snapshot does not read prices, mark to market, calculate PnL,
+  calculate returns, create orders, create fills, mutate the ledger, persist
+  state, expose API routes, or change provider/runtime behavior.
 
 Contribution metadata may exist later, but it is accounting metadata. It is not
 trading authority and does not create independent family portfolios.
@@ -2592,6 +2616,7 @@ Current near-term sequence after `DOCS.REVIEW.2`:
 3. `CORE.2 - Ledger Projection and Treasury Snapshot`
 4. `CORE.3 - Paper Position Boundary`
 5. `CORE.4 - Paper Portfolio Snapshot Boundary`
+6. `CORE.5 - Paper Decision Record Boundary`
 
 This product core path overrides the older Spark-first infrastructure sequence
 where they conflict. Tailscale and Spark sections below remain useful future
@@ -2627,6 +2652,9 @@ valuation, order, fill, strategy, or execution work.
 `CORE.4` must combine the treasury cash snapshot and paper position book into a
 paper portfolio snapshot boundary without market prices, execution, or live
 capital behavior.
+
+`CORE.5` must define paper decision records before market data, strategy
+evaluation, paper execution, reporting, or model assistance.
 
 ### Phase 0. Repo, environment, provider skeleton, master spine
 
@@ -3703,7 +3731,7 @@ Acceptance criteria:
 - Snapshot exposes no positions or market valuation fields.
 - Existing `CORE.0` and `CORE.1` tests still pass.
 
-Current implementation wave:
+Completed implementation wave:
 
 `CORE.3 - Paper Position Boundary`
 
@@ -3807,16 +3835,108 @@ Acceptance criteria:
 - Position contracts expose no market valuation or PnL fields.
 - Existing `CORE.0`, `CORE.1`, and `CORE.2` tests still pass.
 
-Next recommended wave:
+Current implementation wave:
 
 `CORE.4 - Paper Portfolio Snapshot Boundary`
 
 Purpose:
 
-- Combine the `CORE.2` treasury cash snapshot and the `CORE.3` position book
-  into a paper portfolio snapshot boundary.
-- Keep the portfolio snapshot free of market prices, valuation, orders, fills,
-  execution, storage, API routes, and live capital behavior.
+- Combine the `CORE.2` treasury cash snapshot and the `CORE.3` paper position
+  book into one structural paper portfolio snapshot.
+- Keep the snapshot pure, in-memory, paper-only, and free of market prices,
+  PnL, orders, fills, execution, storage, API routes, UI, and runtime services.
+- Make future client/risk/reporting work consume a single structural read model
+  without inventing cash movement or market valuation.
+
+Previous state:
+
+- `CORE.2` could describe paper cash state.
+- `CORE.3` could describe paper positions.
+- No combined portfolio read model existed.
+
+Target state:
+
+- A paper portfolio snapshot has the canonical treasury id.
+- A paper portfolio snapshot exposes available cash, reserved cash, and total
+  cash from the treasury snapshot.
+- A paper portfolio snapshot exposes open and closed position counts.
+- A paper portfolio snapshot exposes open cost basis and total position fees.
+- A paper portfolio snapshot exposes structural exposure and open cost basis
+  ratio.
+- A paper portfolio snapshot remains paper-only and live-capital locked.
+- A paper portfolio snapshot proves deterministic reconciliation.
+
+Allowed changes:
+
+- Add `packages/core/src/drmlke_core/portfolio.py`.
+- Export stable portfolio snapshot contracts from `drmlke_core`.
+- Extend core tests for portfolio projection, ratio, reconciliation, and
+  non-goals.
+- Update roadmap and architecture documentation.
+
+Forbidden changes:
+
+- No persistence.
+- No database schema.
+- No API routes.
+- No UI/client.
+- No paper orders or fills.
+- No ledger mutation.
+- No treasury cash mutation.
+- No market data.
+- No market valuation.
+- No realized or unrealized PnL.
+- No returns or performance metrics.
+- No trading logic.
+- No strategy decisions.
+- No provider, Docker, Spark, or Tailscale changes.
+- No exchange, broker, wallet custody, withdrawal, credential, or model runtime
+  work.
+
+Implementation contracts:
+
+- `PaperPortfolioSnapshot`.
+- `project_paper_portfolio_snapshot`.
+- `validate_paper_portfolio_snapshot`.
+- `is_paper_portfolio_snapshot_reconciled`.
+- `calculate_open_cost_basis_ratio`.
+
+Validation commands:
+
+- `git diff --check`.
+- `uv run pytest -q tests/test_core_contracts.py`.
+- `make doctor`.
+- `make check`.
+- `docker compose ps`.
+- `curl -sS http://127.0.0.1:8781/health`.
+- `curl -sS http://127.0.0.1:8781/models`.
+
+Acceptance criteria:
+
+- Empty portfolio snapshot shows 200 EUR cash, no positions, zero open cost
+  basis, zero position fees, zero open cost basis ratio, and reconciled true.
+- One open BTC position contributes open cost basis and open cost basis ratio.
+- Closed positions count as closed and contribute to total position fees, but
+  not open cost basis.
+- Treasury id mismatches are rejected.
+- Live-backed positions are rejected.
+- Non-reconciled treasury snapshots are rejected.
+- Portfolio snapshots are frozen.
+- Portfolio snapshots expose no market value, PnL, return, or strategy
+  attribution fields.
+- Existing `CORE.0`, `CORE.1`, `CORE.2`, and `CORE.3` tests still pass.
+
+Next recommended wave:
+
+`CORE.5 - Paper Decision Record Boundary`
+
+Purpose:
+
+- Define paper decision record contracts for owner-reviewed action, no-action,
+  hypothesis, risk context, stale data state, reasons not to act, and
+  post-mortem fields.
+- Keep decision records independent from market data ingestion, strategy
+  engines, paper execution, provider runtime, and live trading.
 
 Non-goals:
 
@@ -3904,3 +4024,7 @@ decision until the relevant wave makes and records the decision.
   simulated positions, with no persistence, ledger mutation, orders, fills,
   market data, valuation, PnL, execution, provider, exchange, or wallet custody
   behavior.
+- `CORE.4`: paper portfolio snapshot boundary contracts combining treasury cash
+  snapshots and paper position books, with no persistence, market value, PnL,
+  returns, strategy attribution, orders, fills, execution, provider, exchange,
+  or wallet custody behavior.

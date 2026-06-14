@@ -22,6 +22,11 @@ from drmlke_core.ledger import (
     create_initial_paper_ledger,
     project_paper_cash_balance_eur,
 )
+from drmlke_core.portfolio import (
+    calculate_open_cost_basis_ratio,
+    is_paper_portfolio_snapshot_reconciled,
+    project_paper_portfolio_snapshot,
+)
 from drmlke_core.position import (
     INITIAL_PAPER_POSITION_ASSETS,
     AssetSymbol,
@@ -52,6 +57,7 @@ from drmlke_core.treasury import (
     validate_single_paper_treasury,
 )
 from drmlke_core.treasury_projection import (
+    PaperTreasurySnapshot,
     is_paper_treasury_snapshot_reconciled,
     project_paper_treasury_snapshot,
 )
@@ -157,6 +163,33 @@ def _unsafe_paper_position(
     object.__setattr__(position, "live_backed", live_backed)
     object.__setattr__(position, "reference", None)
     return position
+
+
+def _initial_treasury_snapshot() -> PaperTreasurySnapshot:
+    return project_paper_treasury_snapshot(create_initial_paper_ledger(_actor()))
+
+
+def _unsafe_position_book(
+    *,
+    treasury_id: str = DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+    positions: tuple[PaperPosition, ...] = (),
+) -> PaperPositionBook:
+    book = object.__new__(PaperPositionBook)
+    object.__setattr__(book, "treasury_id", treasury_id)
+    object.__setattr__(book, "positions", positions)
+    return book
+
+
+def _unsafe_treasury_snapshot(
+    source: PaperTreasurySnapshot,
+    *,
+    reconciled: bool,
+) -> PaperTreasurySnapshot:
+    snapshot = object.__new__(PaperTreasurySnapshot)
+    for field in fields(source):
+        object.__setattr__(snapshot, field.name, getattr(source, field.name))
+    object.__setattr__(snapshot, "reconciled", reconciled)
+    return snapshot
 
 
 def test_owner_has_expected_operator_capabilities() -> None:
@@ -964,3 +997,153 @@ def test_paper_position_boundary_does_not_grant_viewer_or_admin_authority() -> N
     assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.VIEWER_FAMILY)
     assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.ADMIN_TECHNICAL)
     assert not hasattr(position, "capabilities")
+
+
+def test_empty_paper_portfolio_snapshot_combines_cash_and_empty_position_book() -> None:
+    treasury_snapshot = _initial_treasury_snapshot()
+    position_book = PaperPositionBook()
+
+    snapshot = project_paper_portfolio_snapshot(treasury_snapshot, position_book)
+
+    assert snapshot.treasury_snapshot is treasury_snapshot
+    assert snapshot.position_book is position_book
+    assert snapshot.treasury_id == DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id
+    assert snapshot.available_cash_eur == Decimal("200.00")
+    assert snapshot.reserved_cash_eur == Decimal("0.00")
+    assert snapshot.total_cash_eur == Decimal("200.00")
+    assert snapshot.open_position_count == 0
+    assert snapshot.closed_position_count == 0
+    assert snapshot.position_count == 0
+    assert snapshot.open_cost_basis_eur == Decimal("0.00")
+    assert snapshot.position_fees_eur == Decimal("0.00")
+    assert snapshot.total_structural_exposure_eur == Decimal("200.00")
+    assert snapshot.open_cost_basis_ratio == Decimal("0")
+    assert snapshot.paper_only
+    assert snapshot.live_capital_locked
+    assert snapshot.reconciled
+    assert is_paper_portfolio_snapshot_reconciled(snapshot)
+
+
+def test_paper_portfolio_snapshot_with_one_open_btc_position() -> None:
+    treasury_snapshot = _initial_treasury_snapshot()
+    position = create_open_paper_position(
+        position_id=PaperPositionId("portfolio-btc-1"),
+        asset="BTC",
+        quantity=Decimal("0.01"),
+        average_entry_price_eur=Decimal("4900.00"),
+        fees_eur=Decimal("1.00"),
+    )
+    position_book = PaperPositionBook(positions=(position,))
+
+    snapshot = project_paper_portfolio_snapshot(treasury_snapshot, position_book)
+    snapshot_fields = {field.name for field in fields(snapshot)}
+
+    assert position.cost_basis_eur == Decimal("50.0000")
+    assert snapshot.open_position_count == 1
+    assert snapshot.closed_position_count == 0
+    assert snapshot.open_cost_basis_eur == Decimal("50.0000")
+    assert snapshot.open_cost_basis_ratio == Decimal("0.2500")
+    assert snapshot.available_cash_eur == Decimal("200.00")
+    assert snapshot.total_structural_exposure_eur == Decimal("250.0000")
+    assert "current_price_eur" not in snapshot_fields
+    assert "market_value_eur" not in snapshot_fields
+    assert "unrealized_pnl_eur" not in snapshot_fields
+
+
+def test_paper_portfolio_snapshot_with_open_and_closed_positions() -> None:
+    treasury_snapshot = _initial_treasury_snapshot()
+    open_position = create_open_paper_position(
+        position_id=PaperPositionId("portfolio-btc-open"),
+        asset="BTC",
+        quantity=Decimal("0.01"),
+        average_entry_price_eur=Decimal("4900.00"),
+        fees_eur=Decimal("1.00"),
+    )
+    closed_position = PaperPosition(
+        position_id=PaperPositionId("portfolio-eth-closed"),
+        treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+        asset=AssetSymbol("ETH"),
+        side=PaperPositionSide.LONG,
+        status=PaperPositionStatus.CLOSED,
+        quantity=Decimal("0.01"),
+        average_entry_price_eur=Decimal("2900.00"),
+        cost_basis_eur=Decimal("30.0000"),
+        fees_eur=Decimal("1.00"),
+    )
+    position_book = PaperPositionBook(positions=(open_position, closed_position))
+
+    snapshot = project_paper_portfolio_snapshot(treasury_snapshot, position_book)
+
+    assert snapshot.open_position_count == 1
+    assert snapshot.closed_position_count == 1
+    assert snapshot.position_count == 2
+    assert snapshot.open_cost_basis_eur == Decimal("50.0000")
+    assert snapshot.position_fees_eur == Decimal("2.00")
+    assert snapshot.total_structural_exposure_eur == Decimal("250.0000")
+
+
+def test_paper_portfolio_snapshot_rejects_treasury_id_mismatch() -> None:
+    treasury_snapshot = _initial_treasury_snapshot()
+    position_book = _unsafe_position_book(treasury_id="not-the-paper-treasury")
+
+    with pytest.raises(ValueError, match="treasury id"):
+        project_paper_portfolio_snapshot(treasury_snapshot, position_book)
+
+
+def test_paper_portfolio_snapshot_rejects_live_backed_position_book() -> None:
+    treasury_snapshot = _initial_treasury_snapshot()
+    live_backed_position = _unsafe_paper_position(
+        position_id="portfolio-live-backed",
+        live_backed=True,
+    )
+    position_book = _unsafe_position_book(positions=(live_backed_position,))
+
+    with pytest.raises(ValueError, match="live-backed"):
+        project_paper_portfolio_snapshot(treasury_snapshot, position_book)
+
+
+def test_paper_portfolio_snapshot_rejects_non_reconciled_treasury_snapshot() -> None:
+    treasury_snapshot = _unsafe_treasury_snapshot(
+        _initial_treasury_snapshot(),
+        reconciled=False,
+    )
+
+    with pytest.raises(ValueError, match="reconciliation"):
+        project_paper_portfolio_snapshot(treasury_snapshot, PaperPositionBook())
+
+
+def test_paper_portfolio_snapshot_is_frozen() -> None:
+    snapshot = project_paper_portfolio_snapshot(
+        _initial_treasury_snapshot(),
+        PaperPositionBook(),
+    )
+
+    with pytest.raises(FrozenInstanceError):
+        snapshot.open_position_count = 99
+
+
+def test_paper_portfolio_snapshot_has_no_valuation_or_pnl_fields() -> None:
+    snapshot = project_paper_portfolio_snapshot(
+        _initial_treasury_snapshot(),
+        PaperPositionBook(),
+    )
+    snapshot_fields = {field.name for field in fields(snapshot)}
+
+    assert "current_price_eur" not in snapshot_fields
+    assert "market_value_eur" not in snapshot_fields
+    assert "unrealized_pnl_eur" not in snapshot_fields
+    assert "realized_pnl_eur" not in snapshot_fields
+    assert "return_pct" not in snapshot_fields
+    assert "strategy_attribution" not in snapshot_fields
+
+
+def test_open_cost_basis_ratio_uses_decimal_and_rejects_invalid_capital() -> None:
+    assert calculate_open_cost_basis_ratio(
+        Decimal("50.00"),
+        Decimal("200.00"),
+    ) == Decimal("0.25")
+
+    with pytest.raises(ValueError, match="initial capital must be positive"):
+        calculate_open_cost_basis_ratio(Decimal("50.00"), Decimal("0.00"))
+    with pytest.raises(ValueError, match="initial capital must be positive"):
+        calculate_open_cost_basis_ratio(Decimal("50.00"), Decimal("-200.00"))
