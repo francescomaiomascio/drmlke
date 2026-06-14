@@ -41,6 +41,12 @@ from drmlke_core.treasury import (
     TreasuryMode,
     validate_single_paper_treasury,
 )
+from drmlke_core.treasury_projection import (
+    PaperTreasurySnapshot,
+    is_paper_treasury_snapshot_reconciled,
+    project_paper_treasury_snapshot,
+    validate_paper_treasury_snapshot,
+)
 
 __all__ = [
     "DEFAULT_GLOBAL_SAFETY_LOCKS",
@@ -61,6 +67,7 @@ __all__ = [
     "LedgerEntryId",
     "LedgerEntryType",
     "LedgerSequence",
+    "PaperTreasurySnapshot",
     "PaperTreasuryBoundary",
     "PaperLedger",
     "Role",
@@ -72,8 +79,11 @@ __all__ = [
     "capabilities_for_role",
     "create_initial_paper_ledger",
     "is_capability_globally_locked",
+    "is_paper_treasury_snapshot_reconciled",
     "next_ledger_sequence",
     "project_paper_cash_balance_eur",
+    "project_paper_treasury_snapshot",
     "validate_paper_ledger",
+    "validate_paper_treasury_snapshot",
     "validate_single_paper_treasury",
 ]

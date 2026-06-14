@@ -7,6 +7,8 @@ Current architecture priority:
 - product core before Spark runtime
 - identity and capabilities before mutating treasury state
 - paper treasury ledger before paper execution
+- treasury snapshot projection before UI, risk, reporting, or execution consumes
+  ledger state
 - market data and benchmarks before strategy claims
 - decision journal before advanced models or live extensions
 - Spark remains reserved infrastructure until it does not delay the decision core
@@ -28,7 +30,7 @@ drmlke bootstrap modules:
 - `apps/client`: future SvelteKit/Vite + Capacitor client
 - `packages/core`: shared settings, paths, identity and capability contracts,
   global safety locks, the one-paper-treasury boundary, and append-only paper
-  ledger domain contracts
+  ledger and treasury projection domain contracts
 - `packages/storage`: storage placeholder
 - `packages/wallet`: future wallet, account-tracking, and execution-adjacent
   placeholder
@@ -48,3 +50,7 @@ Bootstrap safety boundaries:
 - `CORE.1` ledger contracts are append-only domain logic only; persistence,
   database schema, API routes, paper orders, fills, market data, strategies, and
   execution remain later work
+- `CORE.2` treasury projection contracts are pure in-memory read-side domain
+  logic only; persistence, API enforcement, paper orders, fills, paper
+  positions, market data, market valuation, strategies, and execution remain
+  later work

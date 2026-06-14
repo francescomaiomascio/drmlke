@@ -1,3 +1,4 @@
+from dataclasses import FrozenInstanceError, fields
 from decimal import Decimal
 
 import pytest
@@ -16,6 +17,7 @@ from drmlke_core.ledger import (
     LedgerEntryId,
     LedgerEntryType,
     LedgerSequence,
+    PaperLedger,
     append_paper_ledger_entry,
     create_initial_paper_ledger,
     project_paper_cash_balance_eur,
@@ -32,10 +34,68 @@ from drmlke_core.treasury import (
     TreasuryMode,
     validate_single_paper_treasury,
 )
+from drmlke_core.treasury_projection import (
+    is_paper_treasury_snapshot_reconciled,
+    project_paper_treasury_snapshot,
+)
 
 
 def _actor(role: Role = Role.OWNER_OPERATOR, user_id: str = "francesco") -> ActorMetadata:
     return UserProfile(UserId(user_id), role, user_id.title()).actor_metadata()
+
+
+def _ledger_entry(
+    entry_id: str,
+    sequence: int,
+    entry_type: LedgerEntryType,
+    amount_eur: Decimal,
+    actor: ActorMetadata,
+) -> LedgerEntry:
+    return LedgerEntry(
+        entry_id=LedgerEntryId(entry_id),
+        treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+        sequence=LedgerSequence(sequence),
+        entry_type=entry_type,
+        amount_eur=amount_eur,
+        actor=actor,
+        reason=f"Test entry {entry_id}",
+    )
+
+
+def _append_entry(
+    ledger: PaperLedger,
+    entry_id: str,
+    entry_type: LedgerEntryType,
+    amount_eur: Decimal,
+    actor: ActorMetadata,
+) -> PaperLedger:
+    entry = _ledger_entry(
+        entry_id,
+        len(ledger.entries) + 1,
+        entry_type,
+        amount_eur,
+        actor,
+    )
+    return append_paper_ledger_entry(ledger, entry, actor)
+
+
+def _unsafe_ledger_entry(
+    entry_id: str,
+    sequence: int,
+    entry_type: LedgerEntryType,
+    amount_eur: Decimal,
+    actor: ActorMetadata,
+) -> LedgerEntry:
+    entry = object.__new__(LedgerEntry)
+    object.__setattr__(entry, "entry_id", LedgerEntryId(entry_id))
+    object.__setattr__(entry, "treasury_id", DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id)
+    object.__setattr__(entry, "sequence", LedgerSequence(sequence))
+    object.__setattr__(entry, "entry_type", entry_type)
+    object.__setattr__(entry, "amount_eur", amount_eur)
+    object.__setattr__(entry, "actor", actor)
+    object.__setattr__(entry, "reason", f"Unsafe test entry {entry_id}")
+    object.__setattr__(entry, "reference", None)
+    return entry
 
 
 def test_owner_has_expected_operator_capabilities() -> None:
@@ -375,3 +435,231 @@ def test_correction_entry_changes_balance_by_appending_without_mutating_original
     assert len(corrected.entries) == 2
     assert project_paper_cash_balance_eur(ledger) == Decimal("200.00")
     assert project_paper_cash_balance_eur(corrected) == Decimal("195.00")
+
+
+def test_initial_paper_treasury_snapshot_projects_cash_state() -> None:
+    ledger = create_initial_paper_ledger(_actor())
+
+    snapshot = project_paper_treasury_snapshot(ledger)
+
+    assert snapshot.treasury_id == DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id
+    assert snapshot.mode is TreasuryMode.PAPER
+    assert snapshot.initial_capital_eur == Decimal("200.00")
+    assert snapshot.live_capital_eur == Decimal("0.00")
+    assert snapshot.ledger_entry_count == 1
+    assert snapshot.last_sequence == 1
+    assert snapshot.available_cash_eur == Decimal("200.00")
+    assert snapshot.reserved_cash_eur == Decimal("0.00")
+    assert snapshot.total_cash_eur == Decimal("200.00")
+    assert snapshot.total_fees_eur == Decimal("0.00")
+    assert snapshot.net_adjustments_eur == Decimal("0.00")
+    assert snapshot.net_corrections_eur == Decimal("0.00")
+    assert snapshot.paper_only
+    assert snapshot.live_capital_locked
+    assert snapshot.reconciled
+    assert is_paper_treasury_snapshot_reconciled(snapshot)
+
+
+def test_paper_fee_projection_reduces_available_cash_and_records_positive_cost() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    ledger = _append_entry(
+        ledger,
+        "fee-1",
+        LedgerEntryType.PAPER_FEE,
+        Decimal("-1.25"),
+        actor,
+    )
+
+    snapshot = project_paper_treasury_snapshot(ledger)
+
+    assert snapshot.available_cash_eur == Decimal("198.75")
+    assert snapshot.reserved_cash_eur == Decimal("0.00")
+    assert snapshot.total_cash_eur == Decimal("198.75")
+    assert snapshot.total_fees_eur == Decimal("1.25")
+    assert snapshot.reconciled
+
+
+def test_paper_reserved_cash_projection_moves_available_to_reserved() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    ledger = _append_entry(
+        ledger,
+        "reserve-1",
+        LedgerEntryType.PAPER_RESERVED_CASH,
+        Decimal("-50.00"),
+        actor,
+    )
+
+    snapshot = project_paper_treasury_snapshot(ledger)
+
+    assert snapshot.available_cash_eur == Decimal("150.00")
+    assert snapshot.reserved_cash_eur == Decimal("50.00")
+    assert snapshot.total_cash_eur == Decimal("200.00")
+    assert snapshot.reconciled
+
+
+def test_paper_released_cash_projection_moves_reserved_to_available() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    ledger = _append_entry(
+        ledger,
+        "reserve-1",
+        LedgerEntryType.PAPER_RESERVED_CASH,
+        Decimal("-50.00"),
+        actor,
+    )
+    ledger = _append_entry(
+        ledger,
+        "release-1",
+        LedgerEntryType.PAPER_RELEASED_CASH,
+        Decimal("20.00"),
+        actor,
+    )
+
+    snapshot = project_paper_treasury_snapshot(ledger)
+
+    assert snapshot.available_cash_eur == Decimal("170.00")
+    assert snapshot.reserved_cash_eur == Decimal("30.00")
+    assert snapshot.total_cash_eur == Decimal("200.00")
+    assert snapshot.reconciled
+
+
+def test_paper_projection_rejects_release_greater_than_reserved_cash() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    ledger = _append_entry(
+        ledger,
+        "release-1",
+        LedgerEntryType.PAPER_RELEASED_CASH,
+        Decimal("10.00"),
+        actor,
+    )
+
+    with pytest.raises(ValueError, match="release cannot exceed reserved cash"):
+        project_paper_treasury_snapshot(ledger)
+
+
+@pytest.mark.parametrize(
+    ("entry_type", "amount_eur"),
+    [
+        (LedgerEntryType.PAPER_CASH_ADJUSTMENT, Decimal("-250.00")),
+        (LedgerEntryType.PAPER_CORRECTION, Decimal("-250.00")),
+        (LedgerEntryType.PAPER_FEE, Decimal("-250.00")),
+        (LedgerEntryType.PAPER_RESERVED_CASH, Decimal("-250.00")),
+    ],
+)
+def test_paper_projection_rejects_entries_that_make_available_cash_negative(
+    entry_type: LedgerEntryType,
+    amount_eur: Decimal,
+) -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    ledger = _append_entry(ledger, "negative-cash-1", entry_type, amount_eur, actor)
+
+    with pytest.raises(ValueError, match="available cash cannot be negative"):
+        project_paper_treasury_snapshot(ledger)
+
+
+def test_paper_projection_rejects_positive_fee_entries() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    corrupted_entry = _unsafe_ledger_entry(
+        "positive-fee-1",
+        2,
+        LedgerEntryType.PAPER_FEE,
+        Decimal("1.00"),
+        actor,
+    )
+    corrupted_ledger = PaperLedger(
+        treasury=ledger.treasury,
+        entries=(ledger.entries[0], corrupted_entry),
+    )
+
+    with pytest.raises(ValueError, match="fee entries must be negative"):
+        project_paper_treasury_snapshot(corrupted_ledger)
+
+
+def test_paper_projection_rejects_positive_reserved_cash_entries() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    corrupted_entry = _unsafe_ledger_entry(
+        "positive-reserve-1",
+        2,
+        LedgerEntryType.PAPER_RESERVED_CASH,
+        Decimal("10.00"),
+        actor,
+    )
+    corrupted_ledger = PaperLedger(
+        treasury=ledger.treasury,
+        entries=(ledger.entries[0], corrupted_entry),
+    )
+
+    with pytest.raises(ValueError, match="reserved cash entries must be negative"):
+        project_paper_treasury_snapshot(corrupted_ledger)
+
+
+def test_paper_projection_rejects_negative_released_cash_entries() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    corrupted_entry = _unsafe_ledger_entry(
+        "negative-release-1",
+        2,
+        LedgerEntryType.PAPER_RELEASED_CASH,
+        Decimal("-10.00"),
+        actor,
+    )
+    corrupted_ledger = PaperLedger(
+        treasury=ledger.treasury,
+        entries=(ledger.entries[0], corrupted_entry),
+    )
+
+    with pytest.raises(ValueError, match="released cash entries must be positive"):
+        project_paper_treasury_snapshot(corrupted_ledger)
+
+
+def test_paper_projection_correction_changes_snapshot_without_mutating_ledger() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    original_entries = ledger.entries
+    corrected = _append_entry(
+        ledger,
+        "snapshot-correction-1",
+        LedgerEntryType.PAPER_CORRECTION,
+        Decimal("-5.00"),
+        actor,
+    )
+
+    snapshot = project_paper_treasury_snapshot(corrected)
+
+    assert ledger.entries == original_entries
+    assert len(ledger.entries) == 1
+    assert len(corrected.entries) == 2
+    assert snapshot.available_cash_eur == Decimal("195.00")
+    assert snapshot.net_corrections_eur == Decimal("-5.00")
+    assert snapshot.total_cash_eur == Decimal("195.00")
+
+
+def test_paper_treasury_snapshot_is_immutable() -> None:
+    snapshot = project_paper_treasury_snapshot(create_initial_paper_ledger(_actor()))
+
+    with pytest.raises(FrozenInstanceError):
+        snapshot.available_cash_eur = Decimal("0.00")
+
+
+def test_paper_treasury_snapshot_does_not_introduce_positions_or_market_value() -> None:
+    snapshot = project_paper_treasury_snapshot(create_initial_paper_ledger(_actor()))
+    snapshot_fields = {field.name for field in fields(snapshot)}
+
+    assert "positions" not in snapshot_fields
+    assert "asset_balances" not in snapshot_fields
+    assert "market_value_eur" not in snapshot_fields
+    assert "unrealized_pnl_eur" not in snapshot_fields
+
+
+def test_paper_projection_does_not_grant_viewer_or_admin_management_path() -> None:
+    snapshot = project_paper_treasury_snapshot(create_initial_paper_ledger(_actor()))
+
+    assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.VIEWER_FAMILY)
+    assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.ADMIN_TECHNICAL)
+    assert not hasattr(snapshot, "capabilities")

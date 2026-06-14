@@ -3,11 +3,12 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `CORE.1` append-only paper ledger contracts on top of
-`DOCS.REVIEW.2`, `DOCS.REVIEW.1`, `DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and
-`LINUX.SETUP.1`. It refocuses the roadmap on the decision core before any
-Spark attachment, runtime deployment, trading feature, wallet feature, exchange
-connection, mobile client scaffold, or AI model download.
+This version includes `CORE.2` ledger projection and treasury snapshot
+contracts on top of `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`,
+`DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the
+roadmap on the decision core before any Spark attachment, runtime deployment,
+trading feature, wallet feature, exchange connection, mobile client scaffold,
+or AI model download.
 
 ## 1. Current Project State
 
@@ -22,11 +23,11 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `CORE.1`.
+- Current wave: `CORE.2`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
   `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
-  `DOCS.REVIEW.2`, `CORE.0`.
-- Next recommended wave: `CORE.2`.
+  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`.
+- Next recommended wave: `CORE.3`.
 
 Current provider status:
 
@@ -81,6 +82,8 @@ What is implemented now:
   paper treasury boundary contracts.
 - `packages/core` append-only paper ledger domain contracts for the single
   200 EUR paper treasury.
+- `packages/core` paper treasury projection and snapshot contracts over the
+  append-only ledger.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -101,6 +104,8 @@ What is not implemented now:
 - No persisted account, login, session, or device implementation.
 - No API capability enforcement implementation.
 - No paper orders or fills.
+- No paper positions.
+- No market valuation.
 - No mobile client scaffold.
 - No web admin console.
 - No strategy engine.
@@ -121,8 +126,8 @@ Sequencing correction:
 5. `DOCS.REVIEW.2` drafts MVP gates, promotion gates, and numeric risk policy.
 6. `CORE.0` implements identity, capabilities, and the paper treasury boundary.
 7. `CORE.1` implements the paper treasury ledger.
-8. `CORE.2` implements market data, benchmarks, and cost assumptions.
-9. `CORE.3` implements the decision journal.
+8. `CORE.2` implements ledger projection and treasury snapshot contracts.
+9. `CORE.3` defines the paper position boundary.
 10. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
@@ -994,11 +999,16 @@ What belongs there:
 - Capability names.
 - Event names.
 - Common schema primitives.
+- Identity, capability, safety, paper treasury, append-only ledger, and
+  treasury projection contracts while they remain pure domain logic.
 
 What does not belong there yet:
 
 - Service-specific route implementations.
 - Heavy runtime jobs.
+- Persistence adapters.
+- Paper execution.
+- Market data ingestion.
 - Secrets.
 
 ### `packages/storage`
@@ -1645,6 +1655,22 @@ Correct capital model:
 - Persistence, database schema, API enforcement, paper orders, fills, positions,
   PnL accounting, market data, and trading logic remain later work.
 - Padre and Zio remain viewers, not independent portfolio managers.
+
+`CORE.2` implementation:
+
+- `drmlke_core.treasury_projection.PaperTreasurySnapshot` defines a frozen
+  read-side view over the paper ledger.
+- `project_paper_treasury_snapshot` derives available cash, reserved cash,
+  total cash, fees, adjustments, corrections, entry count, and last sequence
+  from append-only ledger entries.
+- `validate_paper_treasury_snapshot` enforces paper mode, canonical treasury id,
+  200 EUR initial capital, 0 EUR live capital, nonnegative cash, nonnegative
+  reserved cash, nonnegative fees, and reconciliation.
+- `is_paper_treasury_snapshot_reconciled` provides deterministic reconciliation
+  for tests and future read surfaces.
+- The snapshot is in-memory domain logic only and does not introduce storage,
+  API routes, paper orders, fills, positions, market valuation, strategy logic,
+  live trading, or provider/runtime changes.
 
 Contribution metadata may exist later, but it is accounting metadata. It is not
 trading authority and does not create independent family portfolios.
@@ -2537,8 +2563,8 @@ Current near-term sequence after `DOCS.REVIEW.2`:
 
 1. `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
 2. `CORE.1 - Paper Treasury Ledger`
-3. `CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
-4. `CORE.3 - Decision Journal`
+3. `CORE.2 - Ledger Projection and Treasury Snapshot`
+4. `CORE.3 - Paper Position Boundary`
 
 This product core path overrides the older Spark-first infrastructure sequence
 where they conflict. Tailscale and Spark sections below remain useful future
@@ -2565,12 +2591,11 @@ before any strategy or data pipeline can mutate treasury state.
 `CORE.1` must make the 200 EUR paper treasury ledger auditable before paper
 execution exists.
 
-`CORE.2` must make BTC/ETH market data, buy-and-hold benchmark, scheduled
-accumulation benchmark, and cost assumptions available before strategy claims
-are trusted.
+`CORE.2` must project the append-only paper ledger into a deterministic treasury
+snapshot before UI, risk, paper execution, or reporting consumes treasury state.
 
-`CORE.3` must make decision records and risk veto records first-class product
-objects before advanced model or runtime work.
+`CORE.3` must define paper position boundaries before any market data,
+valuation, order, fill, strategy, or execution work.
 
 ### Phase 0. Repo, environment, provider skeleton, master spine
 
@@ -3504,7 +3529,7 @@ Closeout acceptance:
   market data, strategy, backtest, paper execution, UI, or auth/session storage
   is introduced.
 
-Current implementation wave:
+Completed implementation wave:
 
 `CORE.1 - Paper Treasury Ledger`
 
@@ -3563,15 +3588,100 @@ Acceptance criteria:
 - Corrections change projected balance through a new entry, not mutation.
 - Existing `CORE.0` capability, safety, and treasury tests still pass.
 
-Next recommended wave:
+Current implementation wave:
 
-`CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
+`CORE.2 - Ledger Projection and Treasury Snapshot`
 
 Purpose:
 
-- Add BTC/ETH market data contracts and benchmark/cost assumptions needed before
-  strategy claims or decision reports are trusted.
-- Keep the ledger domain separate from data ingestion and strategy evaluation.
+- Add a deterministic read-side projection over the append-only paper ledger.
+- Produce a paper treasury snapshot for future UI, risk, reporting, and paper
+  execution work.
+- Keep projection pure, in-memory, and separate from storage, API routes,
+  positions, market data, strategy logic, and execution.
+
+Previous state:
+
+- `CORE.0` defined identity, safety, and the one-paper-treasury boundary.
+- `CORE.1` defined append-only paper ledger entries and owner-only append
+  authority.
+- Ledger cash projection existed only as a simple summed cash helper.
+
+Target state:
+
+- The system can answer current paper available cash.
+- The system can answer reserved cash.
+- The system can answer total cash.
+- The system can answer total recorded fees.
+- The system can answer net adjustments and net corrections.
+- The system can answer ledger entry count and last sequence.
+- The system can prove the snapshot reconciles.
+
+Allowed changes:
+
+- Add `packages/core/src/drmlke_core/treasury_projection.py`.
+- Export stable snapshot/projection contracts from `drmlke_core`.
+- Extend core tests for projection behavior and invariants.
+- Update roadmap and architecture documentation.
+
+Forbidden changes:
+
+- No persistence.
+- No database schema.
+- No API routes.
+- No paper orders or fills.
+- No paper positions.
+- No market data.
+- No market valuation.
+- No trading logic.
+- No strategy decisions.
+- No provider, Docker, Spark, or Tailscale changes.
+- No exchange, broker, wallet custody, withdrawal, credential, or model runtime
+  work.
+
+Implementation contracts:
+
+- `PaperTreasurySnapshot`.
+- `project_paper_treasury_snapshot`.
+- `validate_paper_treasury_snapshot`.
+- `is_paper_treasury_snapshot_reconciled`.
+
+Validation requirements:
+
+- Snapshot projection validates the ledger first.
+- Projection rejects negative available cash.
+- Projection rejects negative reserved cash.
+- Projection rejects unreconciled total cash.
+- Projection rejects release entries that exceed reserved cash.
+- Projection preserves fee cost as a positive absolute cost.
+- Projection keeps live capital locked at 0 EUR.
+- Projection remains paper-only.
+
+Acceptance criteria:
+
+- Initial snapshot shows 200 EUR available cash, 0 EUR reserved cash, and
+  200 EUR total cash.
+- Fee entries reduce available cash and increase positive total fees.
+- Reserve entries move available cash to reserved cash without changing total
+  cash.
+- Release entries move reserved cash back to available cash without changing
+  total cash.
+- Adjustments and corrections affect available cash through ledger entries.
+- Snapshot reports ledger entry count and last sequence.
+- Snapshot is immutable.
+- Snapshot exposes no positions or market valuation fields.
+- Existing `CORE.0` and `CORE.1` tests still pass.
+
+Next recommended wave:
+
+`CORE.3 - Paper Position Boundary`
+
+Purpose:
+
+- Define paper position domain contracts without market data, market valuation,
+  orders, fills, strategy logic, or execution.
+- Prepare the boundary for later paper execution and reporting without allowing
+  any real-money behavior.
 
 Non-goals:
 
@@ -3581,6 +3691,8 @@ Non-goals:
 - No trading logic.
 - No market data collector.
 - No strategy engine.
+- No positions with market valuation.
+- No paper orders or fills.
 - No model downloads.
 - No exchange integration.
 - No wallet custody.
@@ -3649,3 +3761,7 @@ decision until the relevant wave makes and records the decision.
 - `CORE.1`: append-only paper ledger domain contracts for the single 200 EUR
   paper treasury, with no persistence, API route, paper execution, exchange, or
   wallet custody behavior.
+- `CORE.2`: ledger projection and paper treasury snapshot contracts, with
+  available cash, reserved cash, fee, correction, sequence, and reconciliation
+  read models and no persistence, positions, market data, execution, provider,
+  exchange, or wallet custody behavior.
