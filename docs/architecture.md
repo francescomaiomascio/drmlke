@@ -2,6 +2,15 @@
 
 The canonical project spine is [drmlke-roadmap.md](drmlke-roadmap.md).
 
+Current architecture priority:
+
+- product core before Spark runtime
+- identity and capabilities before mutating treasury state
+- paper treasury ledger before paper execution
+- market data and benchmarks before strategy claims
+- decision journal before advanced models or live extensions
+- Spark remains reserved infrastructure until it does not delay the decision core
+
 Architecture must follow the corrected account model:
 
 - one owner-managed treasury

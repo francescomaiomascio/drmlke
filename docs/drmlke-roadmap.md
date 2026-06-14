@@ -3,12 +3,11 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version is `DOCS.SPINE.3` with `MAC.SETUP.1-CLOSE` and `LINUX.SETUP.1`
-status recorded. It completes the master spine, records the MacBook as an
-active secondary development node, and records the Linux workstation as the
-canonical development node before any Spark attachment, runtime deployment,
-trading feature, wallet feature, exchange connection, mobile client scaffold,
-or AI model download.
+This version includes `DOCS.REVIEW.1` product, decision, math, and strategy
+hardening on top of `DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`.
+It refocuses the roadmap on the decision core before any Spark attachment,
+runtime deployment, trading feature, wallet feature, exchange connection,
+mobile client scaffold, or AI model download.
 
 ## 1. Current Project State
 
@@ -23,10 +22,10 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `LINUX.SETUP.1`.
+- Current wave: `DOCS.REVIEW.1`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
-  `MAC.SETUP.1-CLOSE`.
-- Next recommended wave: `DOCS.REVIEW.1`.
+  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`.
+- Next recommended wave: `DOCS.REVIEW.2`.
 
 Current provider status:
 
@@ -66,7 +65,9 @@ Current Spark status:
   path, not a fragile local hostname dependency.
 - Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
 - Spark remains intentionally untouched by `LINUX.SETUP.1`.
-- Documentation review comes before Spark runtime deployment.
+- `DOCS.REVIEW.1` keeps Spark reserved until the product core is no longer
+  blocked by identity, paper treasury, market data, benchmarks, and decision
+  records.
 
 What is implemented now:
 
@@ -109,10 +110,15 @@ Sequencing correction:
 2. `MAC.SETUP.1-CLOSE` records the MacBook as an active development node.
 3. `LINUX.SETUP.1` records the canonical Linux development node and resolves
    stale Linux path references.
-4. `DOCS.REVIEW.1` inspects and hardens this spine before infrastructure work.
-5. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
-6. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
-   the access path is verified.
+4. `DOCS.REVIEW.1` hardens product thesis, decision quality, math, strategy
+   specification, backtest integrity, and MVP boundaries.
+5. `DOCS.REVIEW.2` drafts MVP gates, promotion gates, and numeric risk policy.
+6. `CORE.0` implements identity, capabilities, and the paper treasury boundary.
+7. `CORE.1` implements the paper treasury ledger.
+8. `CORE.2` implements market data, benchmarks, and cost assumptions.
+9. `CORE.3` implements the decision journal.
+10. Tailscale and Spark remain infrastructure-only future work until they do
+   not delay the decision core.
 
 ## 2. Product Definition
 
@@ -120,11 +126,11 @@ Product name: `drmlke`.
 
 Meaning: `dreamlike`.
 
-drmlke is a private and family-scoped, local-first crypto intelligence,
-paper-trading, treasury ledger, strategy research, and agentic runtime system.
-It is designed to help Francesco observe markets, research conservative
-strategies, simulate treasury behavior, and eventually operate a tightly gated
-private runtime.
+drmlke is a private and family-scoped, local-first crypto decision journal,
+paper treasury, strategy research, benchmark, and auditability system. It is
+designed to help Francesco observe markets, research conservative strategies,
+simulate treasury behavior, preserve decision memory, and only much later
+consider tightly gated manual real actions.
 
 drmlke is not initially:
 
@@ -134,6 +140,18 @@ drmlke is not initially:
 - an exchange
 - a public financial advisory product
 - a system that manages public user funds
+
+drmlke is not an auto-trading product. Its first purpose is to help Francesco
+make slower, better-tracked, less emotional decisions about a small private
+crypto treasury. The system should make it easier to understand market context,
+avoid damage, preserve capital, compare against simple alternatives, simulate
+before acting, and review decisions after the outcome is known.
+
+The long-term possibility of small manual real actions does not change the
+early product thesis. Live action is a late extension only after paper evidence,
+risk review, manual owner approval, and explicit gates. The core product is a
+private decision and research system, not a machine that tries to trade by
+itself.
 
 The foundational product model is one treasury managed by Francesco. Francesco
 is the owner and operator. Padre and Zio are initial observer users. They can
@@ -148,6 +166,289 @@ If drmlke ever leaves private and family use, becomes public, provides public
 financial service behavior, or manages money for people outside the private
 family context, legal and regulatory review becomes mandatory before that
 behavior is designed, shipped, marketed, or enabled.
+
+### Target User and Target Outcome
+
+Primary user:
+
+- Francesco as owner, operator, and researcher.
+
+Secondary users:
+
+- Padre and Zio as trusted viewers.
+
+Usage context:
+
+- private
+- local-first
+- non-public
+- one small owner-managed treasury
+- conservative paper-first research
+
+Initial capital assumption:
+
+- small capital
+- first real capital ceiling is 200 EUR
+- first MVP paper treasury uses 200 EUR simulated capital
+
+Target outcomes:
+
+- learning
+- discipline
+- auditability
+- capital preservation
+- decision quality
+- clear memory of why a decision was made
+- clear comparison against doing nothing or simple accumulation
+
+The desired user experience is not speed. It is friction in the right places:
+better records, more explicit risk, clearer reasons not to act, and better
+post-mortems.
+
+### Expansion Discipline
+
+drmlke has four expansion zones. Earlier zones must not be delayed by later
+zones.
+
+Core product:
+
+- identity and capabilities
+- paper treasury ledger
+- market data
+- deterministic feature engine
+- benchmark engine
+- backtest engine
+- risk engine
+- paper execution
+- audit and reporting
+- owner and viewer UI
+
+Research extensions:
+
+- classical ML
+- compact time-series models
+- LLM-assisted explanation
+- embeddings
+- sentiment
+- retrieval augmented generation
+
+Operator extensions:
+
+- desktop console
+- admin workflows
+- reporting
+- runtime observability
+- backup and restore tools
+
+Live extensions:
+
+- shadow mode
+- manual live action
+- tightly gated auto-live candidate behavior
+
+Live extensions are blocked until paper results prove value. Research
+extensions are blocked until the core data, benchmark, backtest, and decision
+records are reliable enough to evaluate them honestly.
+
+### MVP Spine
+
+MVP sequence:
+
+1. `MVP.1 - Decision Journal and Paper Treasury`
+2. `MVP.2 - Strategy Lab`
+3. `MVP.3 - Risk and Paper Execution`
+
+`MVP.1` is intentionally narrow:
+
+- 200 EUR paper treasury
+- BTC and ETH market data
+- buy-and-hold benchmark
+- scheduled accumulation benchmark
+- paper ledger
+- decision records
+- risk veto records
+- simple dashboard and reporting
+- weekly report
+- no ML
+- no LLM
+- no Spark dependency unless infrastructure-only and explicitly non-blocking
+
+`MVP.2` adds strategy specification, deterministic features, benchmark
+comparison, leakage-safe backtests, and regime-aware reports. It does not add
+live trading.
+
+`MVP.3` adds risk policy, risk veto enforcement, paper order simulation, fill
+simulation, and promotion evidence. It does not add exchange execution.
+
+If no strategy beats the relevant benchmark after realistic costs, the correct
+product behavior is to preserve that negative result, keep the simple
+benchmark visible, and avoid promoting the strategy.
+
+## 2A. Decision Quality Spine
+
+Decision quality is separate from economic outcome. A decision can be good and
+lose money. A decision can be bad and make money. drmlke must preserve this
+distinction as project doctrine.
+
+Each decision is evaluated across four dimensions:
+
+- process quality
+- information quality
+- risk compliance
+- economic outcome
+
+Process quality asks whether the owner followed the required thinking process.
+Information quality asks whether the data and context were sufficient, fresh,
+and correctly interpreted. Risk compliance asks whether the decision respected
+policy, exposure, cost, and veto boundaries. Economic outcome asks what
+happened financially after costs, but it must not rewrite the judgment of the
+process by itself.
+
+Required decision record fields:
+
+- decision id
+- timestamp
+- actor
+- treasury state
+- asset
+- timeframe
+- market context
+- regime
+- data availability
+- missing data
+- stale data state
+- hypothesis
+- signal or observation
+- expected risk
+- estimated fee
+- estimated spread
+- estimated slippage
+- break-even move required
+- adverse scenario
+- reasons not to act
+- final decision
+- risk decision
+- execution mode
+- later outcome
+- post-mortem
+
+Decision quality metrics:
+
+- overtrading rate
+- risk veto rate
+- expected outcome vs realized outcome
+- fee and slippage cost
+- drawdown avoided
+- stale-data decisions
+- wrong-regime decisions
+- decisions without a clear hypothesis
+- decisions without a reason not to act
+- post-mortem completion rate
+
+The decision journal must record no-action decisions. For small capital, the
+best action will often be no action.
+
+## 2B. Mathematical Spine
+
+Math is a product boundary, not a reporting decoration. With small capital,
+fees, spread, slippage, minimum order size, and rounding can dominate the
+result. Any strategy or decision that ignores these costs is not eligible for
+promotion.
+
+Core metrics:
+
+- arithmetic returns
+- log returns
+- cumulative returns
+- rolling returns
+- realized volatility
+- downside volatility
+- max drawdown
+- drawdown duration
+- exposure
+- turnover
+- fee drag
+- slippage drag
+- expectancy
+- win rate
+- average win
+- average loss
+- profit factor
+- payoff ratio
+- Sharpe ratio with caution
+- Sortino ratio with caution
+- Calmar ratio
+- benchmark-relative return
+- risk-adjusted return after costs
+
+Small-capital constraints:
+
+- fee minimums
+- spread
+- slippage
+- minimum order size
+- position size rounding
+- asset quantity precision
+- quote currency precision
+- break-even move required before a trade has any chance to matter
+- cost as a percentage of position size
+- turnover as a capital damage source
+
+Every strategy report must show performance before costs and after costs. The
+after-cost result is the promotion-relevant result.
+
+`DOCS.REVIEW.2` must draft initial numeric assumptions for simulated costs,
+maximum weekly decision count, conservative strategy definition, and promotion
+thresholds.
+
+## 2C. Strategy Specification and Backtest Integrity Spine
+
+No strategy may be treated as real work until it has a written specification.
+
+Strategy spec template:
+
+- Strategy ID
+- Hypothesis
+- Market regime where it should work
+- Market regime where it should not trade
+- Asset universe
+- Timeframe
+- Inputs
+- Signal formula
+- Entry condition
+- Exit condition
+- Invalidation condition
+- Position sizing
+- Max holding period
+- Fee and slippage assumptions
+- Expected failure mode
+- Benchmark
+- Evaluation metrics
+- Promotion criteria
+- Deprecation criteria
+
+Backtest integrity rules:
+
+- no lookahead bias
+- no survivorship bias
+- no repainting indicators
+- no same-candle entry when the signal uses the same close
+- include costs and slippage
+- explicitly handle missing data
+- normalize timezone
+- chronological train/test only
+- no random split on time series
+- separate hyperparameter tuning from final test
+- mandatory benchmark
+- results by regime, not only aggregate
+- preserve negative results
+
+Backtest output must include benchmark comparison, cost assumptions, drawdown,
+drawdown duration, turnover, exposure, regime breakdown, and reasoned
+promotion or rejection status.
+
+Negative results are project assets. They prevent repeated mistakes and help
+calibrate future decisions.
 
 ## 3. Non-Negotiable Safety Boundary
 
@@ -1413,22 +1714,42 @@ idea -> specified -> backtest_ready -> backtested -> paper_enabled -> paper_obse
 Promotion requires:
 
 - Clear specification.
+- Completed strategy spec template.
 - Realistic fees.
 - Realistic slippage.
+- Explicit break-even move required.
 - No lookahead.
+- No same-candle execution when the signal uses the same close.
 - Out-of-sample validation.
 - Walk-forward validation.
 - Acceptable drawdown.
+- Drawdown duration review.
 - Stable behavior across regimes.
 - Benchmark comparison.
+- After-cost benchmark-relative result.
+- Turnover and exposure review.
 - Risk review.
 - Owner review.
 - Auditability.
+- Preserved negative results and rejection reasons.
 
 Hard rule:
 
 Accuracy is not enough. A strategy must improve risk-adjusted paper performance
-after fees, slippage, drawdown, and regime analysis.
+after fees, slippage, spread, rounding, drawdown, and regime analysis.
+Promotion is not allowed when the strategy only looks good before costs, only
+works in one cherry-picked regime, or depends on overtrading a small treasury.
+
+Deprecation criteria:
+
+- fails to beat the selected benchmark after costs
+- violates risk policy too often
+- depends on stale or missing data
+- degrades outside one narrow regime
+- creates excessive fee or slippage drag
+- encourages overtrading
+- lacks completed post-mortems
+- cannot be explained to the owner with source data
 
 ## 16. Algorithmic and Model Spine
 
@@ -1643,7 +1964,15 @@ Future categories:
 - `features`: stores deterministic features derived from market data.
 - `news_items`: stores normalized news records and source metadata.
 - `embeddings`: stores vector references for retrieval memory after approval.
+- `decision_records`: stores owner decisions, no-action decisions, hypotheses,
+  missing data, reasons not to act, risk context, later outcomes, and
+  post-mortems.
+- `strategy_specs`: stores written strategy specifications and promotion state.
 - `strategy_signals`: stores candidate signals emitted by strategies.
+- `backtest_runs`: stores leakage-safe backtest configuration, benchmark
+  comparison, regime breakdown, and cost assumptions.
+- `performance_metrics`: stores returns, volatility, drawdown, expectancy,
+  turnover, fee drag, slippage drag, and risk-adjusted after-cost results.
 - `risk_decisions`: stores allow, reduce, delay, or veto outcomes.
 - `audit_records`: stores security, permission, runtime, and treasury audit
   events.
@@ -1809,13 +2138,18 @@ Non-goals:
 
 Freeze rules:
 
-- Do not start Spark runtime work before `MAC.SETUP.1-CLOSE` and
-  `TAILSCALE.SPARK.1`.
+- Do not start Spark runtime work before `DOCS.REVIEW.2`, `CORE.0`,
+  `CORE.1`, `CORE.2`, and `CORE.3`, unless a later wave explicitly proves the
+  Spark task is infrastructure-only and non-blocking.
+- Do not treat Tailscale as trading, provider activation, model serving, or
+  Spark runtime approval. Future Tailscale work is infrastructure access only.
 - Do not scaffold the mobile client before the client framework decision is
   ready.
 - Do not add exchange keys, wallet custody, live trading, withdrawals, or AI
   model downloads during bootstrap waves.
 - Do not promote a strategy without evaluation and review.
+- Do not promote a strategy that fails after costs, lacks benchmark comparison,
+  or lacks backtest integrity checks.
 - Do not treat UI locks as security.
 - Do not convert open decisions into fake decisions.
 - Do not implement public service behavior without legal and regulatory review.
@@ -1824,6 +2158,46 @@ Freeze rules:
 
 This phase map is designed so a future coding agent can copy a wave and execute
 without reinventing architecture. Each phase includes sub-waves A through F.
+
+Current near-term sequence after `DOCS.REVIEW.1`:
+
+1. `DOCS.REVIEW.2 - MVP, Promotion Gates, and Risk Policy Numeric Draft`
+2. `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
+3. `CORE.1 - Paper Treasury Ledger`
+4. `CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
+5. `CORE.3 - Decision Journal`
+
+This product core path overrides the older Spark-first infrastructure sequence
+where they conflict. Tailscale and Spark sections below remain useful future
+infrastructure references, but they are not the next execution path.
+
+`DOCS.REVIEW.2` must draft:
+
+- first true MVP cut
+- primary product outcome
+- decision frequency
+- initial timeframe
+- primary benchmark
+- simulated fee, spread, slippage, and rounding assumptions
+- maximum decisions or trades per week
+- conservative strategy numeric definition
+- strategy promotion metric
+- behavior when no strategy beats benchmark
+- minimum paper duration before any manual live consideration
+- trusted-enough data criteria
+
+`CORE.0` must establish identity, capabilities, and paper treasury boundaries
+before any strategy or data pipeline can mutate treasury state.
+
+`CORE.1` must make the 200 EUR paper treasury ledger auditable before paper
+execution exists.
+
+`CORE.2` must make BTC/ETH market data, buy-and-hold benchmark, scheduled
+accumulation benchmark, and cost assumptions available before strategy claims
+are trusted.
+
+`CORE.3` must make decision records and risk veto records first-class product
+objects before advanced model or runtime work.
 
 ### Phase 0. Repo, environment, provider skeleton, master spine
 
@@ -1881,10 +2255,13 @@ and local validation working.
   Code. Output: validation report. Acceptance: checks pass or documented
   exceptions are understood. Non-goals: Spark deployment.
 
-### Phase 2. Tailscale and Spark access planning
+### Phase 2. Reserved Later: Tailscale and Spark access planning
 
-Outcome: Spark private access path is verified and documented before runtime
-deployment begins.
+Status: reserved until the Product Core path no longer depends on identity,
+paper treasury, market data, benchmarks, and decision records.
+
+Outcome when unblocked: Spark private access path is verified and documented
+before runtime deployment begins.
 
 - P2.A - Access inventory. Purpose: identify available Spark addresses. Tasks:
   inspect Tailscale status, SSH config, known aliases, and expected user.
@@ -1911,10 +2288,13 @@ deployment begins.
   Acceptance: `SPARK.RUNTIME.1` can start with clear access. Non-goals:
   deployment.
 
-### Phase 3. Spark storage and provider runtime deployment
+### Phase 3. Reserved Later: Spark storage and provider runtime deployment
 
-Outcome: Spark has `/srv/drmlke`, a deploy copy, private provider runtime, and
-repeatable validation.
+Status: reserved until the Product Core path no longer depends on identity,
+paper treasury, market data, benchmarks, and decision records.
+
+Outcome when unblocked: Spark has `/srv/drmlke`, a deploy copy, private
+provider runtime, and repeatable validation.
 
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
@@ -2443,7 +2823,8 @@ Acceptance:
 
 - Roadmap is self-contained.
 - Historical next sequence at the time of this wave was docs, then MacBook,
-  then Tailscale, then Spark.
+  then Tailscale, then Spark. `DOCS.REVIEW.1` supersedes that active sequence
+  with Product Core before Spark.
 - Treasury model is correct.
 - Account and capability model is correct.
 - Interface surfaces are clear.
@@ -2573,16 +2954,76 @@ Closeout acceptance:
 - Local provider models returns an empty list.
 - Spark remains intentionally untouched.
 
-Next recommended wave:
+Current review wave:
 
-`DOCS.REVIEW.1 - inspect and harden master spine before Spark/Tailscale work`
+`DOCS.REVIEW.1 - Product, Decision, Math, and Strategy Hardening`
 
 Purpose:
 
-- Read the master spine carefully as an operating document.
-- Close ambiguity before further infrastructure work.
-- Verify open decisions are honestly represented.
-- Keep Spark deployment blocked until the spine is reviewed.
+- Refocus the roadmap away from infrastructure-first execution.
+- Establish product thesis and target outcome.
+- Define decision quality doctrine.
+- Define mathematical minimums for small-capital strategy evaluation.
+- Define strategy specification and backtest integrity requirements.
+- Define MVP sequence.
+- Move Tailscale and Spark behind the product core path.
+
+Completed tasks:
+
+- D1.A product thesis. Purpose: clarify that drmlke is not an auto-trading
+  product. Tasks: define decision-journal and paper-treasury product thesis.
+  Output: product thesis and target outcome. Acceptance: small private treasury
+  learning, discipline, auditability, and capital preservation are explicit.
+  Non-goals: trading implementation.
+- D1.B expansion discipline. Purpose: separate core product, research,
+  operator, and live extension zones. Tasks: define which zones may follow
+  which prerequisites. Output: expansion discipline. Acceptance: research and
+  live work cannot outrun core data, benchmarks, risk, and paper evidence.
+  Non-goals: model downloads.
+- D1.C decision quality spine. Purpose: separate process quality, information
+  quality, risk compliance, and economic outcome. Tasks: define decision record
+  fields and metrics. Output: decision doctrine. Acceptance: good losing
+  decisions and bad winning decisions can be distinguished. Non-goals: journal
+  implementation.
+- D1.D mathematical spine. Purpose: make costs and small-capital math primary.
+  Tasks: define returns, volatility, drawdown, expectancy, benchmarks, fee
+  drag, slippage drag, and break-even constraints. Output: math minimums.
+  Acceptance: after-cost results govern promotion. Non-goals: metric code.
+- D1.E strategy and backtest integrity. Purpose: standardize strategy specs and
+  reject biased backtests. Tasks: define strategy template, promotion criteria,
+  deprecation criteria, and integrity rules. Output: strategy hardening.
+  Acceptance: no strategy can be promoted without benchmark, cost, regime, and
+  leakage checks. Non-goals: strategy implementation.
+- D1.F MVP sequence. Purpose: define narrow MVPs before runtime infrastructure.
+  Tasks: define MVP 1, MVP 2, MVP 3 and the product core path. Output: sequence
+  update. Acceptance: `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`, and
+  `CORE.3` precede Spark runtime work. Non-goals: Spark activation.
+
+Closeout acceptance:
+
+- Product thesis is explicit.
+- Target users and target outcomes are explicit.
+- Expansion discipline is explicit.
+- Decision quality record fields and metrics are explicit.
+- Mathematical spine covers returns, volatility, drawdown, costs, expectancy,
+  benchmark-relative results, and small-capital constraints.
+- Strategy spec template is explicit.
+- Backtest integrity rules are explicit.
+- MVP sequence is explicit.
+- Spark remains untouched.
+- No application code changes are required.
+
+Next recommended wave:
+
+`DOCS.REVIEW.2 - MVP, Promotion Gates, and Risk Policy Numeric Draft`
+
+Purpose:
+
+- Convert this review into initial numeric gates.
+- Draft MVP 1 acceptance tightly enough for implementation.
+- Draft first promotion thresholds and deprecation thresholds.
+- Draft first risk policy numbers for paper mode only.
+- Keep Spark reserved until the decision core is no longer blocked.
 
 Non-goals:
 
@@ -2598,6 +3039,22 @@ Non-goals:
 
 Current open decisions:
 
+- Primary product outcome for MVP 1.
+- Expected decision frequency.
+- Initial trading/research timeframe.
+- Primary benchmark for BTC and ETH evaluation.
+- Simulated fee assumptions.
+- Simulated spread assumptions.
+- Simulated slippage assumptions.
+- Rounding and minimum-order assumptions.
+- Max decisions or trades per week.
+- Conservative strategy numeric definition.
+- Strategy promotion metric.
+- Strategy deprecation metric.
+- Behavior if no strategy beats benchmark.
+- Minimum paper duration before any manual live consideration.
+- Trusted-enough data criteria.
+- First true MVP cut.
 - Whether the MacBook Docker runtime remains OrbStack long-term or later moves
   to Docker Desktop.
 - Tailscale hostname or address for Spark.
@@ -2638,3 +3095,6 @@ decision until the relevant wave makes and records the decision.
 - `LINUX.SETUP.1`: Linux workstation recorded as the canonical development
   node, legacy path references removed, provider stub status documented, and
   Spark left untouched.
+- `DOCS.REVIEW.1`: roadmap refocused on product thesis, decision quality,
+  small-capital math, strategy specification, backtest integrity, MVP sequence,
+  and Product Core before Spark.

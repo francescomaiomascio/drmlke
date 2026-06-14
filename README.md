@@ -1,6 +1,7 @@
 # drmlke
 
-Local-first family crypto intelligence, paper-trading, treasury-ledger, and agentic runtime project.
+Local-first family crypto decision journal, paper treasury, strategy research,
+and auditability project.
 
 Canonical spine: [docs/drmlke-roadmap.md](docs/drmlke-roadmap.md).
 
@@ -12,6 +13,13 @@ Current product model:
 - one shared client UI with role/capability locks
 - backend-enforced permissions
 
+Current product thesis:
+
+- not an auto-trading product
+- helps Francesco make slower, better-tracked, less emotional decisions
+- starts with a small private paper treasury, benchmarks, and decision records
+- values learning, damage avoidance, auditability, and capital preservation
+
 This repository is in bootstrap state. It intentionally does not include:
 
 - live trading
@@ -19,6 +27,7 @@ This repository is in bootstrap state. It intentionally does not include:
 - exchange API keys
 - real AI models
 - withdrawal support
+- Spark runtime activation
 
 ## Development
 
