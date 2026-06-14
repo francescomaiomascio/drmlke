@@ -3,11 +3,11 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `P0.NAMING.1` naming normalization on top of the completed
-`P0.L - Paper Portfolio Snapshot Boundary` implementation, historically
-committed as `CORE.4`. It refocuses the roadmap on canonical Phase 0 wave ids
-before any Spark attachment, runtime deployment, trading feature, wallet
-feature, exchange connection, mobile client scaffold, or AI model download.
+This version records `P0.NAMING.1` naming normalization and the completed
+Phase 0 product-core contracts through `P0.M - Paper Decision Record Boundary`,
+historically aliased as `CORE.5`. It keeps canonical Phase 0 wave ids in front
+of any Spark attachment, runtime deployment, trading feature, wallet feature,
+exchange connection, mobile client scaffold, or AI model download.
 
 ## Naming Doctrine: Phase IDs, Legacy CORE Aliases, and Future Wave IDs
 
@@ -46,8 +46,9 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P0.L - Paper Portfolio Snapshot Boundary`
-  (legacy alias: `CORE.4`).
+- Current completed wave: `P0.M - Paper Decision Record Boundary`
+  (legacy alias: `CORE.5`).
+- Current closeout wave: `P0.CLOSE - Phase 0 Product Core Closeout`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -64,8 +65,9 @@ Current repository facts:
     (legacy alias: `CORE.2`).
   - `P0.K - Paper Position Boundary` (legacy alias: `CORE.3`).
   - `P0.L - Paper Portfolio Snapshot Boundary` (legacy alias: `CORE.4`).
-- Next recommended wave: `P0.M - Paper Decision Record Boundary`
-  (legacy alias: `CORE.5`).
+  - `P0.M - Paper Decision Record Boundary` (legacy alias: `CORE.5`).
+- Next recommended wave after closeout: `P2.A - Access Inventory`, because the
+  historical MacBook setup path already satisfied the practical `P1` goal.
 
 Current provider status:
 
@@ -126,6 +128,8 @@ What is implemented now:
   simulated long-only positions.
 - `packages/core` paper portfolio snapshot contracts combining treasury cash
   snapshots and paper position books.
+- `packages/core` paper decision record contracts for paper-only no-action,
+  watch, action candidate, rejected, postponed, and risk-vetoed records.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -178,7 +182,9 @@ Sequencing correction:
     (legacy alias: `CORE.4`).
 11. `P0.M` defines the paper decision record boundary
     (legacy alias: `CORE.5`).
-12. Tailscale and Spark remain infrastructure-only future work until they do
+12. `P0.CLOSE` verifies Phase 0 product-core coherence before moving to
+   infrastructure or persistence work.
+13. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -1764,6 +1770,26 @@ Correct capital model:
   calculate returns, create orders, create fills, mutate the ledger, persist
   state, expose API routes, or change provider/runtime behavior.
 
+`P0.M` implementation (legacy alias: `CORE.5`):
+
+- `drmlke_core.decision.DecisionRecord` defines a frozen paper decision record
+  contract for no-action, watch, action candidate, rejected, postponed, and
+  risk-vetoed decisions.
+- `DecisionContext` records the paper treasury id, optional paper portfolio
+  snapshot, optional BTC/ETH asset, timeframe, data freshness, risk state, cost
+  assumptions, and reference metadata.
+- `DecisionCostAssumption` records estimated fees, spread, slippage, rounding
+  buffer, and break-even move using `Decimal`.
+- Decision creation remains owner/operator-only at the domain boundary.
+- Reasons not to act are mandatory.
+- Action candidates require fresh data, reasons to act, reasons not to act,
+  paper-review risk allowance, and cost assumptions.
+- Completed outcome states require a post-mortem, keeping decision process
+  quality separate from economic result.
+- The decision boundary does not ingest market data, compute strategy signals,
+  create orders or fills, execute actions, persist state, expose API routes, or
+  change provider/runtime behavior.
+
 Contribution metadata may exist later, but it is accounting metadata. It is not
 trading authority and does not create independent family portfolios.
 
@@ -2761,7 +2787,10 @@ deployment, wallet custody, or UI implementation.
 - P0.M - Paper Decision Record Boundary. Legacy alias: `CORE.5`. Purpose:
   define paper decision records, action/no-action records, hypothesis, reasons
   not to act, risk context, stale data state, later outcome, and post-mortem
-  fields. Status: next.
+  fields. Status: completed.
+- P0.CLOSE - Phase 0 Product Core Closeout. Purpose: verify that `P0.H`
+  through `P0.M` remain coherent together before infrastructure, persistence,
+  API, market data, strategy, execution, or UI work. Status: current closeout.
 
 ### Phase 1. MacBook development setup
 
@@ -4011,42 +4040,39 @@ Acceptance criteria:
   attribution fields.
 - Existing `P0.H`, `P0.I`, `P0.J`, and `P0.K` tests still pass.
 
-Next recommended wave:
+Current closeout wave:
 
-`P0.M - Paper Decision Record Boundary`
-(legacy alias: `CORE.5`)
+`P0.CLOSE - Phase 0 Product Core Closeout`
 
 Purpose:
 
-- Define paper decision record contracts for owner-reviewed action, no-action,
-  hypothesis, risk context, stale data state, reasons not to act, and
-  post-mortem fields.
-- Keep decision records independent from market data ingestion, strategy
-  engines, paper execution, provider runtime, and live trading.
+- Verify that `P0.H` through `P0.M` are coherent as one Phase 0 product-core
+  foundation.
+- Confirm that identity, safety, treasury, ledger, treasury projection, paper
+  position, paper portfolio, and paper decision record boundaries remain
+  separated.
+- Confirm that no market data, persistence, API, strategy, execution, Spark,
+  Tailscale, exchange, wallet custody, or model runtime behavior has leaked
+  into the product core.
 
 Previous state:
 
-- `P0.H` through `P0.L` define authority, treasury, ledger, cash snapshot,
-  paper positions, and structural paper portfolio state.
-- No first-class decision record contract exists yet.
+- `P0.M` completed the first paper decision record boundary.
+- Phase 0 product-core domain contracts now cover authority, treasury state,
+  paper accounting primitives, paper exposure, structural portfolio snapshots,
+  and decision memory.
 
 Target state:
 
-- Owner decision records exist as typed paper-only domain contracts.
-- No-action records are first-class records, not missing data.
-- Action candidate records can be represented without creating orders or fills.
-- Records include hypothesis, asset, timeframe, expected risk, reasons not to
-  act, stale data state, cost assumptions, risk context, final decision, later
-  outcome, and post-mortem fields.
-- Records do not ingest market data, compute strategy signals, execute actions,
-  or call provider/model runtime.
+- Phase 0 product-core foundation is declared coherent or any remaining
+  inconsistency is explicitly listed.
+- Roadmap and architecture docs reflect that `P0.M` is completed.
+- The next canonical wave is chosen from the roadmap instead of invented.
 
 Allowed changes:
 
-- Add a narrow paper decision record domain module under `packages/core`.
-- Export stable decision record contracts from `drmlke_core`.
-- Add deterministic unit tests.
-- Update this roadmap and architecture docs.
+- Documentation updates to this roadmap and architecture.
+- No feature implementation.
 
 Forbidden changes:
 
@@ -4062,26 +4088,11 @@ Forbidden changes:
 
 Acceptance criteria:
 
-- Decision records distinguish action, no-action, and veto/reject outcomes.
-- A record can include hypothesis, reasons not to act, stale data state, cost
-  assumptions, risk context, final decision, later outcome, and post-mortem.
-- Records remain paper-only and owner-reviewed.
-- No execution path is created.
-- Existing Phase 0 product-core tests still pass.
-
-Non-goals:
-
-- No Spark deployment.
-- No Tailscale production routing changes.
-- No client implementation.
-- No trading logic.
-- No market data collector.
-- No strategy engine.
-- No positions with market valuation.
-- No paper orders or fills.
-- No model downloads.
-- No exchange integration.
-- No wallet custody.
+- `P0.H` through `P0.M` are present in `packages/core`.
+- Tests still pass.
+- The product core remains pure in-memory domain logic.
+- No forbidden runtime, trading, storage, API, or UI behavior is introduced.
+- The next recommended canonical wave is documented as roadmap-derived.
 
 ## 24. Open Decisions
 
@@ -4159,3 +4170,10 @@ decision until the relevant wave makes and records the decision.
   snapshots and paper position books, with no persistence, market value, PnL,
   returns, strategy attribution, orders, fills, execution, provider, exchange,
   or wallet custody behavior.
+- `P0.M` (legacy alias: `CORE.5`): paper decision record boundary contracts
+  for owner-reviewed no-action, watch, action candidate, rejected, postponed,
+  and risk-vetoed records, with no execution, strategy engine, market data,
+  API, persistence, provider, exchange, or wallet custody behavior.
+- `P0.CLOSE`: Phase 0 product-core closeout confirming coherence of `P0.H`
+  through `P0.M` before moving toward infrastructure, persistence, API, market
+  data, strategy, execution, or UI work.

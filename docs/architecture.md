@@ -16,6 +16,8 @@ Current architecture priority:
   execution
 - paper portfolio snapshot before client, risk, reporting, market valuation, or
   execution consumes combined cash and position state
+- paper decision record boundary before market data, strategy engines, paper
+  execution, reports, or model assistance consume decision memory
 - market data and benchmarks before strategy claims
 - decision journal before advanced models or live extensions
 - Spark remains reserved infrastructure until it does not delay the decision core
@@ -37,8 +39,8 @@ drmlke bootstrap modules:
 - `apps/client`: future SvelteKit/Vite + Capacitor client
 - `packages/core`: shared settings, paths, identity and capability contracts,
   global safety locks, the one-paper-treasury boundary, and append-only paper
-  ledger, treasury projection, paper position, and paper portfolio snapshot
-  domain contracts
+  ledger, treasury projection, paper position, paper portfolio snapshot, and
+  paper decision record domain contracts
 - `packages/storage`: storage placeholder
 - `packages/wallet`: future wallet, account-tracking, and execution-adjacent
   placeholder
@@ -71,3 +73,8 @@ Bootstrap safety boundaries:
   and paper position books without persistence, API enforcement, UI, paper
   orders, fills, ledger mutation, market data, market valuation, realized or
   unrealized PnL, returns, strategies, or execution
+- `P0.M` paper decision record contracts, historically `CORE.5`, are pure
+  in-memory domain logic only; they record paper no-action, watch, action
+  candidate, rejected, postponed, and risk-vetoed decisions without market data
+  ingestion, strategy execution, orders, fills, persistence, API enforcement,
+  UI, provider runtime, exchange integration, wallet custody, or live trading
