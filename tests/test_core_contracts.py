@@ -2,6 +2,21 @@ from dataclasses import FrozenInstanceError, fields
 from decimal import Decimal
 
 import pytest
+from drmlke_core.decision import (
+    DataFreshnessState,
+    DecisionContext,
+    DecisionCostAssumption,
+    DecisionKind,
+    DecisionOutcomeState,
+    DecisionRecord,
+    DecisionRecordId,
+    DecisionRiskState,
+    DecisionSubjectType,
+    DecisionTimeframe,
+    create_action_candidate_decision,
+    create_no_action_decision,
+    create_watch_decision,
+)
 from drmlke_core.identity import (
     INITIAL_USER_PROFILES,
     ActorMetadata,
@@ -190,6 +205,39 @@ def _unsafe_treasury_snapshot(
         object.__setattr__(snapshot, field.name, getattr(source, field.name))
     object.__setattr__(snapshot, "reconciled", reconciled)
     return snapshot
+
+
+def _decision_cost_assumption() -> DecisionCostAssumption:
+    return DecisionCostAssumption(
+        estimated_entry_fee_eur=Decimal("0.10"),
+        estimated_exit_fee_eur=Decimal("0.10"),
+        estimated_spread_eur=Decimal("0.20"),
+        estimated_slippage_eur=Decimal("0.20"),
+        estimated_rounding_buffer_eur=Decimal("0.05"),
+        break_even_move_pct=Decimal("0.01"),
+    )
+
+
+def _decision_context(
+    *,
+    asset: str | None = "BTC",
+    data_freshness: DataFreshnessState = DataFreshnessState.FRESH,
+    risk_state: DecisionRiskState = DecisionRiskState.ALLOW_PAPER_REVIEW,
+    cost_assumption: DecisionCostAssumption | None = None,
+) -> DecisionContext:
+    return DecisionContext(
+        treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+        portfolio_snapshot=project_paper_portfolio_snapshot(
+            _initial_treasury_snapshot(),
+            PaperPositionBook(),
+        ),
+        asset=normalize_asset_symbol(asset) if asset is not None else None,
+        timeframe=DecisionTimeframe.ONE_DAY,
+        data_freshness=data_freshness,
+        risk_state=risk_state,
+        cost_assumption=cost_assumption,
+        reference="decision-context-1",
+    )
 
 
 def test_owner_has_expected_operator_capabilities() -> None:
@@ -1147,3 +1195,289 @@ def test_open_cost_basis_ratio_uses_decimal_and_rejects_invalid_capital() -> Non
         calculate_open_cost_basis_ratio(Decimal("50.00"), Decimal("0.00"))
     with pytest.raises(ValueError, match="initial capital must be positive"):
         calculate_open_cost_basis_ratio(Decimal("50.00"), Decimal("-200.00"))
+
+
+def test_valid_no_action_decision_records_reason_not_to_act() -> None:
+    decision = create_no_action_decision(
+        decision_id=DecisionRecordId("decision-no-action-1"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.TREASURY,
+        context=_decision_context(
+            asset=None,
+            data_freshness=DataFreshnessState.STALE,
+            risk_state=DecisionRiskState.DELAY,
+        ),
+        hypothesis="Paper treasury should wait until data quality improves.",
+        reasons_not_to_act=("Data is stale.",),
+        final_decision="No paper action.",
+    )
+
+    assert decision.kind is DecisionKind.NO_ACTION
+    assert decision.context.asset is None
+    assert decision.reasons_not_to_act == ("Data is stale.",)
+    assert decision.final_decision == "No paper action."
+    assert decision.outcome_state is DecisionOutcomeState.PENDING
+
+
+def test_no_action_decision_requires_reason_not_to_act() -> None:
+    with pytest.raises(ValueError, match="reasons not to act"):
+        create_no_action_decision(
+            decision_id=DecisionRecordId("decision-no-action-no-reason"),
+            actor=_actor(),
+            subject_type=DecisionSubjectType.TREASURY,
+            context=_decision_context(asset=None),
+            hypothesis="No action without reason should fail.",
+            reasons_not_to_act=(),
+            final_decision="No action.",
+        )
+
+
+def test_valid_watch_decision_allows_partial_context() -> None:
+    decision = create_watch_decision(
+        decision_id=DecisionRecordId("decision-watch-1"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.ASSET,
+        context=_decision_context(
+            asset="BTC",
+            data_freshness=DataFreshnessState.PARTIAL,
+            risk_state=DecisionRiskState.NOT_EVALUATED,
+        ),
+        hypothesis="BTC setup is worth monitoring, but not acting on yet.",
+        reasons_not_to_act=("Context is partial.",),
+        final_decision="Watch only.",
+        reasons_to_act=("BTC remains inside the initial MVP asset boundary.",),
+    )
+
+    assert decision.kind is DecisionKind.WATCH
+    assert decision.context.asset == AssetSymbol("BTC")
+    assert decision.context.data_freshness is DataFreshnessState.PARTIAL
+
+
+def test_valid_action_candidate_decision_does_not_execute_anything() -> None:
+    decision = create_action_candidate_decision(
+        decision_id=DecisionRecordId("decision-action-candidate-1"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.ASSET,
+        context=_decision_context(
+            asset="ETH",
+            data_freshness=DataFreshnessState.FRESH,
+            risk_state=DecisionRiskState.ALLOW_PAPER_REVIEW,
+            cost_assumption=_decision_cost_assumption(),
+        ),
+        hypothesis="ETH paper exposure may be acceptable after costs.",
+        reasons_to_act=("Fresh context supports a paper review.",),
+        reasons_not_to_act=("Small capital makes costs meaningful.",),
+        final_decision="Paper candidate only; no execution.",
+    )
+    decision_fields = {field.name for field in fields(decision)}
+
+    assert decision.kind is DecisionKind.ACTION_CANDIDATE
+    assert decision.context.asset == AssetSymbol("ETH")
+    assert decision.context.cost_assumption is not None
+    assert "order_id" not in decision_fields
+    assert "fill_id" not in decision_fields
+    assert "executed" not in decision_fields
+
+
+@pytest.mark.parametrize(
+    "freshness",
+    [DataFreshnessState.STALE, DataFreshnessState.MISSING],
+)
+def test_stale_or_missing_data_blocks_action_candidate(
+    freshness: DataFreshnessState,
+) -> None:
+    with pytest.raises(ValueError, match="fresh data"):
+        create_action_candidate_decision(
+            decision_id=DecisionRecordId(f"decision-action-{freshness.value}"),
+            actor=_actor(),
+            subject_type=DecisionSubjectType.ASSET,
+            context=_decision_context(
+                asset="BTC",
+                data_freshness=freshness,
+                risk_state=DecisionRiskState.ALLOW_PAPER_REVIEW,
+                cost_assumption=_decision_cost_assumption(),
+            ),
+            hypothesis="Stale or missing data must block action candidates.",
+            reasons_to_act=("Potential paper setup exists.",),
+            reasons_not_to_act=("Data is not fresh.",),
+            final_decision="Blocked.",
+        )
+
+
+def test_risk_veto_decision_requires_veto_like_risk_state() -> None:
+    decision = DecisionRecord(
+        decision_id=DecisionRecordId("decision-risk-veto-1"),
+        kind=DecisionKind.RISK_VETOED,
+        actor=_actor(),
+        subject_type=DecisionSubjectType.RISK,
+        context=_decision_context(
+            asset="BTC",
+            risk_state=DecisionRiskState.VETO,
+        ),
+        hypothesis="Risk context blocks the paper candidate.",
+        reasons_to_act=(),
+        reasons_not_to_act=("Risk policy vetoed the candidate.",),
+        final_decision="Risk veto.",
+    )
+
+    assert decision.kind is DecisionKind.RISK_VETOED
+    assert decision.context.risk_state is DecisionRiskState.VETO
+
+
+def test_risk_veto_decision_rejects_non_veto_risk_state() -> None:
+    with pytest.raises(ValueError, match="risk-vetoed"):
+        DecisionRecord(
+            decision_id=DecisionRecordId("decision-risk-veto-bad-state"),
+            kind=DecisionKind.RISK_VETOED,
+            actor=_actor(),
+            subject_type=DecisionSubjectType.RISK,
+            context=_decision_context(
+                asset="BTC",
+                risk_state=DecisionRiskState.ALLOW_PAPER_REVIEW,
+            ),
+            hypothesis="Risk veto with allow state should fail.",
+            reasons_to_act=(),
+            reasons_not_to_act=("Risk state is not a veto state.",),
+            final_decision="Rejected.",
+        )
+
+
+@pytest.mark.parametrize(
+    ("role", "user_id"),
+    [
+        (Role.VIEWER_FAMILY, "padre"),
+        (Role.ADMIN_TECHNICAL, "admin"),
+        (Role.EMERGENCY_ONLY, "emergency"),
+    ],
+)
+def test_non_owner_roles_cannot_create_decision_records(
+    role: Role,
+    user_id: str,
+) -> None:
+    with pytest.raises(ValueError, match="owner/operator"):
+        create_no_action_decision(
+            decision_id=DecisionRecordId(f"decision-denied-{role.value}"),
+            actor=_actor(role, user_id),
+            subject_type=DecisionSubjectType.TREASURY,
+            context=_decision_context(asset=None),
+            hypothesis="Non-owner decision creation should fail.",
+            reasons_not_to_act=("Only owner/operator can create records.",),
+            final_decision="Denied.",
+        )
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "estimated_entry_fee_eur",
+        "estimated_exit_fee_eur",
+        "estimated_spread_eur",
+        "estimated_slippage_eur",
+        "estimated_rounding_buffer_eur",
+        "break_even_move_pct",
+    ],
+)
+def test_decision_cost_assumptions_reject_negative_values(field_name: str) -> None:
+    values = {
+        "estimated_entry_fee_eur": Decimal("0.10"),
+        "estimated_exit_fee_eur": Decimal("0.10"),
+        "estimated_spread_eur": Decimal("0.20"),
+        "estimated_slippage_eur": Decimal("0.20"),
+        "estimated_rounding_buffer_eur": Decimal("0.05"),
+        "break_even_move_pct": Decimal("0.01"),
+    }
+    values[field_name] = Decimal("-0.01")
+
+    with pytest.raises(ValueError, match="cannot be negative"):
+        DecisionCostAssumption(**values)
+
+
+def test_decision_context_rejects_wrong_treasury_id() -> None:
+    with pytest.raises(ValueError, match="treasury id"):
+        DecisionContext(
+            treasury_id="not-the-paper-treasury",
+            portfolio_snapshot=None,
+            asset=None,
+            timeframe=DecisionTimeframe.UNSPECIFIED,
+            data_freshness=DataFreshnessState.UNKNOWN,
+            risk_state=DecisionRiskState.NOT_EVALUATED,
+            cost_assumption=None,
+        )
+
+
+def test_decision_context_rejects_unsupported_initial_asset() -> None:
+    with pytest.raises(ValueError, match="outside the initial BTC/ETH"):
+        DecisionContext(
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            portfolio_snapshot=None,
+            asset=AssetSymbol("DOGE"),
+            timeframe=DecisionTimeframe.ONE_DAY,
+            data_freshness=DataFreshnessState.FRESH,
+            risk_state=DecisionRiskState.NOT_EVALUATED,
+            cost_assumption=None,
+        )
+
+
+def test_decision_context_accepts_no_asset_for_treasury_level_record() -> None:
+    context = _decision_context(
+        asset=None,
+        data_freshness=DataFreshnessState.UNKNOWN,
+        risk_state=DecisionRiskState.NOT_EVALUATED,
+    )
+
+    assert context.asset is None
+    assert context.treasury_id == DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id
+
+
+def test_decision_outcome_requires_post_mortem_when_completed() -> None:
+    pending = create_no_action_decision(
+        decision_id=DecisionRecordId("decision-pending-without-post-mortem"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.TREASURY,
+        context=_decision_context(asset=None),
+        hypothesis="Pending decision can wait for review.",
+        reasons_not_to_act=("No paper action is needed.",),
+        final_decision="No action.",
+    )
+
+    assert pending.post_mortem is None
+
+    with pytest.raises(ValueError, match="post-mortem"):
+        create_no_action_decision(
+            decision_id=DecisionRecordId("decision-complete-no-post-mortem"),
+            actor=_actor(),
+            subject_type=DecisionSubjectType.TREASURY,
+            context=_decision_context(asset=None),
+            hypothesis="Completed outcome needs process review.",
+            reasons_not_to_act=("No paper action was needed.",),
+            final_decision="No action.",
+            outcome_state=DecisionOutcomeState.GOOD_PROCESS_LOSS,
+        )
+
+    reviewed = create_no_action_decision(
+        decision_id=DecisionRecordId("decision-complete-with-post-mortem"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.TREASURY,
+        context=_decision_context(asset=None),
+        hypothesis="Completed outcome can be reviewed with a post-mortem.",
+        reasons_not_to_act=("No paper action was needed.",),
+        final_decision="No action.",
+        outcome_state=DecisionOutcomeState.GOOD_PROCESS_LOSS,
+        post_mortem="Process was good even though the outcome lost money.",
+    )
+    assert reviewed.outcome_state is DecisionOutcomeState.GOOD_PROCESS_LOSS
+
+
+def test_decision_record_is_frozen() -> None:
+    decision = create_no_action_decision(
+        decision_id=DecisionRecordId("decision-frozen-1"),
+        actor=_actor(),
+        subject_type=DecisionSubjectType.TREASURY,
+        context=_decision_context(asset=None),
+        hypothesis="Frozen records preserve audit history.",
+        reasons_not_to_act=("Audit records should not mutate.",),
+        final_decision="No action.",
+    )
+
+    with pytest.raises(FrozenInstanceError):
+        decision.final_decision = "Changed."
