@@ -3,12 +3,22 @@ from decimal import Decimal
 import pytest
 from drmlke_core.identity import (
     INITIAL_USER_PROFILES,
+    ActorMetadata,
     Capability,
     Role,
     UserId,
     UserProfile,
     capabilities_for_role,
     is_capability_globally_locked,
+)
+from drmlke_core.ledger import (
+    LedgerEntry,
+    LedgerEntryId,
+    LedgerEntryType,
+    LedgerSequence,
+    append_paper_ledger_entry,
+    create_initial_paper_ledger,
+    project_paper_cash_balance_eur,
 )
 from drmlke_core.safety import (
     DEFAULT_GLOBAL_SAFETY_LOCKS,
@@ -22,6 +32,10 @@ from drmlke_core.treasury import (
     TreasuryMode,
     validate_single_paper_treasury,
 )
+
+
+def _actor(role: Role = Role.OWNER_OPERATOR, user_id: str = "francesco") -> ActorMetadata:
+    return UserProfile(UserId(user_id), role, user_id.title()).actor_metadata()
 
 
 def test_owner_has_expected_operator_capabilities() -> None:
@@ -196,3 +210,168 @@ def test_multiple_paper_treasuries_are_rejected() -> None:
                 DEFAULT_PAPER_TREASURY_BOUNDARY,
             ]
         )
+
+
+def test_initial_paper_ledger_creates_one_200_eur_initial_capital_entry() -> None:
+    ledger = create_initial_paper_ledger(_actor())
+
+    assert len(ledger.entries) == 1
+    entry = ledger.entries[0]
+    assert entry.entry_type is LedgerEntryType.PAPER_INITIAL_CAPITAL
+    assert entry.amount_eur == Decimal("200.00")
+    assert entry.sequence == LedgerSequence(1)
+    assert ledger.treasury.initial_capital_eur == PAPER_TREASURY_INITIAL_CAPITAL_EUR
+    assert ledger.treasury.live_capital_eur == LIVE_CAPITAL_EUR
+
+
+def test_paper_ledger_balance_projection_starts_at_200_eur() -> None:
+    ledger = create_initial_paper_ledger(_actor())
+
+    assert project_paper_cash_balance_eur(ledger) == Decimal("200.00")
+
+
+def test_owner_operator_can_append_valid_adjustment_entry() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    entry = LedgerEntry(
+        entry_id=LedgerEntryId("owner-adjustment-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(2),
+        entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+        amount_eur=Decimal("10.00"),
+        actor=actor,
+        reason="Paper-only adjustment test",
+    )
+
+    next_ledger = append_paper_ledger_entry(ledger, entry, actor)
+
+    assert next_ledger is not ledger
+    assert len(ledger.entries) == 1
+    assert len(next_ledger.entries) == 2
+    assert project_paper_cash_balance_eur(next_ledger) == Decimal("210.00")
+
+
+def test_viewer_family_cannot_append_ledger_entries() -> None:
+    owner = _actor()
+    viewer = _actor(Role.VIEWER_FAMILY, "padre")
+    ledger = create_initial_paper_ledger(owner)
+    entry = LedgerEntry(
+        entry_id=LedgerEntryId("viewer-adjustment-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(2),
+        entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+        amount_eur=Decimal("10.00"),
+        actor=viewer,
+        reason="Viewer should be denied",
+    )
+
+    with pytest.raises(PermissionError, match="cannot append"):
+        append_paper_ledger_entry(ledger, entry, viewer)
+
+
+def test_admin_technical_cannot_append_ledger_entries() -> None:
+    owner = _actor()
+    admin = _actor(Role.ADMIN_TECHNICAL, "admin")
+    ledger = create_initial_paper_ledger(owner)
+    entry = LedgerEntry(
+        entry_id=LedgerEntryId("admin-adjustment-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(2),
+        entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+        amount_eur=Decimal("10.00"),
+        actor=admin,
+        reason="Admin should be denied",
+    )
+
+    with pytest.raises(PermissionError, match="cannot append"):
+        append_paper_ledger_entry(ledger, entry, admin)
+
+
+def test_invalid_ledger_treasury_id_is_rejected() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+
+    with pytest.raises(ValueError, match="treasury id"):
+        LedgerEntry(
+            entry_id=LedgerEntryId("wrong-treasury-1"),
+            treasury_id="not-the-paper-treasury",
+            sequence=LedgerSequence(2),
+            entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+            amount_eur=Decimal("10.00"),
+            actor=actor,
+            reason="Wrong treasury",
+        )
+
+    assert project_paper_cash_balance_eur(ledger) == Decimal("200.00")
+
+
+def test_wrong_ledger_sequence_is_rejected() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    entry = LedgerEntry(
+        entry_id=LedgerEntryId("wrong-sequence-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(3),
+        entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+        amount_eur=Decimal("10.00"),
+        actor=actor,
+        reason="Wrong sequence",
+    )
+
+    with pytest.raises(ValueError, match="next append-only sequence"):
+        append_paper_ledger_entry(ledger, entry, actor)
+
+
+def test_duplicate_initial_capital_entry_is_rejected() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    entry = LedgerEntry(
+        entry_id=LedgerEntryId("duplicate-initial-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(2),
+        entry_type=LedgerEntryType.PAPER_INITIAL_CAPITAL,
+        amount_eur=Decimal("200.00"),
+        actor=actor,
+        reason="Duplicate initial capital",
+    )
+
+    with pytest.raises(ValueError, match="initial capital cannot be appended"):
+        append_paper_ledger_entry(ledger, entry, actor)
+
+
+def test_zero_amount_ledger_entry_is_rejected() -> None:
+    actor = _actor()
+
+    with pytest.raises(ValueError, match="cannot be zero"):
+        LedgerEntry(
+            entry_id=LedgerEntryId("zero-entry-1"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            sequence=LedgerSequence(2),
+            entry_type=LedgerEntryType.PAPER_CASH_ADJUSTMENT,
+            amount_eur=Decimal("0.00"),
+            actor=actor,
+            reason="Zero amount",
+        )
+
+
+def test_correction_entry_changes_balance_by_appending_without_mutating_original() -> None:
+    actor = _actor()
+    ledger = create_initial_paper_ledger(actor)
+    correction = LedgerEntry(
+        entry_id=LedgerEntryId("correction-1"),
+        treasury_id=ledger.treasury.treasury_id,
+        sequence=LedgerSequence(2),
+        entry_type=LedgerEntryType.PAPER_CORRECTION,
+        amount_eur=Decimal("-5.00"),
+        actor=actor,
+        reason="Paper correction",
+    )
+
+    corrected = append_paper_ledger_entry(ledger, correction, actor)
+
+    assert corrected is not ledger
+    assert tuple(ledger.entries) == ledger.entries
+    assert len(ledger.entries) == 1
+    assert len(corrected.entries) == 2
+    assert project_paper_cash_balance_eur(ledger) == Decimal("200.00")
+    assert project_paper_cash_balance_eur(corrected) == Decimal("195.00")

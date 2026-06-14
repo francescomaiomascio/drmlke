@@ -3,12 +3,11 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `DOCS.REVIEW.2` MVP, promotion gate, and risk policy
-numeric draft on top of `DOCS.REVIEW.1`, `DOCS.SPINE.3`,
-`MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the roadmap on the
-decision core before any Spark attachment, runtime deployment, trading feature,
-wallet feature, exchange connection, mobile client scaffold, or AI model
-download.
+This version includes `CORE.1` append-only paper ledger contracts on top of
+`DOCS.REVIEW.2`, `DOCS.REVIEW.1`, `DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and
+`LINUX.SETUP.1`. It refocuses the roadmap on the decision core before any
+Spark attachment, runtime deployment, trading feature, wallet feature, exchange
+connection, mobile client scaffold, or AI model download.
 
 ## 1. Current Project State
 
@@ -23,11 +22,11 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `CORE.0`.
+- Current wave: `CORE.1`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
   `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
-  `DOCS.REVIEW.2`.
-- Next recommended wave: `CORE.1`.
+  `DOCS.REVIEW.2`, `CORE.0`.
+- Next recommended wave: `CORE.2`.
 
 Current provider status:
 
@@ -80,6 +79,8 @@ What is implemented now:
 - `packages/core` shared settings and path helpers.
 - `packages/core` typed identity, role, capability, global safety lock, and
   paper treasury boundary contracts.
+- `packages/core` append-only paper ledger domain contracts for the single
+  200 EUR paper treasury.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -96,9 +97,10 @@ What is not implemented now:
 - No private key storage.
 - No withdrawal support.
 - No market data collector.
-- No treasury ledger implementation.
+- No persisted treasury ledger, database schema, or ledger API implementation.
 - No persisted account, login, session, or device implementation.
 - No API capability enforcement implementation.
+- No paper orders or fills.
 - No mobile client scaffold.
 - No web admin console.
 - No strategy engine.
@@ -1627,9 +1629,22 @@ Correct capital model:
 - Live capital is 0 EUR.
 - Per-person portfolios are forbidden.
 - Family viewer roles can view allowed treasury state but cannot manage it.
-- Ledger entries, positions, paper orders, fills, and PnL accounting remain for
-  `CORE.1` and later.
 - Padre and Zio are viewers, not independent portfolio managers.
+
+`CORE.1` implementation:
+
+- `drmlke_core.ledger.LedgerEntry` defines typed paper ledger entries.
+- `drmlke_core.ledger.PaperLedger` defines an immutable in-memory ledger
+  contract for the single paper treasury.
+- `create_initial_paper_ledger` creates exactly one 200 EUR initial capital
+  entry.
+- `append_paper_ledger_entry` returns a new ledger object instead of mutating
+  existing entries.
+- `project_paper_cash_balance_eur` computes paper cash from ledger entries.
+- Corrections are represented as new compensating entries, not edits.
+- Persistence, database schema, API enforcement, paper orders, fills, positions,
+  PnL accounting, market data, and trading logic remain later work.
+- Padre and Zio remain viewers, not independent portfolio managers.
 
 Contribution metadata may exist later, but it is accounting metadata. It is not
 trading authority and does not create independent family portfolios.
@@ -3434,7 +3449,7 @@ Closeout acceptance:
 - Spark remains untouched.
 - No application code changes are required.
 
-Current implementation wave:
+Completed implementation wave:
 
 `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
 
@@ -3485,11 +3500,11 @@ Closeout acceptance:
 - Exactly one 200 EUR paper treasury boundary exists.
 - Live capital remains 0 EUR.
 - No per-person portfolio split exists.
-- No application runtime, Docker, Spark, Tailscale, provider, ledger, market
-  data, strategy, backtest, paper execution, UI, or auth/session storage is
-  introduced.
+- No application runtime, Docker, Spark, Tailscale, provider, persisted ledger,
+  market data, strategy, backtest, paper execution, UI, or auth/session storage
+  is introduced.
 
-Next recommended wave:
+Current implementation wave:
 
 `CORE.1 - Paper Treasury Ledger`
 
@@ -3500,6 +3515,63 @@ Purpose:
 - Preserve exactly one paper treasury.
 - Keep live capital at 0 EUR.
 - Keep all future real-money behavior locked.
+
+Allowed changes:
+
+- Add typed paper ledger domain contracts under `packages/core`.
+- Export safe ledger contracts from `drmlke_core`.
+- Add tests for append-only behavior, owner authority, viewer/admin denial,
+  treasury id checks, sequence checks, duplicate initial-capital rejection, zero
+  amount rejection, and correction-by-compensating-entry behavior.
+- Update roadmap and architecture documentation.
+
+Forbidden changes:
+
+- No persistence.
+- No database schema.
+- No API enforcement.
+- No paper orders or fills.
+- No market data.
+- No trading logic.
+- No strategy engine.
+- No Spark or Tailscale work.
+- No exchange, broker, wallet custody, withdrawal, credential, or model runtime
+  work.
+
+Implementation contracts:
+
+- `LedgerEntryId` and `LedgerSequence` type aliases.
+- `LedgerEntryType` paper-only entry categories.
+- `LedgerEntry` frozen domain contract.
+- `PaperLedger` frozen in-memory ledger contract.
+- `create_initial_paper_ledger`.
+- `append_paper_ledger_entry`.
+- `project_paper_cash_balance_eur`.
+- `validate_paper_ledger`.
+
+Acceptance criteria:
+
+- Initial paper ledger contains exactly one 200 EUR initial capital entry.
+- Ledger uses the canonical paper treasury id.
+- Ledger mode remains paper.
+- Live capital remains 0 EUR through the treasury boundary.
+- Only owner/operator authority can append ledger-changing entries.
+- Viewer family and admin technical roles cannot append entries.
+- Appends require the next sequence and return a new ledger object.
+- Duplicate initial capital entries are rejected.
+- Zero amount entries are rejected.
+- Corrections change projected balance through a new entry, not mutation.
+- Existing `CORE.0` capability, safety, and treasury tests still pass.
+
+Next recommended wave:
+
+`CORE.2 - Market Data, Benchmarks, and Cost Assumptions`
+
+Purpose:
+
+- Add BTC/ETH market data contracts and benchmark/cost assumptions needed before
+  strategy claims or decision reports are trusted.
+- Keep the ledger domain separate from data ingestion and strategy evaluation.
 
 Non-goals:
 
@@ -3574,3 +3646,6 @@ decision until the relevant wave makes and records the decision.
   draft, and minimum paper duration before any manual-live review.
 - `CORE.0`: typed identity, role, capability, global safety lock, and
   one-paper-treasury boundary contracts, with tests and no runtime expansion.
+- `CORE.1`: append-only paper ledger domain contracts for the single 200 EUR
+  paper treasury, with no persistence, API route, paper execution, exchange, or
+  wallet custody behavior.

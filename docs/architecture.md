@@ -27,9 +27,11 @@ drmlke bootstrap modules:
 - `apps/provider`: local provider stub
 - `apps/client`: future SvelteKit/Vite + Capacitor client
 - `packages/core`: shared settings, paths, identity and capability contracts,
-  global safety locks, and the one-paper-treasury boundary
+  global safety locks, the one-paper-treasury boundary, and append-only paper
+  ledger domain contracts
 - `packages/storage`: storage placeholder
-- `packages/wallet`: treasury/ledger placeholder
+- `packages/wallet`: future wallet, account-tracking, and execution-adjacent
+  placeholder
 - `packages/agents`: agent placeholder
 - `packages/risk`: risk placeholder
 
@@ -40,6 +42,9 @@ Bootstrap safety boundaries:
 - no exchange connections
 - no live execution
 - no AI model inference
-- `CORE.0` contracts are typed domain boundaries only; authentication, sessions,
-  database storage, API enforcement, ledger entries, market data, strategies,
-  and execution remain later work
+- `CORE.0` contracts are typed identity, safety, and treasury boundaries only;
+  authentication, sessions, database storage, and API enforcement remain later
+  work
+- `CORE.1` ledger contracts are append-only domain logic only; persistence,
+  database schema, API routes, paper orders, fills, market data, strategies, and
+  execution remain later work
