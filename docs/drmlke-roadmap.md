@@ -3,12 +3,12 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `CORE.2` ledger projection and treasury snapshot
-contracts on top of `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`,
-`DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the
-roadmap on the decision core before any Spark attachment, runtime deployment,
-trading feature, wallet feature, exchange connection, mobile client scaffold,
-or AI model download.
+This version includes `CORE.3` paper position boundary contracts on top of
+`CORE.2`, `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`, `DOCS.SPINE.3`,
+`MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the roadmap on the
+decision core before any Spark attachment, runtime deployment, trading feature,
+wallet feature, exchange connection, mobile client scaffold, or AI model
+download.
 
 ## 1. Current Project State
 
@@ -23,11 +23,11 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `CORE.2`.
+- Current wave: `CORE.3`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
   `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
-  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`.
-- Next recommended wave: `CORE.3`.
+  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`.
+- Next recommended wave: `CORE.4`.
 
 Current provider status:
 
@@ -84,6 +84,8 @@ What is implemented now:
   200 EUR paper treasury.
 - `packages/core` paper treasury projection and snapshot contracts over the
   append-only ledger.
+- `packages/core` paper position boundary contracts for initial BTC and ETH
+  simulated long-only positions.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -104,8 +106,9 @@ What is not implemented now:
 - No persisted account, login, session, or device implementation.
 - No API capability enforcement implementation.
 - No paper orders or fills.
-- No paper positions.
+- No persisted paper positions, position transitions, paper orders, or fills.
 - No market valuation.
+- No realized or unrealized PnL calculation.
 - No mobile client scaffold.
 - No web admin console.
 - No strategy engine.
@@ -128,7 +131,8 @@ Sequencing correction:
 7. `CORE.1` implements the paper treasury ledger.
 8. `CORE.2` implements ledger projection and treasury snapshot contracts.
 9. `CORE.3` defines the paper position boundary.
-10. Tailscale and Spark remain infrastructure-only future work until they do
+10. `CORE.4` defines a paper portfolio snapshot boundary.
+11. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -999,8 +1003,8 @@ What belongs there:
 - Capability names.
 - Event names.
 - Common schema primitives.
-- Identity, capability, safety, paper treasury, append-only ledger, and
-  treasury projection contracts while they remain pure domain logic.
+- Identity, capability, safety, paper treasury, append-only ledger, treasury
+  projection, and paper position contracts while they remain pure domain logic.
 
 What does not belong there yet:
 
@@ -1008,6 +1012,7 @@ What does not belong there yet:
 - Heavy runtime jobs.
 - Persistence adapters.
 - Paper execution.
+- Position valuation.
 - Market data ingestion.
 - Secrets.
 
@@ -1671,6 +1676,27 @@ Correct capital model:
 - The snapshot is in-memory domain logic only and does not introduce storage,
   API routes, paper orders, fills, positions, market valuation, strategy logic,
   live trading, or provider/runtime changes.
+
+`CORE.3` implementation:
+
+- `drmlke_core.position.PaperPosition` defines a frozen paper-only position
+  contract.
+- `drmlke_core.position.PaperPositionBook` groups paper positions for the
+  canonical paper treasury without persistence or mutation.
+- `AssetSymbol` and `normalize_asset_symbol` provide strict local symbol
+  normalization.
+- `INITIAL_PAPER_POSITION_ASSETS` limits the initial paper position boundary to
+  BTC and ETH.
+- `PaperPositionSide` is long-only. There is no shorting, margin, leverage, or
+  live-backed state.
+- `create_open_paper_position` constructs an open simulated position with cost
+  basis equal to quantity times average entry price plus fees.
+- `total_open_cost_basis_eur` and `total_position_fees_eur` provide pure
+  position-book summaries only.
+- The position boundary does not read market data, mark positions to market,
+  calculate PnL, create orders, create fills, mutate the ledger, reserve cash,
+  release cash, persist state, expose API routes, or change provider/runtime
+  behavior.
 
 Contribution metadata may exist later, but it is accounting metadata. It is not
 trading authority and does not create independent family portfolios.
@@ -2565,6 +2591,7 @@ Current near-term sequence after `DOCS.REVIEW.2`:
 2. `CORE.1 - Paper Treasury Ledger`
 3. `CORE.2 - Ledger Projection and Treasury Snapshot`
 4. `CORE.3 - Paper Position Boundary`
+5. `CORE.4 - Paper Portfolio Snapshot Boundary`
 
 This product core path overrides the older Spark-first infrastructure sequence
 where they conflict. Tailscale and Spark sections below remain useful future
@@ -2596,6 +2623,10 @@ snapshot before UI, risk, paper execution, or reporting consumes treasury state.
 
 `CORE.3` must define paper position boundaries before any market data,
 valuation, order, fill, strategy, or execution work.
+
+`CORE.4` must combine the treasury cash snapshot and paper position book into a
+paper portfolio snapshot boundary without market prices, execution, or live
+capital behavior.
 
 ### Phase 0. Repo, environment, provider skeleton, master spine
 
@@ -3588,7 +3619,7 @@ Acceptance criteria:
 - Corrections change projected balance through a new entry, not mutation.
 - Existing `CORE.0` capability, safety, and treasury tests still pass.
 
-Current implementation wave:
+Completed implementation wave:
 
 `CORE.2 - Ledger Projection and Treasury Snapshot`
 
@@ -3672,16 +3703,120 @@ Acceptance criteria:
 - Snapshot exposes no positions or market valuation fields.
 - Existing `CORE.0` and `CORE.1` tests still pass.
 
-Next recommended wave:
+Current implementation wave:
 
 `CORE.3 - Paper Position Boundary`
 
 Purpose:
 
-- Define paper position domain contracts without market data, market valuation,
-  orders, fills, strategy logic, or execution.
-- Prepare the boundary for later paper execution and reporting without allowing
-  any real-money behavior.
+- Define paper position domain contracts before market data, valuation, order,
+  fill, strategy, or execution work.
+- Represent simulated BTC/ETH long-only exposure without implying custody,
+  exchange execution, live backing, or real asset ownership.
+- Keep position contracts pure, in-memory, and separate from ledger mutation,
+  treasury cash projection, storage, API routes, and runtime services.
+
+Previous state:
+
+- `CORE.0` defined identity, safety, and the one-paper-treasury boundary.
+- `CORE.1` defined append-only paper ledger entries.
+- `CORE.2` projected ledger entries into a treasury cash snapshot.
+- No paper position contract existed.
+
+Target state:
+
+- A paper position has a canonical treasury id.
+- A paper position has an initial BTC/ETH asset boundary.
+- A paper position is paper-only and not live-backed.
+- A paper position is long-only.
+- A paper position has positive quantity, positive average entry price,
+  positive cost basis, and nonnegative fees.
+- Cost basis is quantity times average entry price plus fees.
+- A paper position book can group positions and summarize open cost basis and
+  total fees without valuation or PnL.
+
+Allowed changes:
+
+- Add `packages/core/src/drmlke_core/position.py`.
+- Export stable paper position contracts from `drmlke_core`.
+- Extend core tests for position validation, asset boundary, position book, and
+  non-goals.
+- Update roadmap and architecture documentation.
+
+Forbidden changes:
+
+- No persistence.
+- No database schema.
+- No API routes.
+- No paper orders or fills.
+- No ledger mutation.
+- No treasury cash mutation.
+- No market data.
+- No market valuation.
+- No realized or unrealized PnL.
+- No trading logic.
+- No strategy decisions.
+- No provider, Docker, Spark, or Tailscale changes.
+- No exchange, broker, wallet custody, withdrawal, credential, or model runtime
+  work.
+
+Implementation contracts:
+
+- `AssetSymbol`.
+- `PaperPositionId`.
+- `PaperPositionSide`.
+- `PaperPositionStatus`.
+- `PaperPosition`.
+- `PaperPositionBook`.
+- `INITIAL_PAPER_POSITION_ASSETS`.
+- `normalize_asset_symbol`.
+- `is_initial_paper_position_asset`.
+- `validate_initial_paper_position_asset`.
+- `validate_paper_position`.
+- `validate_paper_position_book`.
+- `create_open_paper_position`.
+- `open_paper_positions`.
+- `closed_paper_positions`.
+- `total_open_cost_basis_eur`.
+- `total_position_fees_eur`.
+
+Validation commands:
+
+- `git diff --check`.
+- `uv run pytest -q tests/test_core_contracts.py`.
+- `make doctor`.
+- `make check`.
+- `docker compose ps`.
+- `curl -sS http://127.0.0.1:8781/health`.
+- `curl -sS http://127.0.0.1:8781/models`.
+
+Acceptance criteria:
+
+- Asset symbols normalize deterministically.
+- Empty or malformed symbols are rejected.
+- Initial paper position assets are BTC and ETH only.
+- Unsupported assets such as DOGE or AAPL are rejected.
+- Valid open paper positions use the canonical treasury id.
+- Positions are paper-only and not live-backed.
+- Positions are long-only.
+- Quantity, average entry price, and cost basis must be positive.
+- Fees must be nonnegative.
+- Position contracts are frozen.
+- Position books reject duplicate position ids and mixed treasury ids.
+- Open cost basis totals only open positions.
+- Position contracts expose no market valuation or PnL fields.
+- Existing `CORE.0`, `CORE.1`, and `CORE.2` tests still pass.
+
+Next recommended wave:
+
+`CORE.4 - Paper Portfolio Snapshot Boundary`
+
+Purpose:
+
+- Combine the `CORE.2` treasury cash snapshot and the `CORE.3` position book
+  into a paper portfolio snapshot boundary.
+- Keep the portfolio snapshot free of market prices, valuation, orders, fills,
+  execution, storage, API routes, and live capital behavior.
 
 Non-goals:
 
@@ -3765,3 +3900,7 @@ decision until the relevant wave makes and records the decision.
   available cash, reserved cash, fee, correction, sequence, and reconciliation
   read models and no persistence, positions, market data, execution, provider,
   exchange, or wallet custody behavior.
+- `CORE.3`: paper position boundary contracts for initial BTC/ETH long-only
+  simulated positions, with no persistence, ledger mutation, orders, fills,
+  market data, valuation, PnL, execution, provider, exchange, or wallet custody
+  behavior.

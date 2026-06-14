@@ -22,6 +22,23 @@ from drmlke_core.ledger import (
     create_initial_paper_ledger,
     project_paper_cash_balance_eur,
 )
+from drmlke_core.position import (
+    INITIAL_PAPER_POSITION_ASSETS,
+    AssetSymbol,
+    PaperPosition,
+    PaperPositionBook,
+    PaperPositionId,
+    PaperPositionSide,
+    PaperPositionStatus,
+    closed_paper_positions,
+    create_open_paper_position,
+    is_initial_paper_position_asset,
+    normalize_asset_symbol,
+    open_paper_positions,
+    total_open_cost_basis_eur,
+    total_position_fees_eur,
+    validate_initial_paper_position_asset,
+)
 from drmlke_core.safety import (
     DEFAULT_GLOBAL_SAFETY_LOCKS,
     GlobalSafetyLocks,
@@ -96,6 +113,50 @@ def _unsafe_ledger_entry(
     object.__setattr__(entry, "reason", f"Unsafe test entry {entry_id}")
     object.__setattr__(entry, "reference", None)
     return entry
+
+
+def _valid_paper_position(
+    position_id: str = "paper-position-1",
+    asset: str = "BTC",
+) -> PaperPosition:
+    return create_open_paper_position(
+        position_id=PaperPositionId(position_id),
+        asset=asset,
+        quantity=Decimal("0.01"),
+        average_entry_price_eur=Decimal("30000.00"),
+        fees_eur=Decimal("1.00"),
+        reference="decision-1",
+    )
+
+
+def _unsafe_paper_position(
+    *,
+    position_id: str = "unsafe-position-1",
+    treasury_id: str = DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+    asset: str = "BTC",
+    side: object = PaperPositionSide.LONG,
+    status: PaperPositionStatus = PaperPositionStatus.OPEN,
+    quantity: Decimal = Decimal("0.01"),
+    average_entry_price_eur: Decimal = Decimal("30000.00"),
+    cost_basis_eur: Decimal = Decimal("301.00"),
+    fees_eur: Decimal = Decimal("1.00"),
+    paper_only: bool = True,
+    live_backed: bool = False,
+) -> PaperPosition:
+    position = object.__new__(PaperPosition)
+    object.__setattr__(position, "position_id", PaperPositionId(position_id))
+    object.__setattr__(position, "treasury_id", treasury_id)
+    object.__setattr__(position, "asset", AssetSymbol(asset))
+    object.__setattr__(position, "side", side)
+    object.__setattr__(position, "status", status)
+    object.__setattr__(position, "quantity", quantity)
+    object.__setattr__(position, "average_entry_price_eur", average_entry_price_eur)
+    object.__setattr__(position, "cost_basis_eur", cost_basis_eur)
+    object.__setattr__(position, "fees_eur", fees_eur)
+    object.__setattr__(position, "paper_only", paper_only)
+    object.__setattr__(position, "live_backed", live_backed)
+    object.__setattr__(position, "reference", None)
+    return position
 
 
 def test_owner_has_expected_operator_capabilities() -> None:
@@ -663,3 +724,243 @@ def test_paper_projection_does_not_grant_viewer_or_admin_management_path() -> No
     assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.VIEWER_FAMILY)
     assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.ADMIN_TECHNICAL)
     assert not hasattr(snapshot, "capabilities")
+
+
+def test_asset_symbol_normalization_for_initial_paper_positions() -> None:
+    assert normalize_asset_symbol("btc") == AssetSymbol("BTC")
+    assert normalize_asset_symbol(" ETH ") == AssetSymbol("ETH")
+
+    with pytest.raises(ValueError, match="required"):
+        normalize_asset_symbol("")
+    with pytest.raises(ValueError, match="spaces"):
+        normalize_asset_symbol("BT C")
+
+
+def test_initial_paper_position_asset_boundary_is_btc_eth_only() -> None:
+    assert INITIAL_PAPER_POSITION_ASSETS == frozenset(
+        {AssetSymbol("BTC"), AssetSymbol("ETH")}
+    )
+    assert is_initial_paper_position_asset(AssetSymbol("BTC"))
+    assert is_initial_paper_position_asset(AssetSymbol("ETH"))
+
+    with pytest.raises(ValueError, match="outside the initial BTC/ETH"):
+        validate_initial_paper_position_asset(AssetSymbol("DOGE"))
+    with pytest.raises(ValueError, match="outside the initial BTC/ETH"):
+        validate_initial_paper_position_asset(AssetSymbol("AAPL"))
+
+
+def test_valid_open_btc_paper_position_uses_canonical_paper_boundary() -> None:
+    position = _valid_paper_position()
+
+    assert position.position_id == PaperPositionId("paper-position-1")
+    assert position.treasury_id == DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id
+    assert position.asset == AssetSymbol("BTC")
+    assert position.side is PaperPositionSide.LONG
+    assert position.status is PaperPositionStatus.OPEN
+    assert position.quantity == Decimal("0.01")
+    assert position.average_entry_price_eur == Decimal("30000.00")
+    assert position.fees_eur == Decimal("1.00")
+    assert position.cost_basis_eur == Decimal("301.0000")
+    assert position.paper_only
+    assert not position.live_backed
+    assert position.reference == "decision-1"
+
+
+def test_paper_position_wrong_treasury_id_is_rejected() -> None:
+    with pytest.raises(ValueError, match="treasury id"):
+        PaperPosition(
+            position_id=PaperPositionId("wrong-treasury-position"),
+            treasury_id="not-the-paper-treasury",
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=Decimal("300.00"),
+            fees_eur=Decimal("0.00"),
+        )
+
+
+def test_live_backed_paper_position_is_rejected() -> None:
+    with pytest.raises(ValueError, match="live-backed"):
+        PaperPosition(
+            position_id=PaperPositionId("live-backed-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=Decimal("300.00"),
+            fees_eur=Decimal("0.00"),
+            live_backed=True,
+        )
+
+
+def test_non_paper_position_is_rejected() -> None:
+    with pytest.raises(ValueError, match="paper-only"):
+        PaperPosition(
+            position_id=PaperPositionId("non-paper-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=Decimal("300.00"),
+            fees_eur=Decimal("0.00"),
+            paper_only=False,
+        )
+
+
+@pytest.mark.parametrize("quantity", [Decimal("0"), Decimal("-0.01")])
+def test_zero_or_negative_paper_position_quantity_is_rejected(quantity: Decimal) -> None:
+    with pytest.raises(ValueError, match="quantity must be positive"):
+        PaperPosition(
+            position_id=PaperPositionId("bad-quantity-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=quantity,
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=Decimal("300.00"),
+            fees_eur=Decimal("0.00"),
+        )
+
+
+@pytest.mark.parametrize("price", [Decimal("0"), Decimal("-1.00")])
+def test_zero_or_negative_paper_position_entry_price_is_rejected(price: Decimal) -> None:
+    with pytest.raises(ValueError, match="average entry price must be positive"):
+        PaperPosition(
+            position_id=PaperPositionId("bad-price-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=price,
+            cost_basis_eur=Decimal("300.00"),
+            fees_eur=Decimal("0.00"),
+        )
+
+
+@pytest.mark.parametrize("cost_basis", [Decimal("0"), Decimal("-1.00")])
+def test_zero_or_negative_paper_position_cost_basis_is_rejected(
+    cost_basis: Decimal,
+) -> None:
+    with pytest.raises(ValueError, match="cost basis must be positive"):
+        PaperPosition(
+            position_id=PaperPositionId("bad-cost-basis-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=cost_basis,
+            fees_eur=Decimal("0.00"),
+        )
+
+
+def test_paper_position_cost_basis_must_match_quantity_price_plus_fees() -> None:
+    with pytest.raises(ValueError, match="quantity \\* price \\+ fees"):
+        PaperPosition(
+            position_id=PaperPositionId("mismatched-cost-basis-position"),
+            treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+            asset=AssetSymbol("BTC"),
+            side=PaperPositionSide.LONG,
+            status=PaperPositionStatus.OPEN,
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            cost_basis_eur=Decimal("300.01"),
+            fees_eur=Decimal("0.00"),
+        )
+
+
+def test_negative_paper_position_fees_are_rejected() -> None:
+    with pytest.raises(ValueError, match="fees cannot be negative"):
+        create_open_paper_position(
+            position_id=PaperPositionId("bad-fees-position"),
+            asset="BTC",
+            quantity=Decimal("0.01"),
+            average_entry_price_eur=Decimal("30000.00"),
+            fees_eur=Decimal("-0.01"),
+        )
+
+
+def test_paper_position_is_long_only_in_core3() -> None:
+    position = _valid_paper_position()
+
+    assert position.side is PaperPositionSide.LONG
+    assert list(PaperPositionSide) == [PaperPositionSide.LONG]
+    assert not hasattr(PaperPositionSide, "SHORT")
+
+
+def test_paper_position_is_frozen() -> None:
+    position = _valid_paper_position()
+
+    with pytest.raises(FrozenInstanceError):
+        position.quantity = Decimal("0.02")
+
+
+def test_paper_position_book_rejects_duplicate_position_ids() -> None:
+    first = _valid_paper_position(position_id="duplicate-position", asset="BTC")
+    second = _valid_paper_position(position_id="duplicate-position", asset="ETH")
+
+    with pytest.raises(ValueError, match="duplicate position ids"):
+        PaperPositionBook(positions=(first, second))
+
+
+def test_paper_position_book_rejects_mixed_treasury_ids() -> None:
+    valid_position = _valid_paper_position(position_id="valid-position")
+    wrong_treasury_position = _unsafe_paper_position(
+        position_id="wrong-treasury-position",
+        treasury_id="not-the-paper-treasury",
+    )
+
+    with pytest.raises(ValueError, match="treasury id"):
+        PaperPositionBook(positions=(valid_position, wrong_treasury_position))
+
+
+def test_paper_position_book_totals_open_cost_basis_only() -> None:
+    open_position = _valid_paper_position(position_id="open-position", asset="BTC")
+    closed_position = PaperPosition(
+        position_id=PaperPositionId("closed-position"),
+        treasury_id=DEFAULT_PAPER_TREASURY_BOUNDARY.treasury_id,
+        asset=AssetSymbol("ETH"),
+        side=PaperPositionSide.LONG,
+        status=PaperPositionStatus.CLOSED,
+        quantity=Decimal("0.10"),
+        average_entry_price_eur=Decimal("2000.00"),
+        cost_basis_eur=Decimal("201.00"),
+        fees_eur=Decimal("1.00"),
+    )
+    book = PaperPositionBook(positions=(open_position, closed_position))
+
+    assert open_paper_positions(book) == (open_position,)
+    assert closed_paper_positions(book) == (closed_position,)
+    assert total_open_cost_basis_eur(book) == Decimal("301.0000")
+    assert total_position_fees_eur(book) == Decimal("2.00")
+
+
+def test_paper_position_book_has_no_market_valuation_or_pnl_fields() -> None:
+    position = _valid_paper_position()
+    book = PaperPositionBook(positions=(position,))
+    position_fields = {field.name for field in fields(position)}
+    book_fields = {field.name for field in fields(book)}
+
+    assert "current_price_eur" not in position_fields
+    assert "market_value_eur" not in position_fields
+    assert "realized_pnl_eur" not in position_fields
+    assert "unrealized_pnl_eur" not in position_fields
+    assert "market_value_eur" not in book_fields
+    assert "unrealized_pnl_eur" not in book_fields
+
+
+def test_paper_position_boundary_does_not_grant_viewer_or_admin_authority() -> None:
+    position = _valid_paper_position()
+
+    assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.VIEWER_FAMILY)
+    assert not DEFAULT_PAPER_TREASURY_BOUNDARY.can_role_manage(Role.ADMIN_TECHNICAL)
+    assert not hasattr(position, "capabilities")
