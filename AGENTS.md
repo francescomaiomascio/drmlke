@@ -4,6 +4,12 @@ drmlke is a private/family local-first crypto intelligence and paper-trading pla
 
 Canonical spine: `docs/drmlke-roadmap.md`.
 
+Wave naming rules:
+
+- use canonical roadmap wave IDs from `docs/drmlke-roadmap.md`
+- do not create new naming tracks without updating the master spine
+- legacy aliases are allowed only for traceability
+
 Foundational model:
 
 - one treasury / portfolio managed by Francesco

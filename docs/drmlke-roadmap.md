@@ -3,12 +3,35 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version includes `CORE.4` paper portfolio snapshot contracts on top of
-`CORE.3`, `CORE.2`, `CORE.1`, `DOCS.REVIEW.2`, `DOCS.REVIEW.1`,
-`DOCS.SPINE.3`, `MAC.SETUP.1-CLOSE`, and `LINUX.SETUP.1`. It refocuses the
-roadmap on the decision core before any Spark attachment, runtime deployment,
-trading feature, wallet feature, exchange connection, mobile client scaffold,
-or AI model download.
+This version includes `P0.NAMING.1` naming normalization on top of the completed
+`P0.L - Paper Portfolio Snapshot Boundary` implementation, historically
+committed as `CORE.4`. It refocuses the roadmap on canonical Phase 0 wave ids
+before any Spark attachment, runtime deployment, trading feature, wallet
+feature, exchange connection, mobile client scaffold, or AI model download.
+
+## Naming Doctrine: Phase IDs, Legacy CORE Aliases, and Future Wave IDs
+
+Phase ids are the canonical roadmap structure. `P0.*`, `P1.*`, `P2.*`, and
+later phase ids are the canonical operational wave ids going forward.
+
+`CORE.0` through `CORE.5` were temporary product-core labels introduced after
+`DOCS.REVIEW.2`. They remain valid as historical aliases because they exist in
+commit messages, previous prompts, and earlier docs. They are not the canonical
+ids for new work after `P0.NAMING.1`.
+
+Future implementation prompts must use canonical `P*.*` ids. A legacy alias may
+appear in parentheses for traceability.
+
+Example:
+
+```text
+P0.H - Identity, Capabilities, and Paper Treasury Boundary
+(legacy alias: CORE.0)
+```
+
+Do not introduce new `CORE.*` names after this normalization unless the roadmap
+explicitly creates a new major track. If a future prompt uses `CORE.*` alone as
+the primary id, treat it as incomplete and correct the prompt before execution.
 
 ## 1. Current Project State
 
@@ -23,11 +46,26 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `CORE.4`.
-- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
-  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
-  `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`, `CORE.3`.
-- Next recommended wave: `CORE.5`.
+- Current completed wave: `P0.L - Paper Portfolio Snapshot Boundary`
+  (legacy alias: `CORE.4`).
+- Completed waves:
+  - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
+  - `P0.B - Provider Stub`.
+  - `P0.C - Environment Doctor`.
+  - `P0.D - Safety Documentation`.
+  - `P0.E - Treasury Model Correction` (legacy output: `DOCS.SPINE.2`).
+  - `P0.F - Master Spine Completion` (legacy output: `DOCS.SPINE.3`).
+  - `P0.G - Product Thesis, Decision Math, and MVP Gates`
+    (legacy outputs: `DOCS.REVIEW.1`, `DOCS.REVIEW.2`).
+  - `P0.H - Identity, Capabilities, and Paper Treasury Boundary`
+    (legacy alias: `CORE.0`).
+  - `P0.I - Append-Only Paper Treasury Ledger` (legacy alias: `CORE.1`).
+  - `P0.J - Ledger Projection and Treasury Snapshot`
+    (legacy alias: `CORE.2`).
+  - `P0.K - Paper Position Boundary` (legacy alias: `CORE.3`).
+  - `P0.L - Paper Portfolio Snapshot Boundary` (legacy alias: `CORE.4`).
+- Next recommended wave: `P0.M - Paper Decision Record Boundary`
+  (legacy alias: `CORE.5`).
 
 Current provider status:
 
@@ -130,12 +168,16 @@ Sequencing correction:
 4. `DOCS.REVIEW.1` hardens product thesis, decision quality, math, strategy
    specification, backtest integrity, and MVP boundaries.
 5. `DOCS.REVIEW.2` drafts MVP gates, promotion gates, and numeric risk policy.
-6. `CORE.0` implements identity, capabilities, and the paper treasury boundary.
-7. `CORE.1` implements the paper treasury ledger.
-8. `CORE.2` implements ledger projection and treasury snapshot contracts.
-9. `CORE.3` defines the paper position boundary.
-10. `CORE.4` defines a paper portfolio snapshot boundary.
-11. `CORE.5` defines the paper decision record boundary.
+6. `P0.H` implements identity, capabilities, and the paper treasury boundary
+   (legacy alias: `CORE.0`).
+7. `P0.I` implements the paper treasury ledger (legacy alias: `CORE.1`).
+8. `P0.J` implements ledger projection and treasury snapshot contracts
+   (legacy alias: `CORE.2`).
+9. `P0.K` defines the paper position boundary (legacy alias: `CORE.3`).
+10. `P0.L` defines a paper portfolio snapshot boundary
+    (legacy alias: `CORE.4`).
+11. `P0.M` defines the paper decision record boundary
+    (legacy alias: `CORE.5`).
 12. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
@@ -1620,7 +1662,7 @@ Capability assignment:
 - Zio starts with family viewer capabilities.
 - Live trading capabilities are globally disabled.
 
-`CORE.0` implementation:
+`P0.H` implementation (legacy alias: `CORE.0`):
 
 - `drmlke_core.identity.Role` defines the initial roles.
 - `drmlke_core.identity.Capability` defines the initial capability names.
@@ -1642,7 +1684,7 @@ Correct capital model:
 - Paper treasury: one simulated 200 EUR treasury.
 - No per-person budget split.
 
-`CORE.0` implementation:
+`P0.H` implementation (legacy alias: `CORE.0`):
 
 - `drmlke_core.treasury.PaperTreasuryBoundary` defines the one-paper-treasury
   boundary.
@@ -1652,7 +1694,7 @@ Correct capital model:
 - Family viewer roles can view allowed treasury state but cannot manage it.
 - Padre and Zio are viewers, not independent portfolio managers.
 
-`CORE.1` implementation:
+`P0.I` implementation (legacy alias: `CORE.1`):
 
 - `drmlke_core.ledger.LedgerEntry` defines typed paper ledger entries.
 - `drmlke_core.ledger.PaperLedger` defines an immutable in-memory ledger
@@ -1667,7 +1709,7 @@ Correct capital model:
   PnL accounting, market data, and trading logic remain later work.
 - Padre and Zio remain viewers, not independent portfolio managers.
 
-`CORE.2` implementation:
+`P0.J` implementation (legacy alias: `CORE.2`):
 
 - `drmlke_core.treasury_projection.PaperTreasurySnapshot` defines a frozen
   read-side view over the paper ledger.
@@ -1683,7 +1725,7 @@ Correct capital model:
   API routes, paper orders, fills, positions, market valuation, strategy logic,
   live trading, or provider/runtime changes.
 
-`CORE.3` implementation:
+`P0.K` implementation (legacy alias: `CORE.3`):
 
 - `drmlke_core.position.PaperPosition` defines a frozen paper-only position
   contract.
@@ -1704,19 +1746,19 @@ Correct capital model:
   release cash, persist state, expose API routes, or change provider/runtime
   behavior.
 
-`CORE.4` implementation:
+`P0.L` implementation (legacy alias: `CORE.4`):
 
 - `drmlke_core.portfolio.PaperPortfolioSnapshot` defines a frozen structural
   paper portfolio read model.
-- `project_paper_portfolio_snapshot` combines a `CORE.2` treasury cash snapshot
-  with a `CORE.3` paper position book.
+- `project_paper_portfolio_snapshot` combines a `P0.J` treasury cash snapshot
+  with a `P0.K` paper position book.
 - The snapshot reports available cash, reserved cash, total cash, open position
   count, closed position count, total position count, open cost basis, position
   fees, total structural exposure, and open cost basis ratio.
 - Total structural exposure is cash plus open position cost basis. This is not
   market value.
 - Open cost basis ratio is open cost basis divided by initial paper capital.
-- CORE.4 does not subtract position cost from cash. Future paper execution must
+- `P0.L` does not subtract position cost from cash. Future paper execution must
   create ledger entries before treasury cash changes.
 - The portfolio snapshot does not read prices, mark to market, calculate PnL,
   calculate returns, create orders, create fills, mutate the ledger, persist
@@ -2540,6 +2582,7 @@ Every future wave must have:
 - acceptance criteria
 - expected completion report
 - roadmap update requirement
+- canonical phase id such as `P0.H`, `P1.A`, or `P2.A`
 
 Every sub-wave must have:
 
@@ -2588,9 +2631,13 @@ Non-goals:
 
 Freeze rules:
 
-- Do not start Spark runtime work before `DOCS.REVIEW.2`, `CORE.0`,
-  `CORE.1`, `CORE.2`, and `CORE.3`, unless a later wave explicitly proves the
-  Spark task is infrastructure-only and non-blocking.
+- Future implementation prompts must use canonical `P*.*` ids.
+- Legacy aliases may appear only in parentheses for traceability.
+- If a prompt uses `CORE.*` alone after `P0.NAMING.1`, treat it as incomplete
+  and correct the prompt before execution.
+- Do not start Spark runtime work before `P0.G`, `P0.H`, `P0.I`, `P0.J`,
+  `P0.K`, `P0.L`, and `P0.M` are complete, unless a later wave explicitly
+  proves the Spark task is infrastructure-only and non-blocking.
 - Do not treat Tailscale as trading, provider activation, model serving, or
   Spark runtime approval. Future Tailscale work is infrastructure access only.
 - Do not scaffold the mobile client before the client framework decision is
@@ -2607,20 +2654,29 @@ Freeze rules:
 ## 21. Full Phase Roadmap
 
 This phase map is designed so a future coding agent can copy a wave and execute
-without reinventing architecture. Each phase includes sub-waves A through F.
+without reinventing architecture. Phase ids are canonical. Legacy aliases are
+kept only for traceability to previous prompts and commit messages.
 
-Current near-term sequence after `DOCS.REVIEW.2`:
+Current near-term Phase 0 product-core sequence:
 
-1. `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
-2. `CORE.1 - Paper Treasury Ledger`
-3. `CORE.2 - Ledger Projection and Treasury Snapshot`
-4. `CORE.3 - Paper Position Boundary`
-5. `CORE.4 - Paper Portfolio Snapshot Boundary`
-6. `CORE.5 - Paper Decision Record Boundary`
+1. `P0.H - Identity, Capabilities, and Paper Treasury Boundary`
+   (legacy alias: `CORE.0`)
+2. `P0.I - Append-Only Paper Treasury Ledger`
+   (legacy alias: `CORE.1`)
+3. `P0.J - Ledger Projection and Treasury Snapshot`
+   (legacy alias: `CORE.2`)
+4. `P0.K - Paper Position Boundary`
+   (legacy alias: `CORE.3`)
+5. `P0.L - Paper Portfolio Snapshot Boundary`
+   (legacy alias: `CORE.4`)
+6. `P0.M - Paper Decision Record Boundary`
+   (legacy alias: `CORE.5`)
 
-This product core path overrides the older Spark-first infrastructure sequence
-where they conflict. Tailscale and Spark sections below remain useful future
-infrastructure references, but they are not the next execution path.
+This product-core path remains inside Phase 0 because it is foundational. It
+overrides the older Spark-first infrastructure sequence where they conflict.
+Phase 1, Phase 2, and later phases remain future or reserved according to this
+spine. Spark and Tailscale do not start until the Phase 0 product-core blockers
+are complete or explicitly waived by a later documented wave.
 
 `DOCS.REVIEW.2` establishes candidate paper-mode defaults for:
 
@@ -2637,51 +2693,75 @@ infrastructure references, but they are not the next execution path.
 - minimum paper duration before any manual live consideration
 - trusted-enough data criteria
 
-`CORE.0` must establish identity, capabilities, and paper treasury boundaries
+`P0.H` must establish identity, capabilities, and paper treasury boundaries
 before any strategy or data pipeline can mutate treasury state.
 
-`CORE.1` must make the 200 EUR paper treasury ledger auditable before paper
+`P0.I` must make the 200 EUR paper treasury ledger auditable before paper
 execution exists.
 
-`CORE.2` must project the append-only paper ledger into a deterministic treasury
+`P0.J` must project the append-only paper ledger into a deterministic treasury
 snapshot before UI, risk, paper execution, or reporting consumes treasury state.
 
-`CORE.3` must define paper position boundaries before any market data,
+`P0.K` must define paper position boundaries before any market data,
 valuation, order, fill, strategy, or execution work.
 
-`CORE.4` must combine the treasury cash snapshot and paper position book into a
+`P0.L` must combine the treasury cash snapshot and paper position book into a
 paper portfolio snapshot boundary without market prices, execution, or live
 capital behavior.
 
-`CORE.5` must define paper decision records before market data, strategy
+`P0.M` must define paper decision records before market data, strategy
 evaluation, paper execution, reporting, or model assistance.
 
-### Phase 0. Repo, environment, provider skeleton, master spine
+### Phase 0. Bootstrap and Product Core Foundation
 
 Outcome: drmlke has a safe repository skeleton, local provider stub, validated
-development commands, and a complete master spine.
+development commands, complete master spine, and the first paper-only product
+core boundaries. Phase 0 remains foundational. It does not include live trading,
+market data ingestion, strategy execution, provider runtime expansion, Spark
+deployment, wallet custody, or UI implementation.
 
-- P0.A - Repository bootstrap. Purpose: create the monorepo skeleton. Tasks:
-  create app and package folders, workspace config, Makefile, Docker files.
-  Output: initial repo structure. Acceptance: repo installs and basic commands
-  work. Non-goals: product features.
-- P0.B - Provider stub. Purpose: create a safe local provider boundary. Tasks:
-  implement health and empty models endpoint. Output: provider stub. Acceptance:
-  health ok and models empty. Non-goals: model inference.
-- P0.C - Environment doctor. Purpose: validate local tools. Tasks: add doctor
-  script and Make targets. Output: repeatable checks. Acceptance: doctor reports
-  required tools. Non-goals: installing remote machines.
-- P0.D - Safety documentation. Purpose: document hard safety boundaries. Tasks:
-  write AGENTS, architecture, environment, deployment notes. Output: bootstrap
-  docs. Acceptance: boundaries are explicit. Non-goals: implementation.
-- P0.E - Treasury correction. Purpose: correct the model to one owner-managed
-  treasury. Tasks: update roadmap and product language. Output:
-  `DOCS.SPINE.2`. Acceptance: no per-family-member portfolio model remains.
-  Non-goals: ledger code.
-- P0.F - Master spine completion. Purpose: make roadmap execution-grade. Tasks:
-  expand the canonical spine and correct sequencing. Output: `DOCS.SPINE.3`.
-  Acceptance: this document passes validation and is committed. Non-goals:
-  code features.
+- P0.A - Repository Bootstrap. Legacy output: `BOOTSTRAP.0`. Purpose: create
+  the monorepo skeleton. Tasks: create app and package folders, workspace
+  config, Makefile, Docker files. Status: completed.
+- P0.B - Provider Stub. Legacy output: provider bootstrap. Purpose: create a
+  safe local provider boundary with `/health` and `/models`, with no inference.
+  Status: completed.
+- P0.C - Environment Doctor. Purpose: create repeatable local checks through the
+  doctor script and Make validation targets. Status: completed.
+- P0.D - Safety Documentation. Purpose: document AGENTS, architecture,
+  environment, deployment, and hard safety boundaries. Status: completed.
+- P0.E - Treasury Model Correction. Legacy output: `DOCS.SPINE.2`. Purpose:
+  correct the product model to one owner-managed treasury, Padre/Zio as viewers,
+  and no per-family-member trading portfolios. Status: completed.
+- P0.F - Master Spine Completion. Legacy output: `DOCS.SPINE.3`. Purpose: make
+  the roadmap execution-grade, correct sequencing, and define delivery rules.
+  Status: completed.
+- P0.G - Product Thesis, Decision Math, and MVP Gates. Legacy outputs:
+  `DOCS.REVIEW.1`, `DOCS.REVIEW.2`. Purpose: define product thesis, decision
+  quality spine, mathematical spine, strategy specification template, backtest
+  integrity, MVP exact cut, and numeric paper risk draft. Status: completed.
+- P0.H - Identity, Capabilities, and Paper Treasury Boundary. Legacy alias:
+  `CORE.0`. Purpose: define identity contracts, role/capability policy, safety
+  locks, one paper treasury, 200 EUR paper capital, and 0 EUR live capital.
+  Status: completed.
+- P0.I - Append-Only Paper Treasury Ledger. Legacy alias: `CORE.1`. Purpose:
+  define append-only ledger contracts, immutable ledger entries, and the initial
+  200 EUR paper capital entry. Status: completed.
+- P0.J - Ledger Projection and Treasury Snapshot. Legacy alias: `CORE.2`.
+  Purpose: project the append-only ledger into a treasury cash snapshot with
+  available cash, reserved cash, total cash, fees, adjustments, and corrections.
+  Status: completed.
+- P0.K - Paper Position Boundary. Legacy alias: `CORE.3`. Purpose: define
+  paper-only BTC/ETH position contracts, long-only positions, non-live-backed
+  state, position book, and no market valuation. Status: completed.
+- P0.L - Paper Portfolio Snapshot Boundary. Legacy alias: `CORE.4`. Purpose:
+  combine the treasury snapshot and paper position book into a structural
+  portfolio snapshot with no market valuation, no PnL, and no execution. Status:
+  completed.
+- P0.M - Paper Decision Record Boundary. Legacy alias: `CORE.5`. Purpose:
+  define paper decision records, action/no-action records, hypothesis, reasons
+  not to act, risk context, stale data state, later outcome, and post-mortem
+  fields. Status: next.
 
 ### Phase 1. MacBook development setup
 
@@ -3453,8 +3533,8 @@ Completed tasks:
   leakage checks. Non-goals: strategy implementation.
 - D1.F MVP sequence. Purpose: define narrow MVPs before runtime infrastructure.
   Tasks: define MVP 1, MVP 2, MVP 3 and the product core path. Output: sequence
-  update. Acceptance: `DOCS.REVIEW.2`, `CORE.0`, `CORE.1`, `CORE.2`, and
-  `CORE.3` precede Spark runtime work. Non-goals: Spark activation.
+  update. Acceptance: `P0.G`, `P0.H`, `P0.I`, `P0.J`, `P0.K`, `P0.L`, and
+  `P0.M` precede Spark runtime work. Non-goals: Spark activation.
 
 Closeout acceptance:
 
@@ -3533,9 +3613,10 @@ Closeout acceptance:
 - Spark remains untouched.
 - No application code changes are required.
 
-Completed implementation wave:
+Completed Phase 0 wave:
 
-`CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
+`P0.H - Identity, Capabilities, and Paper Treasury Boundary`
+(legacy alias: `CORE.0`)
 
 Purpose:
 
@@ -3588,13 +3669,14 @@ Closeout acceptance:
   market data, strategy, backtest, paper execution, UI, or auth/session storage
   is introduced.
 
-Completed implementation wave:
+Completed Phase 0 wave:
 
-`CORE.1 - Paper Treasury Ledger`
+`P0.I - Append-Only Paper Treasury Ledger`
+(legacy alias: `CORE.1`)
 
 Purpose:
 
-- Implement the append-only paper ledger on top of the `CORE.0` identity,
+- Implement the append-only paper ledger on top of the `P0.H` identity,
   capability, safety, and paper treasury boundary.
 - Preserve exactly one paper treasury.
 - Keep live capital at 0 EUR.
@@ -3645,11 +3727,12 @@ Acceptance criteria:
 - Duplicate initial capital entries are rejected.
 - Zero amount entries are rejected.
 - Corrections change projected balance through a new entry, not mutation.
-- Existing `CORE.0` capability, safety, and treasury tests still pass.
+- Existing `P0.H` capability, safety, and treasury tests still pass.
 
-Completed implementation wave:
+Completed Phase 0 wave:
 
-`CORE.2 - Ledger Projection and Treasury Snapshot`
+`P0.J - Ledger Projection and Treasury Snapshot`
+(legacy alias: `CORE.2`)
 
 Purpose:
 
@@ -3661,8 +3744,8 @@ Purpose:
 
 Previous state:
 
-- `CORE.0` defined identity, safety, and the one-paper-treasury boundary.
-- `CORE.1` defined append-only paper ledger entries and owner-only append
+- `P0.H` defined identity, safety, and the one-paper-treasury boundary.
+- `P0.I` defined append-only paper ledger entries and owner-only append
   authority.
 - Ledger cash projection existed only as a simple summed cash helper.
 
@@ -3729,11 +3812,12 @@ Acceptance criteria:
 - Snapshot reports ledger entry count and last sequence.
 - Snapshot is immutable.
 - Snapshot exposes no positions or market valuation fields.
-- Existing `CORE.0` and `CORE.1` tests still pass.
+- Existing `P0.H` and `P0.I` tests still pass.
 
-Completed implementation wave:
+Completed Phase 0 wave:
 
-`CORE.3 - Paper Position Boundary`
+`P0.K - Paper Position Boundary`
+(legacy alias: `CORE.3`)
 
 Purpose:
 
@@ -3746,9 +3830,9 @@ Purpose:
 
 Previous state:
 
-- `CORE.0` defined identity, safety, and the one-paper-treasury boundary.
-- `CORE.1` defined append-only paper ledger entries.
-- `CORE.2` projected ledger entries into a treasury cash snapshot.
+- `P0.H` defined identity, safety, and the one-paper-treasury boundary.
+- `P0.I` defined append-only paper ledger entries.
+- `P0.J` projected ledger entries into a treasury cash snapshot.
 - No paper position contract existed.
 
 Target state:
@@ -3833,15 +3917,16 @@ Acceptance criteria:
 - Position books reject duplicate position ids and mixed treasury ids.
 - Open cost basis totals only open positions.
 - Position contracts expose no market valuation or PnL fields.
-- Existing `CORE.0`, `CORE.1`, and `CORE.2` tests still pass.
+- Existing `P0.H`, `P0.I`, and `P0.J` tests still pass.
 
-Current implementation wave:
+Completed Phase 0 wave:
 
-`CORE.4 - Paper Portfolio Snapshot Boundary`
+`P0.L - Paper Portfolio Snapshot Boundary`
+(legacy alias: `CORE.4`)
 
 Purpose:
 
-- Combine the `CORE.2` treasury cash snapshot and the `CORE.3` paper position
+- Combine the `P0.J` treasury cash snapshot and the `P0.K` paper position
   book into one structural paper portfolio snapshot.
 - Keep the snapshot pure, in-memory, paper-only, and free of market prices,
   PnL, orders, fills, execution, storage, API routes, UI, and runtime services.
@@ -3850,8 +3935,8 @@ Purpose:
 
 Previous state:
 
-- `CORE.2` could describe paper cash state.
-- `CORE.3` could describe paper positions.
+- `P0.J` could describe paper cash state.
+- `P0.K` could describe paper positions.
 - No combined portfolio read model existed.
 
 Target state:
@@ -3924,11 +4009,12 @@ Acceptance criteria:
 - Portfolio snapshots are frozen.
 - Portfolio snapshots expose no market value, PnL, return, or strategy
   attribution fields.
-- Existing `CORE.0`, `CORE.1`, `CORE.2`, and `CORE.3` tests still pass.
+- Existing `P0.H`, `P0.I`, `P0.J`, and `P0.K` tests still pass.
 
 Next recommended wave:
 
-`CORE.5 - Paper Decision Record Boundary`
+`P0.M - Paper Decision Record Boundary`
+(legacy alias: `CORE.5`)
 
 Purpose:
 
@@ -3937,6 +4023,51 @@ Purpose:
   post-mortem fields.
 - Keep decision records independent from market data ingestion, strategy
   engines, paper execution, provider runtime, and live trading.
+
+Previous state:
+
+- `P0.H` through `P0.L` define authority, treasury, ledger, cash snapshot,
+  paper positions, and structural paper portfolio state.
+- No first-class decision record contract exists yet.
+
+Target state:
+
+- Owner decision records exist as typed paper-only domain contracts.
+- No-action records are first-class records, not missing data.
+- Action candidate records can be represented without creating orders or fills.
+- Records include hypothesis, asset, timeframe, expected risk, reasons not to
+  act, stale data state, cost assumptions, risk context, final decision, later
+  outcome, and post-mortem fields.
+- Records do not ingest market data, compute strategy signals, execute actions,
+  or call provider/model runtime.
+
+Allowed changes:
+
+- Add a narrow paper decision record domain module under `packages/core`.
+- Export stable decision record contracts from `drmlke_core`.
+- Add deterministic unit tests.
+- Update this roadmap and architecture docs.
+
+Forbidden changes:
+
+- No market data ingestion.
+- No strategy engine.
+- No paper execution.
+- No orders or fills.
+- No API routes.
+- No database schema or persistence.
+- No client/UI.
+- No provider, Spark, Tailscale, exchange, broker, wallet custody, withdrawal,
+  credential, or model runtime work.
+
+Acceptance criteria:
+
+- Decision records distinguish action, no-action, and veto/reject outcomes.
+- A record can include hypothesis, reasons not to act, stale data state, cost
+  assumptions, risk context, final decision, later outcome, and post-mortem.
+- Records remain paper-only and owner-reviewed.
+- No execution path is created.
+- Existing Phase 0 product-core tests still pass.
 
 Non-goals:
 

@@ -1,6 +1,9 @@
 # Architecture
 
 The canonical project spine is [drmlke-roadmap.md](drmlke-roadmap.md).
+Canonical operational wave ids are phase ids such as `P0.H`, `P1.A`, and
+`P2.A`. Legacy `CORE.*` names remain only as aliases for commits and prior
+documentation.
 
 Current architecture priority:
 
@@ -49,22 +52,22 @@ Bootstrap safety boundaries:
 - no exchange connections
 - no live execution
 - no AI model inference
-- `CORE.0` contracts are typed identity, safety, and treasury boundaries only;
-  authentication, sessions, database storage, and API enforcement remain later
-  work
-- `CORE.1` ledger contracts are append-only domain logic only; persistence,
-  database schema, API routes, paper orders, fills, market data, strategies, and
+- `P0.H` contracts, historically `CORE.0`, are typed identity, safety, and
+  treasury boundaries only; authentication, sessions, database storage, and API
+  enforcement remain later work
+- `P0.I` ledger contracts, historically `CORE.1`, are append-only domain logic
+  only; persistence, database schema, API routes, paper orders, fills, market
+  data, strategies, and execution remain later work
+- `P0.J` treasury projection contracts, historically `CORE.2`, are pure
+  in-memory read-side domain logic only; persistence, API enforcement, paper
+  orders, fills, paper positions, market data, market valuation, strategies, and
   execution remain later work
-- `CORE.2` treasury projection contracts are pure in-memory read-side domain
-  logic only; persistence, API enforcement, paper orders, fills, paper
-  positions, market data, market valuation, strategies, and execution remain
-  later work
-- `CORE.3` paper position contracts are pure in-memory domain logic only;
-  persistence, API enforcement, paper orders, fills, ledger mutation, market
-  data, market valuation, realized or unrealized PnL, strategies, and execution
-  remain later work
-- `CORE.4` paper portfolio snapshot contracts are pure in-memory read-side
-  domain logic only; they combine treasury cash snapshots and paper position
-  books without persistence, API enforcement, UI, paper orders, fills, ledger
-  mutation, market data, market valuation, realized or unrealized PnL, returns,
-  strategies, or execution
+- `P0.K` paper position contracts, historically `CORE.3`, are pure in-memory
+  domain logic only; persistence, API enforcement, paper orders, fills, ledger
+  mutation, market data, market valuation, realized or unrealized PnL,
+  strategies, and execution remain later work
+- `P0.L` paper portfolio snapshot contracts, historically `CORE.4`, are pure
+  in-memory read-side domain logic only; they combine treasury cash snapshots
+  and paper position books without persistence, API enforcement, UI, paper
+  orders, fills, ledger mutation, market data, market valuation, realized or
+  unrealized PnL, returns, strategies, or execution
