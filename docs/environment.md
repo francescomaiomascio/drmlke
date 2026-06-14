@@ -2,6 +2,9 @@
 
 Bootstrap target: Linux/Arch.
 
+Primary active development node: Linux workstation at
+`/home/mothx/computer-science/projects/drmlke`.
+
 Secondary active development node: MacBook at
 `/Users/mothx/Developer/drmlke`.
 
@@ -35,6 +38,39 @@ pnpm -v
 ```
 
 Do not install random global npm packages.
+
+## Linux Status
+
+`LINUX.SETUP.1` records the Linux workstation as the canonical development node:
+
+- Repo path: `/home/mothx/computer-science/projects/drmlke`.
+- Branch: `main`.
+- Git sync: `main` is aligned with `origin/main`.
+- Host target: Linux/Arch local development.
+- Shell: `zsh`.
+- Node: `v24.16.0`.
+- Project Python: Python 3.12 through `uv`.
+- Docker Compose provider container: `drmlke-provider-1`.
+- Provider port: `8781`.
+- Provider role: local stub provider only.
+- Provider health: `status=ok`, `provider=stub`,
+  `live_trading_enabled=false`.
+- Provider models: empty list.
+- MacBook remains the secondary active development node.
+- Spark remains untouched.
+
+Linux verification commands:
+
+```sh
+cd /home/mothx/computer-science/projects/drmlke
+git status --short --branch
+make doctor
+make check
+docker compose ps
+docker compose --profile provider up -d provider
+curl -sS http://127.0.0.1:8781/health
+curl -sS http://127.0.0.1:8781/models
+```
 
 ## MacBook Status
 

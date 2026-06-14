@@ -3,17 +3,19 @@
 This document is the canonical single source of truth for drmlke product shape,
 system boundaries, delivery order, and future implementation waves.
 
-This version is `DOCS.SPINE.3` with `MAC.SETUP.1-CLOSE` status recorded. It
-completes the master spine and records the MacBook as an active development
-node before any Spark attachment, runtime deployment, trading feature, wallet
-feature, exchange connection, mobile client scaffold, or AI model download.
+This version is `DOCS.SPINE.3` with `MAC.SETUP.1-CLOSE` and `LINUX.SETUP.1`
+status recorded. It completes the master spine, records the MacBook as an
+active secondary development node, and records the Linux workstation as the
+canonical development node before any Spark attachment, runtime deployment,
+trading feature, wallet feature, exchange connection, mobile client scaffold,
+or AI model download.
 
 ## 1. Current Project State
 
 Current repository facts:
 
-- Canonical Linux repo path: `/home/mothx/code/drmlke`.
-- Current active workspace for this edit: `/Users/mothx/Developer/drmlke`.
+- Canonical Linux repo path: `/home/mothx/computer-science/projects/drmlke`.
+- Current active workspace for this edit: `/home/mothx/computer-science/projects/drmlke`.
 - MacBook repo path: `/Users/mothx/Developer/drmlke`.
 - MacBook role: secondary active development node.
 - Remote: `https://github.com/francescomaiomascio/drmlke.git`.
@@ -21,8 +23,9 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `MAC.SETUP.1-CLOSE`.
-- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`.
+- Current wave: `LINUX.SETUP.1`.
+- Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
+  `MAC.SETUP.1-CLOSE`.
 - Next recommended wave: `DOCS.REVIEW.1`.
 
 Current provider status:
@@ -38,6 +41,12 @@ Current environment status:
 
 - Python is pinned to 3.12.
 - Node is pinned to 24.
+- Linux canonical repo path is
+  `/home/mothx/computer-science/projects/drmlke`.
+- Linux Node 24 is active as `v24.16.0`.
+- Linux `make doctor`, `make check`, and local provider health/model checks
+  pass.
+- Linux provider stub is running through Docker Compose on port `8781`.
 - MacBook Node 24 is active as `v24.16.0`.
 - MacBook `uv` is active as `uv 0.11.17`.
 - MacBook `pnpm` works through Corepack as `10.12.1`.
@@ -56,6 +65,7 @@ Current Spark status:
 - The preferred future Spark access path is Tailscale or an explicit private SSH
   path, not a fragile local hostname dependency.
 - Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
+- Spark remains intentionally untouched by `LINUX.SETUP.1`.
 - Documentation review comes before Spark runtime deployment.
 
 What is implemented now:
@@ -97,9 +107,11 @@ Sequencing correction:
 
 1. `DOCS.SPINE.3` completes this master document.
 2. `MAC.SETUP.1-CLOSE` records the MacBook as an active development node.
-3. `DOCS.REVIEW.1` inspects and hardens this spine before infrastructure work.
-4. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
-5. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
+3. `LINUX.SETUP.1` records the canonical Linux development node and resolves
+   stale Linux path references.
+4. `DOCS.REVIEW.1` inspects and hardens this spine before infrastructure work.
+5. `TAILSCALE.SPARK.1` verifies the private access path to Spark.
+6. `SPARK.RUNTIME.1` prepares Spark storage and deploys the provider only after
    the access path is verified.
 
 ## 2. Product Definition
@@ -520,21 +532,28 @@ Expected tools:
 Expected validation:
 
 ```sh
+git status --short --branch
 uv sync --dev
 make doctor
 make check
-docker compose --profile provider up provider
-curl http://localhost:8781/health
-curl http://localhost:8781/models
+docker compose ps
+docker compose --profile provider up -d provider
+curl -sS http://127.0.0.1:8781/health
+curl -sS http://127.0.0.1:8781/models
 ```
 
 Current status:
 
 - Python 3.12 is the pinned Python version.
 - Node 24 alignment is resolved.
-- The provider stub is expected to validate locally.
-- The Linux workstation remains the main authoring machine until MacBook setup
-  is complete.
+- Canonical repo path is `/home/mothx/computer-science/projects/drmlke`.
+- The provider stub validates locally on port `8781`.
+- Provider health returns `status=ok`, `provider=stub`, and
+  `live_trading_enabled=false`.
+- Provider models returns an empty list.
+- The Linux workstation is the canonical authoring machine.
+- MacBook remains a secondary active development node.
+- Spark remains untouched.
 
 ### MacBook
 
@@ -2423,7 +2442,8 @@ Forbidden:
 Acceptance:
 
 - Roadmap is self-contained.
-- Next sequence is docs, then MacBook, then Tailscale, then Spark.
+- Historical next sequence at the time of this wave was docs, then MacBook,
+  then Tailscale, then Spark.
 - Treasury model is correct.
 - Account and capability model is correct.
 - Interface surfaces are clear.
@@ -2456,7 +2476,7 @@ Expected final report:
 - whether `docs/drmlke-roadmap.md` was fully expanded
 - historical next wave at the time of `DOCS.SPINE.3`: `MAC.SETUP.1`
 
-## 23. Current Closeout and Next Wave Detail
+## 23. Current Closeouts and Next Wave Detail
 
 Current closeout:
 
@@ -2508,6 +2528,47 @@ Closeout acceptance:
 - MacBook pnpm is `10.12.1`.
 - MacBook uv is `0.11.17`.
 - Docker-compatible runtime is available through OrbStack.
+- Local provider health returns ok with live trading disabled.
+- Local provider models returns an empty list.
+- Spark remains intentionally untouched.
+
+Current Linux closeout:
+
+`LINUX.SETUP.1 - Canonical Linux Development Node`
+
+Purpose:
+
+- Establish `/home/mothx/computer-science/projects/drmlke` as the canonical
+  Linux workspace.
+- Replace stale legacy Linux workspace references.
+- Record Linux provider stub status without changing provider behavior.
+- Keep MacBook documented as secondary.
+- Keep Spark untouched.
+
+Completed checks:
+
+- L1.A documentation audit. Purpose: find stale Linux workspace path
+  references. Tasks: inspect README and `docs/`. Output: stale path list.
+  Acceptance: the legacy Linux workspace path is no longer used as canonical
+  path.
+  Non-goals: code changes.
+- L1.B environment status. Purpose: record the Linux node as the canonical
+  development node. Tasks: document repo path, provider status, port, and local
+  verification commands. Output: Linux status section. Acceptance: commands are
+  explicit and reproducible. Non-goals: Docker behavior changes.
+- L1.C provider verification. Purpose: confirm current local provider state.
+  Tasks: inspect Compose status and call health/model endpoints. Output:
+  provider status. Acceptance: provider remains stub-only, live trading is
+  false, and models are empty. Non-goals: real provider, model downloads,
+  trading, credentials, or Spark deployment.
+
+Closeout acceptance:
+
+- Canonical Linux path is `/home/mothx/computer-science/projects/drmlke`.
+- `main` is aligned with `origin/main` before this documentation edit.
+- `make doctor` passes on Linux.
+- `make check` passes on Linux.
+- Docker Compose provider is running on port `8781`.
 - Local provider health returns ok with live trading disabled.
 - Local provider models returns an empty list.
 - Spark remains intentionally untouched.
@@ -2574,3 +2635,6 @@ decision until the relevant wave makes and records the decision.
 - `MAC.SETUP.1-CLOSE`: MacBook recorded as a secondary active development node,
   `DOCS.SPINE.3` pushed to GitHub, local toolchain validated, and provider
   stub verified locally without touching Spark.
+- `LINUX.SETUP.1`: Linux workstation recorded as the canonical development
+  node, legacy path references removed, provider stub status documented, and
+  Spark left untouched.

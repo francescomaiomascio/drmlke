@@ -24,7 +24,7 @@ This repository is in bootstrap state. It intentionally does not include:
 
 Active development checkouts:
 
-- Linux workstation canonical path: `/home/mothx/code/drmlke`
+- Linux workstation canonical path: `/home/mothx/computer-science/projects/drmlke`
 - MacBook secondary active node: `/Users/mothx/Developer/drmlke`
 
 Spark is a future runtime/deploy target and is not the authoring repo.
@@ -38,6 +38,6 @@ docker compose --profile provider up provider
 Provider health:
 
 ```sh
-curl http://localhost:8781/health
-curl http://localhost:8781/models
+curl -sS http://127.0.0.1:8781/health
+curl -sS http://127.0.0.1:8781/models
 ```
