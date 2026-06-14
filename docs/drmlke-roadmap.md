@@ -23,10 +23,11 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current wave: `DOCS.REVIEW.2`.
+- Current wave: `CORE.0`.
 - Completed waves: `BOOTSTRAP.0`, `DOCS.SPINE.2`, `DOCS.SPINE.3`,
-  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`.
-- Next recommended wave: `CORE.0`.
+  `MAC.SETUP.1-CLOSE`, `LINUX.SETUP.1`, `DOCS.REVIEW.1`,
+  `DOCS.REVIEW.2`.
+- Next recommended wave: `CORE.1`.
 
 Current provider status:
 
@@ -77,6 +78,8 @@ What is implemented now:
 - `apps/provider` FastAPI provider stub.
 - `apps/worker` worker heartbeat placeholder.
 - `packages/core` shared settings and path helpers.
+- `packages/core` typed identity, role, capability, global safety lock, and
+  paper treasury boundary contracts.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -94,8 +97,8 @@ What is not implemented now:
 - No withdrawal support.
 - No market data collector.
 - No treasury ledger implementation.
-- No account and identity implementation.
-- No capability enforcement implementation.
+- No persisted account, login, session, or device implementation.
+- No API capability enforcement implementation.
 - No mobile client scaffold.
 - No web admin console.
 - No strategy engine.
@@ -1594,6 +1597,18 @@ Capability assignment:
 - Zio starts with family viewer capabilities.
 - Live trading capabilities are globally disabled.
 
+`CORE.0` implementation:
+
+- `drmlke_core.identity.Role` defines the initial roles.
+- `drmlke_core.identity.Capability` defines the initial capability names.
+- `drmlke_core.identity.capabilities_for_role` applies deterministic role
+  defaults.
+- `approve_future_live_action` and `manage_exchange_connections` are globally
+  locked.
+- Initial profile contracts exist for Francesco, Padre, and Zio.
+- This is a typed domain contract only, not authentication, login, session
+  storage, or API enforcement.
+
 ## 12. Treasury and Capital Spine
 
 Correct capital model:
@@ -1603,6 +1618,17 @@ Correct capital model:
 - Current implementation: paper only.
 - Paper treasury: one simulated 200 EUR treasury.
 - No per-person budget split.
+
+`CORE.0` implementation:
+
+- `drmlke_core.treasury.PaperTreasuryBoundary` defines the one-paper-treasury
+  boundary.
+- Initial paper capital is 200 EUR.
+- Live capital is 0 EUR.
+- Per-person portfolios are forbidden.
+- Family viewer roles can view allowed treasury state but cannot manage it.
+- Ledger entries, positions, paper orders, fills, and PnL accounting remain for
+  `CORE.1` and later.
 - Padre and Zio are viewers, not independent portfolio managers.
 
 Contribution metadata may exist later, but it is accounting metadata. It is not
@@ -3408,7 +3434,7 @@ Closeout acceptance:
 - Spark remains untouched.
 - No application code changes are required.
 
-Next recommended wave:
+Current implementation wave:
 
 `CORE.0 - Identity, Capabilities, and Paper Treasury Boundary`
 
@@ -3421,12 +3447,68 @@ Purpose:
 - Keep Spark reserved until the Product Core path no longer depends on local
   identity, treasury, benchmark, and decision objects.
 
+Completed tasks:
+
+- C0.A identity contracts. Purpose: define user and actor identity primitives.
+  Tasks: add `UserId`, `UserProfile`, and actor metadata contracts. Output:
+  typed core identity contracts. Acceptance: no authentication or session
+  storage is introduced. Non-goals: login implementation.
+- C0.B role and capability policy. Purpose: define initial authority. Tasks:
+  add roles, capability names, deterministic role defaults, and global locks.
+  Output: role/capability policy. Acceptance: viewers cannot mutate treasury,
+  runtime, risk, strategy, user, device, or exchange state. Non-goals: API
+  routes.
+- C0.C safety locks. Purpose: preserve bootstrap safety. Tasks: add global
+  safety lock contract for live trading, withdrawals, wallet custody, exchange
+  credentials, model override, UI lock doctrine, and server-side enforcement.
+  Output: safety lock contract. Acceptance: unsafe lock combinations fail fast.
+  Non-goals: runtime state store.
+- C0.D paper treasury boundary. Purpose: enforce the single treasury model.
+  Tasks: add one-paper-treasury boundary with 200 EUR paper capital and 0 EUR
+  live capital. Output: treasury boundary contract. Acceptance: multiple
+  treasuries and per-person portfolios are rejected. Non-goals: ledger entries.
+- C0.E tests. Purpose: prove the authority and treasury boundary. Tasks: add
+  tests for owner, viewer, admin, live locks, safety locks, and treasury
+  policy. Output: core contract tests. Acceptance: tests pass without Docker,
+  Spark, providers, credentials, ledger, market data, strategies, or UI.
+
+Closeout acceptance:
+
+- Role and capability contracts exist.
+- Owner/operator has owner/operator paper capabilities.
+- Viewer family accounts remain view-only.
+- Emergency-only role remains narrow.
+- Technical admin role has no trading authority by default.
+- Future live and exchange capabilities remain globally locked.
+- Global safety locks disable live trading, withdrawals, wallet custody,
+  exchange credentials, and model risk override.
+- Exactly one 200 EUR paper treasury boundary exists.
+- Live capital remains 0 EUR.
+- No per-person portfolio split exists.
+- No application runtime, Docker, Spark, Tailscale, provider, ledger, market
+  data, strategy, backtest, paper execution, UI, or auth/session storage is
+  introduced.
+
+Next recommended wave:
+
+`CORE.1 - Paper Treasury Ledger`
+
+Purpose:
+
+- Implement the append-only paper ledger on top of the `CORE.0` identity,
+  capability, safety, and paper treasury boundary.
+- Preserve exactly one paper treasury.
+- Keep live capital at 0 EUR.
+- Keep all future real-money behavior locked.
+
 Non-goals:
 
 - No Spark deployment.
 - No Tailscale production routing changes.
 - No client implementation.
 - No trading logic.
+- No market data collector.
+- No strategy engine.
 - No model downloads.
 - No exchange integration.
 - No wallet custody.
@@ -3490,3 +3572,5 @@ decision until the relevant wave makes and records the decision.
 - `DOCS.REVIEW.2`: `MVP.1` exact cut, candidate paper-mode cost assumptions,
   conservative strategy limits, promotion gates, rejection gates, risk policy
   draft, and minimum paper duration before any manual-live review.
+- `CORE.0`: typed identity, role, capability, global safety lock, and
+  one-paper-treasury boundary contracts, with tests and no runtime expansion.
