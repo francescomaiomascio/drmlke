@@ -142,6 +142,51 @@ mutate runtime state.
   addresses, private key path, detailed mount output, GPU bus/process details,
   and unrelated local runtime details.
 
+## P2.D.REMEDIATION Docker Access Review
+
+- Current Docker access state: Docker and Docker Compose are installed, but the
+  verified remote user cannot inspect Docker without elevated permissions.
+- Docker group state: a Docker group exists, but the verified remote user does
+  not appear to be a member. User and group details are summarized only.
+- Docker socket state: the Docker socket is owned by `root:docker` and is not
+  world-accessible.
+- No Docker permission change was made.
+- No `sudo` command was run.
+- No container was started or stopped.
+- No Docker daemon configuration was changed.
+- No `/srv/drmlke` directory was created.
+
+Options reviewed:
+
+1. Owner manually adds the verified runtime user to the Docker group.
+   - Pros: Docker and Docker Compose become usable without `sudo` for later
+     deploy and operations waves.
+   - Cons: Docker group access is effectively root-equivalent and requires
+     explicit trust.
+   - Manual action pattern, if approved outside this wave:
+     `sudo usermod -aG docker <verified-spark-user>`, followed by a fresh login
+     session and a read-only Docker access check.
+2. Use explicit `sudo` for Docker operations in later waves.
+   - Pros: avoids Docker group membership.
+   - Cons: every Docker-related wave requires controlled owner approval and is
+     harder to automate safely.
+3. Use a separate deployment/runtime user.
+   - Pros: clearer operational boundary.
+   - Cons: requires user, group, and policy setup before runtime work.
+4. Keep Spark Docker work blocked.
+   - Pros: safest until an owner policy decision exists.
+   - Cons: blocks Spark runtime deployment.
+
+Recommended policy:
+
+- Do not silently change Docker permissions.
+- Treat Docker access as privileged/root-equivalent.
+- Require an explicit owner decision before granting Docker group access, using
+  `sudo`, or creating a dedicated deployment user.
+- Keep `P3` runtime deployment blocked until that decision is made and recorded.
+- `P2.E - Private Service Policy` can proceed only as a policy/documentation
+  wave; it must not deploy or mutate Spark runtime state.
+
 ## Unknowns
 
 - Whether `spark-vpn` should be the long-term preferred SSH path for all Spark
@@ -155,6 +200,8 @@ mutate runtime state.
 - Whether MacBook remains the preferred private access path for remote work.
 - Whether the remote user should be allowed to inspect Docker without sudo, or
   whether future runtime operations should use a different operator pattern.
+- Whether the owner prefers Docker group membership, explicit `sudo`, a
+  dedicated deployment user, or keeping Docker work blocked.
 - Which wave should create `/srv/drmlke` and with what ownership model.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.

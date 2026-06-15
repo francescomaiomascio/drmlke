@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.D - Remote Preflight`.
+- Current completed wave: `P2.D.REMEDIATION - Spark Docker Access Review`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -69,9 +69,10 @@ Current repository facts:
   - `P2.B - Tailscale Reachability`.
   - `P2.C - SSH Verification`.
   - `P2.D - Remote Preflight`.
-- Next recommended wave: `P2.D.REMEDIATION - Spark Docker Access Review`,
-  because Docker inspection is not currently available to the verified remote
-  user without elevated permissions.
+  - `P2.D.REMEDIATION - Spark Docker Access Review`.
+- Next recommended action: owner decision on Spark Docker access policy.
+- Next eligible wave after Docker access policy decision: `P2.E - Private
+  Service Policy`.
 
 Current provider status:
 
@@ -197,7 +198,10 @@ Sequencing correction:
 16. `P2.D` performs read-only remote preflight and records that Docker is
    installed but not inspectable by the verified remote user without elevated
    permissions.
-17. Tailscale and Spark remain infrastructure-only future work until they do
+17. `P2.D.REMEDIATION` reviews Docker access options and requires an explicit
+   owner decision before Docker permissions, `sudo`, runtime users, or Spark
+   deployment work proceed.
+18. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2865,9 +2869,11 @@ and SSH identity is confirmed before runtime deployment begins.
   inspection and future runtime operations should be authorized on Spark.
   Tasks: review whether to adjust user group membership, use another operator
   account, or defer Docker work to a privileged setup wave. Output: access
-  remediation decision. Acceptance: next runtime preparation path is explicit.
-  Non-goals: provider deployment, market data, trading, wallet custody, model
-  runtime, or unreviewed privilege changes.
+  remediation decision. Acceptance: Docker access options are documented and an
+  explicit owner decision is required before permissions change. Status:
+  completed as review; manual owner decision required. Non-goals: provider
+  deployment, market data, trading, wallet custody, model runtime, or
+  unreviewed privilege changes.
 - P2.E - Private service policy. Purpose: define how services stay private.
   Tasks: document bind addresses, firewall expectations, VPN route, and no
   public tunnels. Output: access policy. Acceptance: no public internet exposure

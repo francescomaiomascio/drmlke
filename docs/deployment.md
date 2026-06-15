@@ -33,3 +33,20 @@ not deployment-ready yet: `/srv/drmlke` has not been created, and Docker
 inspection is not currently available to the verified remote user without
 elevated permissions. Storage-root preparation and any Docker permission change
 belong to later reviewed waves.
+
+## Spark Docker Access Policy
+
+Docker access on Spark requires an explicit owner-approved policy before runtime
+deployment.
+
+Docker group membership is effectively root-equivalent. Do not add users to the
+Docker group, change Docker socket permissions, or use `sudo` for Docker
+operations without a reviewed owner decision.
+
+No Docker permission change has been made. No runtime deployment can begin until
+the project decides one of these paths:
+
+- owner-approved Docker group membership for the verified runtime user
+- explicit owner-approved `sudo` use in later Docker waves
+- a separate deployment/runtime user with a documented policy
+- keeping Spark Docker work blocked
