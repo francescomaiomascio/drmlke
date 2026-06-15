@@ -27,3 +27,9 @@ source for current and next wave status.
 The current verified Spark SSH candidate is the Tailscale SSH alias `spark-vpn`.
 This verifies access only. It does not create `/srv/drmlke`, prove runtime
 readiness, or approve deployment.
+
+Spark has been inspected read-only through the verified SSH path. The host is
+not deployment-ready yet: `/srv/drmlke` has not been created, and Docker
+inspection is not currently available to the verified remote user without
+elevated permissions. Storage-root preparation and any Docker permission change
+belong to later reviewed waves.

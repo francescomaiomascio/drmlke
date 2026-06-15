@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.C - SSH Verification`.
+- Current completed wave: `P2.D - Remote Preflight`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -68,7 +68,10 @@ Current repository facts:
   - `P2.A - Access Inventory`.
   - `P2.B - Tailscale Reachability`.
   - `P2.C - SSH Verification`.
-- Next recommended wave: `P2.D - Remote Preflight`.
+  - `P2.D - Remote Preflight`.
+- Next recommended wave: `P2.D.REMEDIATION - Spark Docker Access Review`,
+  because Docker inspection is not currently available to the verified remote
+  user without elevated permissions.
 
 Current provider status:
 
@@ -191,7 +194,10 @@ Sequencing correction:
    Tailscale configuration, or deployment.
 15. `P2.C` verifies the preferred Tailscale SSH alias without deployment,
    remote file mutation, sudo, Docker, or runtime changes.
-16. Tailscale and Spark remain infrastructure-only future work until they do
+16. `P2.D` performs read-only remote preflight and records that Docker is
+   installed but not inspectable by the verified remote user without elevated
+   permissions.
+17. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2852,8 +2858,16 @@ and SSH identity is confirmed before runtime deployment begins.
   Docker, or deploying services.
 - P2.D - Remote preflight. Purpose: inspect Spark without deploying. Tasks:
   check OS, architecture, disk, Docker, Compose, GPU visibility if appropriate.
-  Output: preflight report. Acceptance: runtime blockers are known. Non-goals:
-  creating `/srv/drmlke`.
+  Output: preflight report. Acceptance: runtime blockers are known. Status:
+  completed with Docker access blocker. Non-goals: creating `/srv/drmlke`,
+  changing permissions, running Docker workloads, or deploying services.
+- P2.D.REMEDIATION - Spark Docker Access Review. Purpose: decide how Docker
+  inspection and future runtime operations should be authorized on Spark.
+  Tasks: review whether to adjust user group membership, use another operator
+  account, or defer Docker work to a privileged setup wave. Output: access
+  remediation decision. Acceptance: next runtime preparation path is explicit.
+  Non-goals: provider deployment, market data, trading, wallet custody, model
+  runtime, or unreviewed privilege changes.
 - P2.E - Private service policy. Purpose: define how services stay private.
   Tasks: document bind addresses, firewall expectations, VPN route, and no
   public tunnels. Output: access policy. Acceptance: no public internet exposure

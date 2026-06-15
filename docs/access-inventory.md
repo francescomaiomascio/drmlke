@@ -113,6 +113,35 @@ mutate runtime state.
 - No `sudo`, Docker, service, package, runtime, or deployment commands were run
   on Spark.
 
+## P2.D Remote Preflight Result
+
+- SSH path used: `spark-vpn`.
+- Remote preflight was read-only.
+- Remote OS distribution: Ubuntu 24.04 LTS family.
+- Remote architecture: `aarch64`.
+- Remote kernel family: NVIDIA-related Linux kernel.
+- Docker installed: yes.
+- Docker Compose available: yes.
+- Docker inspection without sudo: no. `docker ps` is not usable by the current
+  remote user without elevated permissions.
+- NVIDIA/GPU tooling visible: yes.
+- GPU summary: NVIDIA GB10 is visible through NVIDIA tooling. Serial numbers,
+  bus identifiers, process details, and unrelated display-process details are
+  not recorded here.
+- Disk summary: Spark exposes a large NVMe-backed root filesystem with ample
+  free space and standard EFI/tmpfs/system mounts. Detailed mount output is not
+  copied into this repository document.
+- `/srv/drmlke` exists: no.
+- `/srv/drmlke` was not created.
+- No files were copied.
+- No directories were created.
+- No remote files were changed.
+- No `sudo`, package installation, Docker container, service, runtime, or
+  deployment command was run.
+- Redacted values: SSH username, remote home directory, Tailscale/private
+  addresses, private key path, detailed mount output, GPU bus/process details,
+  and unrelated local runtime details.
+
 ## Unknowns
 
 - Whether `spark-vpn` should be the long-term preferred SSH path for all Spark
@@ -124,5 +153,8 @@ mutate runtime state.
   outside this repository.
 - Whether Linux workstation should be the primary Spark access source.
 - Whether MacBook remains the preferred private access path for remote work.
+- Whether the remote user should be allowed to inspect Docker without sudo, or
+  whether future runtime operations should use a different operator pattern.
+- Which wave should create `/srv/drmlke` and with what ownership model.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.
