@@ -227,6 +227,7 @@ Decision outcome:
   environment file, secret, model artifact, log payload, backup payload,
   database, provider runtime, market data, trading state, exchange credential,
   or wallet material is populated.
+- File payload count at storage-root closeout: `0`.
 - Docker group membership has not been granted.
 - Docker socket permissions have not been changed.
 - No Docker container was started or stopped as part of storage-root creation.

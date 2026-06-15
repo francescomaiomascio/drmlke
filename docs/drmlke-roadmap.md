@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
+- Current completed wave: `P3.A.CLOSE - Spark Storage Root Closeout`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -78,9 +78,10 @@ Current repository facts:
   - `P3.A.OWNER - Spark Storage Ownership Decision`.
   - `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
   - `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
+  - `P3.A.CLOSE - Spark Storage Root Closeout`.
   - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.A.CLOSE - Spark Storage Root Closeout`.
+- Next recommended wave: `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
 - P3 runtime preparation has a storage root, but provider deployment has not
   started and remains blocked until later approved runtime waves.
 - Phase 4 agentic decision-intelligence architecture is documented at spine
@@ -124,6 +125,8 @@ Current Spark status:
 - `/srv/drmlke` exists with dedicated `drmlke:drmlke` ownership and `0750`
   directory mode.
 - The approved storage-root tree exists under `/srv/drmlke`.
+- Storage-root closeout verified the expected tree, ownership, mode, and empty
+  file payload state. File payload count is `0`.
 - No source deploy copy, provider runtime, Docker container, environment file,
   secret, model artifact, log, backup, market data, API, trading, exchange, or
   wallet behavior has been added to Spark.
@@ -248,7 +251,10 @@ Sequencing correction:
    `/srv/drmlke` tree with dedicated `drmlke:drmlke` ownership and `0750`
    directory mode, without provider deployment, Docker operation, secrets, or
    runtime services.
-28. Tailscale and Spark remain infrastructure-only future work until they do
+28. `P3.A.CLOSE` verifies and documents the completed storage root without
+   Spark mutation, permission loosening, Docker use, deploy work, or payload
+   creation.
+29. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -3236,8 +3242,8 @@ and SSH identity is confirmed before runtime deployment begins.
 
 ### Phase 3. Spark storage and provider runtime preparation
 
-Status: active infrastructure phase after P2 closeout. The storage root exists,
-but runtime preparation remains pre-deploy.
+Status: active infrastructure phase after P2 closeout. The storage-root
+baseline is complete, but runtime preparation remains pre-deploy.
 
 Outcome when complete: Spark has `/srv/drmlke`, a deploy copy, private provider
 runtime, and repeatable validation.
@@ -3279,11 +3285,18 @@ runtime, and repeatable validation.
   completed storage root before environment file planning or deploy-copy work.
   Tasks: inspect `drmlke` user/group, root ownership, directory tree,
   permission model, empty runtime content, and no Docker/deploy side effects.
-  Output: storage-root closeout. Acceptance: root and tree are documented,
-  no secrets or runtime files exist, and next P3 wave is explicit. Non-goals:
-  provider deployment, source copy, Docker operations, environment file
-  creation, secrets, market data, trading, exchange, wallet custody, or model
-  runtime.
+  Output: storage-root closeout. Status: completed. Acceptance: root and tree
+  are documented, no secrets or runtime files exist, and next P3 wave is
+  explicit. Non-goals: provider deployment, source copy, Docker operations,
+  environment file creation, secrets, market data, trading, exchange, wallet
+  custody, or model runtime.
+- P3.B.PREFLIGHT - Spark Environment File Setup Plan. Purpose: plan future
+  environment-file setup before any env file is created on Spark. Tasks:
+  define target paths, template source, disabled-live defaults, backup behavior,
+  secret redaction, verification checks, and stop conditions. Output: approved
+  or rejected env-file plan. Status: recommended next. Non-goals: creating env
+  files, adding secrets, copying source, running Docker, deploying provider,
+  market data, trading, exchange, wallet custody, or model runtime.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:
@@ -4964,3 +4977,7 @@ decision until the relevant wave makes and records the decision.
   directory tree created with `drmlke:drmlke` ownership and `0750` permissions,
   with no source copy, provider deployment, Docker operation, secrets, model
   artifacts, market data, trading, exchange, or wallet behavior.
+- `P3.A.CLOSE`: Spark storage-root baseline verified and documented with
+  `drmlke:drmlke` ownership, `0750` directory permissions, file payload count
+  `0`, and no Spark mutation, Docker operation, deploy work, secrets, models,
+  env files, log payloads, market data, trading, exchange, or wallet behavior.

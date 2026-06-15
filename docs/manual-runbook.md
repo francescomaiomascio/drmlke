@@ -288,13 +288,38 @@ Storage-root validation inside Spark:
 ```bash
 getent group drmlke
 getent passwd drmlke
-stat -c "%U:%G %a %n" /srv/drmlke
-sudo find /srv/drmlke -mindepth 1 -maxdepth 3 -type d -print0 | sort -z | xargs -0 sudo stat -c "%U:%G %a %n"
+sudo stat -c "%U:%G %a %n" /srv/drmlke
+sudo find /srv/drmlke -maxdepth 3 -type d -exec stat -c "%U:%G %a %n" {} + | sort
+sudo find /srv/drmlke -type f -print | wc -l
 ```
 
 The `sudo find` is intentional. `/srv/drmlke` is `0750` and owned by
 `drmlke:drmlke`, so the human SSH user cannot list child directories without
 sudo.
+
+## REMOTE / Spark Storage Root Read-Only Verification
+
+Run from Exon when a future wave needs to re-check the storage-root baseline.
+This may prompt for the owner sudo password on Spark. Do not store or paste the
+password.
+
+```bash
+ssh -tt spark-vpn '
+hostname
+id
+getent group drmlke
+getent passwd drmlke
+sudo stat -c "%U:%G %a %n" /srv/drmlke
+sudo find /srv/drmlke -maxdepth 3 -type d -exec stat -c "%U:%G %a %n" {} + | sort
+sudo find /srv/drmlke -type f -print | wc -l
+'
+```
+
+Expected baseline after `P3.A.CLOSE`:
+
+- `/srv/drmlke` and expected child directories are `drmlke:drmlke 750`.
+- File payload count is `0` until a later approved wave populates content.
+- Non-sudo traversal by the human SSH user may fail; do not loosen permissions.
 
 ## REMOTE / Spark Storage Ownership Decision
 
@@ -342,6 +367,7 @@ tailscale set --accept-routes=true
 
 - Spark Docker access policy recorded: explicit owner-approved `sudo` in future
   approved Spark Docker waves.
-- `/srv/drmlke` exists as an empty runtime storage root.
+- `/srv/drmlke` exists as an empty runtime storage root with file payload count
+  `0` at `P3.A.CLOSE`.
 - Exact Spark private service bind implementation pending.
 - Provider deployment to Spark pending.

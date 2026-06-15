@@ -274,6 +274,8 @@ Storage-root result:
 - `/srv/drmlke` exists.
 - `/srv/drmlke` and expected child directories are owned by `drmlke:drmlke`.
 - `/srv/drmlke` and expected child directories use mode `0750`.
+- `P3.A.CLOSE` verified that the storage tree still contains no file payloads.
+  File payload count is `0`.
 - The verified human SSH user is separate from the runtime owner and cannot
   list child directories without sudo. This is expected from the `0750`
   permission model.
@@ -281,13 +283,14 @@ Storage-root result:
 - Docker socket permissions remain unchanged.
 - Provider deployment remains future work.
 
-`REMOTE / Spark interactive` validation command:
+`REMOTE / Spark interactive` read-only validation command:
 
 ```bash
 getent group drmlke
 getent passwd drmlke
-stat -c "%U:%G %a %n" /srv/drmlke
-sudo find /srv/drmlke -mindepth 1 -maxdepth 3 -type d -print0 | sort -z | xargs -0 sudo stat -c "%U:%G %a %n"
+sudo stat -c "%U:%G %a %n" /srv/drmlke
+sudo find /srv/drmlke -maxdepth 3 -type d -exec stat -c "%U:%G %a %n" {} + | sort
+sudo find /srv/drmlke -type f -print | wc -l
 ```
 
 Forbidden storage-root behavior:
@@ -304,5 +307,6 @@ Forbidden storage-root behavior:
 Execution gate:
 
 - `P3.A.APPLY.INTERACTIVE` created storage only.
+- `P3.A.CLOSE` verified storage only.
 - Provider deployment remains a later runtime wave.
 - Any additional Spark mutation still requires an explicit approved wave.
