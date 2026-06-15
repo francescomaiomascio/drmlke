@@ -194,8 +194,22 @@ ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/env /srv/drmlke/app /srv/drml
 ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/lake/parquet /srv/drmlke/lake/duckdb /srv/drmlke/vector/lancedb /srv/drmlke/models/embeddings /srv/drmlke/models/llm /srv/drmlke/models/timeseries /srv/drmlke/logs/api /srv/drmlke/logs/worker /srv/drmlke/logs/provider /srv/drmlke/backups/daily /srv/drmlke/backups/weekly /srv/drmlke/runtime/sockets /srv/drmlke/runtime/pids'
 ```
 
-Do not create `/srv/drmlke` manually before an approved apply wave. Ownership
-policy is unresolved; no `chown` command is approved yet.
+Do not create `/srv/drmlke` manually before an approved apply wave. Storage
+ownership is dedicated `drmlke:drmlke`, but no user, group, directory, `chown`,
+or permission command is approved until a future apply wave records the exact
+commands.
+
+## Spark Storage Ownership Decision
+
+Storage ownership policy is dedicated `drmlke:drmlke`.
+
+- The human SSH operator remains separate from the runtime owner.
+- Docker group membership is not granted by this decision.
+- Do not run user or group creation manually yet.
+- A future apply wave will provide exact `sudo` commands for user/group
+  creation, directory creation, ownership, and validation.
+- Keep draft storage-root commands labelled as forbidden until the approved
+  apply wave.
 
 ## Private Service Policy Checks
 
@@ -220,7 +234,7 @@ these by filling placeholders during an access-planning wave.
 ```bash
 ssh spark-vpn 'sudo usermod -aG docker dgmothx'
 ssh spark-vpn 'sudo mkdir -p /srv/drmlke'
-ssh spark-vpn 'sudo chown -R dgmothx:<spark-runtime-group> /srv/drmlke'
+ssh spark-vpn 'sudo chown -R drmlke:drmlke /srv/drmlke'
 ssh spark-vpn 'cd /srv/drmlke/app && docker compose --profile provider up -d provider'
 scp -r /home/mothx/computer-science/projects/drmlke spark-vpn:/srv/drmlke/app
 rsync -av /home/mothx/computer-science/projects/drmlke/ spark-vpn:/srv/drmlke/app/

@@ -170,14 +170,18 @@ Target future tree:
 
 Ownership policy:
 
-The storage-root ownership policy is unresolved and blocks execution. The owner
-must choose one of these before any apply wave runs:
+The selected ownership model is a dedicated runtime user and group:
+`drmlke:drmlke`.
 
-- verified remote user owns `/srv/drmlke`
-- dedicated `drmlke` runtime user owns `/srv/drmlke`
-- root-owned directories with group access
+- The human SSH operator is not the runtime owner by default.
+- Docker group membership is not granted by this ownership decision.
+- Runtime data, environment files, logs, models, and backups remain outside
+  source control.
+- A future apply wave must create the `drmlke` user/group and storage tree with
+  explicit owner-approved sudo commands.
 
-Until that decision is recorded, no `chown` command is approved.
+No deploy occurs in this decision. No user, group, directory, file, or
+permission is changed by this document.
 
 DRAFT - do not run until `P3.A.APPLY` is approved:
 
@@ -210,5 +214,6 @@ Execution gate:
 - This preflight plan does not run the commands.
 - A future `P3.A.APPLY` or equivalent wave must explicitly approve and run
   them.
-- Owner must decide directory ownership policy first.
+- The future apply wave must provide exact commands for creating the `drmlke`
+  user/group and applying `drmlke:drmlke` ownership.
 - Provider deployment remains a later runtime wave.

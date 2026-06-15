@@ -204,7 +204,8 @@ Decision outcome:
 - Docker group membership has not been granted.
 - Docker socket permissions have not been changed.
 - Storage-root creation commands are draft-only and have not been run.
-- `/srv/drmlke` ownership policy is unresolved.
+- `/srv/drmlke` ownership policy is dedicated `drmlke:drmlke`.
+- The `drmlke` user/group has not been created by this documentation wave.
 - No Spark files, directories, services, containers, or runtime state were
   created or changed during P2.
 
@@ -217,7 +218,7 @@ Decision outcome:
   outside this repository.
 - Whether Linux workstation should be the primary Spark access source.
 - Whether MacBook remains the preferred private access path for remote work.
-- Which future approved sudo-based wave should create `/srv/drmlke` and with
-  what ownership model.
+- Which future approved sudo-based wave should create the `drmlke` user/group
+  and `/srv/drmlke` storage tree.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.
