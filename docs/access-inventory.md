@@ -244,6 +244,26 @@ Decision outcome:
 - No environment file was created during `P3.B.PREFLIGHT`.
 - No Spark ownership or permission change was made during `P3.B.PREFLIGHT`.
 
+## P3.B.APPLY.INTERACTIVE Environment Baseline Facts
+
+- `/srv/drmlke/env` is owned by `root:drmlke`.
+- `/srv/drmlke/env` uses mode `0750`.
+- Environment files exist:
+  - `/srv/drmlke/env/drmlke.shared.env`
+  - `/srv/drmlke/env/drmlke.provider.env`
+  - `/srv/drmlke/env/drmlke.api.env`
+  - `/srv/drmlke/env/drmlke.worker.env`
+- Environment files are owned by `root:drmlke`.
+- Environment files use mode `0640`.
+- No sensitive key-like names were observed by the baseline validation scan.
+- Live trading, withdrawals, provider inference, market data, and live
+  execution are disabled in the baseline flags.
+- No Docker container was started or stopped.
+- No provider runtime was deployed.
+- No source copy was created under `/srv/drmlke/app`.
+- No exchange, broker, wallet, seed phrase, private key, API credential, model
+  artifact, market data, trading, or execution state was added.
+
 ## Unknowns
 
 - Whether `spark` over LAN is reliable enough.

@@ -364,10 +364,24 @@ Target policy selected by `P3.B.PREFLIGHT`:
 No real environment values, secrets, exchange keys, broker keys, wallet keys,
 live-trading enablement, or model-download credentials belong in this runbook.
 
-### DRAFT - forbidden until P3.B.APPLY or equivalent approved wave
+### P3.B.APPLY.INTERACTIVE - applied historical workflow
 
-The following commands are a future apply sketch only. Do not run them until a
-future approved wave explicitly authorizes environment-file baseline creation.
+`P3.B.APPLY.INTERACTIVE` applied the Spark environment-file baseline. The owner
+entered the sudo password manually in an interactive Spark terminal. LAN or
+private-network access does not permit password-in-chat, `sudo -S`, password
+storage, sudoers changes, or `NOPASSWD`.
+
+The baseline uses:
+
+- `/srv/drmlke/env`: `root:drmlke 0750`.
+- `/srv/drmlke/env/drmlke.shared.env`: `root:drmlke 0640`.
+- `/srv/drmlke/env/drmlke.provider.env`: `root:drmlke 0640`.
+- `/srv/drmlke/env/drmlke.api.env`: `root:drmlke 0640`.
+- `/srv/drmlke/env/drmlke.worker.env`: `root:drmlke 0640`.
+
+Do not use shell wildcards from the human SSH user for ownership or mode changes
+inside `/srv/drmlke/env`; private directory permissions may prevent shell
+expansion before `sudo` runs. Use explicit file paths.
 
 ```bash
 sudo install -d -m 0750 -o root -g drmlke /srv/drmlke/env
@@ -377,12 +391,49 @@ sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.provider
 sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.api.env
 sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.worker.env
 
-sudo stat -c "%F %U:%G %a %n" /srv/drmlke/env /srv/drmlke/env/drmlke.*.env
+sudo chown root:drmlke \
+  /srv/drmlke/env/drmlke.shared.env \
+  /srv/drmlke/env/drmlke.provider.env \
+  /srv/drmlke/env/drmlke.api.env \
+  /srv/drmlke/env/drmlke.worker.env
+
+sudo chmod 0640 \
+  /srv/drmlke/env/drmlke.shared.env \
+  /srv/drmlke/env/drmlke.provider.env \
+  /srv/drmlke/env/drmlke.api.env \
+  /srv/drmlke/env/drmlke.worker.env
+
+sudo chmod 0750 /srv/drmlke/env
 ```
 
-These draft commands create empty files only. Any future wave that writes
-actual environment content must define safe values, redaction rules, backup
-behavior, validation checks, and stop conditions.
+Baseline environment content was limited to safe non-secret path and disabled
+runtime flags. Future environment edits require an approved wave, safe values,
+redaction rules, backup behavior, validation checks, and stop conditions.
+
+Reusable environment baseline verification:
+
+```bash
+sudo stat -c "%U:%G %a %n" /srv/drmlke/env
+sudo stat -c "%U:%G %a %n" \
+  /srv/drmlke/env/drmlke.shared.env \
+  /srv/drmlke/env/drmlke.provider.env \
+  /srv/drmlke/env/drmlke.api.env \
+  /srv/drmlke/env/drmlke.worker.env
+
+sudo grep -R -nE "PASSWORD|TOKEN|SECRET|PRIVATE_KEY|SEED|API_KEY" /srv/drmlke/env && echo "BAD: secret-like key found" || echo "OK: no secret-like keys"
+
+sudo grep -R -n "DRMLKE_LIVE_TRADING_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_WITHDRAWALS_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_PROVIDER_INFERENCE_ENABLED=false" /srv/drmlke/env/drmlke.provider.env
+sudo grep -R -n "DRMLKE_MARKET_DATA_ENABLED=false" /srv/drmlke/env/drmlke.worker.env
+sudo grep -R -n "DRMLKE_LIVE_EXECUTION_ENABLED=false" /srv/drmlke/env/drmlke.worker.env
+
+sudo find /srv/drmlke/env -maxdepth 1 -type f -print | sort
+```
+
+No Docker, provider deployment, source copy, real secrets, exchange keys,
+broker keys, wallet keys, live-trading enablement, or model-download
+credentials were added by `P3.B.APPLY.INTERACTIVE`.
 
 ## LOCAL / Exon Private Service Policy Checks
 

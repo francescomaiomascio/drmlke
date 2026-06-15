@@ -362,3 +362,41 @@ uses approved sudo in a future apply wave for changes.
 `P3.B.PREFLIGHT` defines this policy only. It does not change
 `/srv/drmlke/env`, create environment files, write secrets, deploy the provider,
 run Docker, or copy application code to Spark.
+
+Future apply policy:
+
+- The environment baseline apply wave is
+  `P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo`.
+- It must run through an interactive Spark session.
+- The owner types the sudo password manually in the terminal if prompted.
+- LAN or private-network proximity does not make it acceptable to paste sudo
+  passwords into chat, docs, command history, runbooks, or scripts.
+- Do not use `sudo -S`.
+- Do not store the sudo password.
+- Do not change sudoers.
+- Do not grant `NOPASSWD`.
+
+Applied baseline:
+
+- `P3.B.APPLY.INTERACTIVE` applied the environment-file baseline through an
+  interactive Spark session with owner-entered sudo.
+- `/srv/drmlke/env` is `root:drmlke 0750`.
+- Baseline environment files are `root:drmlke 0640`:
+  - `/srv/drmlke/env/drmlke.shared.env`
+  - `/srv/drmlke/env/drmlke.provider.env`
+  - `/srv/drmlke/env/drmlke.api.env`
+  - `/srv/drmlke/env/drmlke.worker.env`
+- Baseline environment files contain safe non-secret paths and disabled flags
+  only.
+- Validation found no secret-like key names matching `PASSWORD`, `TOKEN`,
+  `SECRET`, `PRIVATE_KEY`, `SEED`, or `API_KEY`.
+- Live trading remains disabled.
+- Withdrawals remain disabled.
+- Provider inference remains disabled.
+- Market data remains disabled.
+- Live execution remains disabled.
+- Provider deployment has not started.
+- Docker was not used.
+- No source copy, exchange credential, broker credential, wallet key, seed
+  phrase, private key, API credential, model artifact, or runtime service was
+  added.

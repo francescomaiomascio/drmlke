@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
+- Current completed wave: `P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -80,9 +80,10 @@ Current repository facts:
   - `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
   - `P3.A.CLOSE - Spark Storage Root Closeout`.
   - `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
+  - `P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo`.
   - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.B.APPLY - Spark Environment File Baseline`.
+- Next recommended wave: `P3.B.CLOSE - Spark Environment File Baseline Closeout`.
 - P3 runtime preparation has a storage root, but provider deployment has not
   started and remains blocked until later approved runtime waves.
 - Phase 4 agentic decision-intelligence architecture is documented at spine
@@ -128,15 +129,22 @@ Current Spark status:
 - The approved storage-root tree exists under `/srv/drmlke`.
 - Storage-root closeout verified the expected tree, ownership, mode, and empty
   file payload state. File payload count is `0`.
-- `/srv/drmlke/env` exists as an empty directory from the storage-root baseline.
-- `P3.B.PREFLIGHT` selects future env boundary policy: `/srv/drmlke/env`
-  should become `root:drmlke 0750`, and future env files should be
-  `root:drmlke 0640`.
-- That env ownership exception has not been applied yet. No env file exists and
-  no secret has been added.
-- No source deploy copy, provider runtime, Docker container, environment file,
-  secret, model artifact, log, backup, market data, API, trading, exchange, or
-  wallet behavior has been added to Spark.
+- `/srv/drmlke/env` exists with `root:drmlke` ownership and `0750` directory
+  mode.
+- The baseline environment files exist under `/srv/drmlke/env` with
+  `root:drmlke` ownership and `0640` mode:
+  - `drmlke.shared.env`
+  - `drmlke.provider.env`
+  - `drmlke.api.env`
+  - `drmlke.worker.env`
+- The baseline environment files contain safe non-secret flags and paths only.
+- Live trading, withdrawals, exchange connections, broker connections, wallet
+  custody, provider inference, market data, paper execution, and live execution
+  remain disabled.
+- No secret-like key names were observed during validation.
+- No source deploy copy, provider runtime, Docker container, real secret, model
+  artifact, log payload, backup payload, market data, API, trading, exchange,
+  or wallet behavior has been added to Spark.
 - The preferred future Spark access path is Tailscale or an explicit private SSH
   path, not a fragile local hostname dependency.
 - Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
@@ -265,7 +273,11 @@ Sequencing correction:
    names, and the planned `root:drmlke 0750` env boundary without creating env
    files, writing secrets, changing Spark permissions, running Docker, or
    deploying services.
-30. Tailscale and Spark remain infrastructure-only future work until they do
+30. `P3.B.APPLY.INTERACTIVE` applies the Spark environment-file baseline with
+   owner-entered interactive sudo, creates the four approved env files with
+   safe non-secret flags and paths, and keeps Docker, provider deployment,
+   source copy, secrets, market data, and execution disabled.
+31. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -3308,14 +3320,26 @@ runtime, and repeatable validation.
   env-file plan. Status: completed. Non-goals: creating env
   files, adding secrets, copying source, running Docker, deploying provider,
   market data, trading, exchange, wallet custody, or model runtime.
-- P3.B.APPLY - Spark Environment File Baseline. Purpose: apply the approved
-  env boundary and create empty baseline env files only after explicit owner
-  approval. Tasks: change `/srv/drmlke/env` to `root:drmlke 0750` if still
-  approved, create empty baseline env files with `root:drmlke 0640`, and
-  validate ownership and mode. Output: Spark env baseline. Status: recommended
-  next. Non-goals: real secret values, exchange/broker/wallet/live-trading
-  credentials, provider deployment, Docker operations, source copy, market
-  data, trading, model runtime, or client/API implementation.
+- P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo.
+  Purpose: apply the approved env boundary and create baseline env files only
+  through an explicit interactive Spark session where the owner types the sudo
+  password manually in the terminal. LAN/private-network proximity does not
+  relax password handling, secret handling, or sudo policy. Tasks: change
+  `/srv/drmlke/env` to `root:drmlke 0750` if still approved, create baseline
+  env files with safe non-secret flags and `root:drmlke 0640`, and validate
+  ownership, mode, and disabled runtime flags. Output: Spark env baseline.
+  Status: completed. Non-goals: real secret values, password in chat,
+  `sudo -S`, sudoers changes, exchange/broker/wallet/live-trading credentials,
+  provider deployment, Docker operations, source copy, market data, trading,
+  model runtime, or client/API implementation.
+- P3.B.CLOSE - Spark Environment File Baseline Closeout. Purpose: verify and
+  document the completed env baseline before deploy-copy planning. Tasks:
+  inspect env directory ownership, env file ownership, disabled flags,
+  secret-like key scan, no Docker/deploy side effects, and no source copy.
+  Output: env baseline closeout. Status: recommended next. Non-goals: creating
+  new env content, adding real secrets, provider deployment, Docker operations,
+  source copy, market data, trading, exchange, wallet custody, model runtime,
+  or client/API implementation.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:
@@ -5004,3 +5028,8 @@ decision until the relevant wave makes and records the decision.
   under `/srv/drmlke/env`, preferred env boundary `root:drmlke 0750`, future env
   file mode `root:drmlke 0640`, no Spark mutation, no env file creation, no
   secrets, no Docker, and no provider deployment.
+- `P3.B.APPLY.INTERACTIVE`: Spark environment-file baseline applied with
+  `/srv/drmlke/env` as `root:drmlke 0750`, four baseline env files as
+  `root:drmlke 0640`, safe non-secret flags and paths only, no secret-like key
+  names observed, and no Docker operation, provider deployment, source copy,
+  market data, execution, exchange, broker, wallet, or model runtime behavior.
