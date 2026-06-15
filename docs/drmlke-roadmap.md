@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P4.A - Define Agentic Decision Intelligence Spine`.
+- Current completed wave: `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -77,12 +77,12 @@ Current repository facts:
   - `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
   - `P3.A.OWNER - Spark Storage Ownership Decision`.
   - `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
+  - `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
   - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation
-  With TTY Sudo`.
-- P3 runtime preparation remains blocked until an approved apply wave runs exact
-  commands.
+- Next recommended wave: `P3.A.CLOSE - Spark Storage Root Closeout`.
+- P3 runtime preparation has a storage root, but provider deployment has not
+  started and remains blocked until later approved runtime waves.
 - Phase 4 agentic decision-intelligence architecture is documented at spine
   level only. No agent implementation, model runtime, provider inference,
   trading, execution, Spark mutation, API route, market data, or client work is
@@ -119,9 +119,14 @@ Current environment status:
 
 Current Spark status:
 
-- Spark is not attached yet for drmlke runtime work.
+- Spark has been reached through the approved private `spark-vpn` path.
 - Spark runtime deployment has not started.
-- `/srv/drmlke` is not assumed to exist yet.
+- `/srv/drmlke` exists with dedicated `drmlke:drmlke` ownership and `0750`
+  directory mode.
+- The approved storage-root tree exists under `/srv/drmlke`.
+- No source deploy copy, provider runtime, Docker container, environment file,
+  secret, model artifact, log, backup, market data, API, trading, exchange, or
+  wallet behavior has been added to Spark.
 - The preferred future Spark access path is Tailscale or an explicit private SSH
   path, not a fragile local hostname dependency.
 - Spark remains intentionally untouched by `MAC.SETUP.1-CLOSE`.
@@ -239,7 +244,11 @@ Sequencing correction:
 26. `P4.A` defines the agentic decision-intelligence, validation, and
    model-risk spine as architecture only before any agent, model, provider
    inference, or execution implementation.
-27. Tailscale and Spark remain infrastructure-only future work until they do
+27. `P3.A.APPLY.INTERACTIVE` creates the Spark storage-root user/group and
+   `/srv/drmlke` tree with dedicated `drmlke:drmlke` ownership and `0750`
+   directory mode, without provider deployment, Docker operation, secrets, or
+   runtime services.
+28. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -3227,12 +3236,11 @@ and SSH identity is confirmed before runtime deployment begins.
 
 ### Phase 3. Spark storage and provider runtime preparation
 
-Status: next infrastructure phase after P2 closeout, but runtime preparation
-remains blocked until a sudo-based storage-root preflight wave defines exact
-commands for review.
+Status: active infrastructure phase after P2 closeout. The storage root exists,
+but runtime preparation remains pre-deploy.
 
-Outcome when unblocked: Spark has `/srv/drmlke`, a deploy copy, private
-provider runtime, and repeatable validation.
+Outcome when complete: Spark has `/srv/drmlke`, a deploy copy, private provider
+runtime, and repeatable validation.
 
 - P3.A.PREFLIGHT - Spark Storage Root Sudo Plan. Purpose: define the exact
   sudo-based storage-root commands, expected effects, verification checks, and
@@ -3261,9 +3269,21 @@ provider runtime, and repeatable validation.
   interactive session. Tasks: open `ssh -tt spark-vpn`, confirm remote context,
   create the `drmlke` user/group, create `/srv/drmlke` and target directories,
   apply `drmlke:drmlke` ownership, and validate using the approved sudo plan.
-  Output: storage root exists and validates. Non-goals: provider deployment,
-  source copy, Docker containers, secrets, market data, trading, exchange,
-  wallet custody, or model runtime.
+  Output: storage root exists and validates. Status: completed. Notes:
+  `dgmothx` cannot list child directories without sudo because the tree is
+  intentionally `0750` and owned by `drmlke:drmlke`; tree validation uses
+  owner-approved sudo inspection. Non-goals: provider deployment, source copy,
+  Docker containers, secrets, market data, trading, exchange, wallet custody,
+  or model runtime.
+- P3.A.CLOSE - Spark Storage Root Closeout. Purpose: verify and document the
+  completed storage root before environment file planning or deploy-copy work.
+  Tasks: inspect `drmlke` user/group, root ownership, directory tree,
+  permission model, empty runtime content, and no Docker/deploy side effects.
+  Output: storage-root closeout. Acceptance: root and tree are documented,
+  no secrets or runtime files exist, and next P3 wave is explicit. Non-goals:
+  provider deployment, source copy, Docker operations, environment file
+  creation, secrets, market data, trading, exchange, wallet custody, or model
+  runtime.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:
@@ -4940,3 +4960,7 @@ decision until the relevant wave makes and records the decision.
   with Phase 4 expanded into concrete future waves for agent authority,
   evidence bundles, validator results, decision cases, model-risk registry,
   reporting/audit agents, and owner-copilot draft-only boundaries.
+- `P3.A.APPLY.INTERACTIVE`: Spark storage-root user/group and `/srv/drmlke`
+  directory tree created with `drmlke:drmlke` ownership and `0750` permissions,
+  with no source copy, provider deployment, Docker operation, secrets, model
+  artifacts, market data, trading, exchange, or wallet behavior.

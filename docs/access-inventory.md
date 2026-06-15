@@ -36,7 +36,7 @@ SSH configuration, and does not authorize runtime mutation.
 - Spark remains private.
 - Target runtime root remains `/srv/drmlke`.
 - No Spark runtime deployment exists yet.
-- No `/srv/drmlke` creation is part of this wave.
+- `/srv/drmlke` now exists as the empty future runtime storage root.
 
 ## Candidate Access Methods
 
@@ -205,9 +205,31 @@ Decision outcome:
 - Docker socket permissions have not been changed.
 - Storage-root creation commands are draft-only and have not been run.
 - `/srv/drmlke` ownership policy is dedicated `drmlke:drmlke`.
-- The `drmlke` user/group has not been created by this documentation wave.
+- The `drmlke` user/group was not created during P2. It was created later by
+  `P3.A.APPLY.INTERACTIVE`.
 - No Spark files, directories, services, containers, or runtime state were
   created or changed during P2.
+
+## P3.A.APPLY.INTERACTIVE Storage Root Facts
+
+- `drmlke` group exists.
+- `drmlke` system/runtime user exists.
+- `/srv/drmlke` exists.
+- `/srv/drmlke` is owned by `drmlke:drmlke`.
+- `/srv/drmlke` uses mode `0750`.
+- Expected child directories exist under `/srv/drmlke`.
+- Child directories are intended to be owned by `drmlke:drmlke` with mode
+  `0750`.
+- The verified human SSH user is separate from the runtime owner and cannot
+  list the storage-root child directories without sudo. This is expected from
+  the `0750` permission model.
+- The storage tree currently contains directories only; no source copy,
+  environment file, secret, model artifact, log payload, backup payload,
+  database, provider runtime, market data, trading state, exchange credential,
+  or wallet material is populated.
+- Docker group membership has not been granted.
+- Docker socket permissions have not been changed.
+- No Docker container was started or stopped as part of storage-root creation.
 
 ## Unknowns
 
@@ -218,7 +240,7 @@ Decision outcome:
   outside this repository.
 - Whether Linux workstation should be the primary Spark access source.
 - Whether MacBook remains the preferred private access path for remote work.
-- Which future approved sudo-based wave should create the `drmlke` user/group
-  and `/srv/drmlke` storage tree.
+- Which future approved wave should create environment files and deploy-copy
+  content under `/srv/drmlke`.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.

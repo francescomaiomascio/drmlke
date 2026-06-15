@@ -18,7 +18,9 @@ deployment approval, and not a place for secrets.
 - Do not paste secrets, IPs, usernames, private key paths, or environment file
   contents into docs.
 - Do not use `sudo` unless a future manual task explicitly asks for it.
-- Do not create `/srv/drmlke` until the approved storage-root wave.
+- `/srv/drmlke` exists after the approved storage-root wave. Do not add files,
+  directories, services, or deployments under it unless a future wave explicitly
+  approves that mutation.
 - Do not deploy the provider to Spark until the approved runtime wave.
 
 ## Machine Contexts
@@ -206,24 +208,25 @@ commands must be copied from the approved wave.
 No `sudo` commands are reusable until a future approved wave records the exact
 command, purpose, expected effect, and rollback or verification step.
 
-Do not create `/srv/drmlke` manually before approval. Do not copy files to
-Spark, run Compose on Spark, or start provider services from this runbook until
-a future P3 wave explicitly approves the operation.
+Do not copy files to Spark, run Compose on Spark, create environment files, or
+start provider services from this runbook until a future P3 wave explicitly
+approves the operation.
 
 Future sudo commands must be copied exactly from the approved wave. Do not
 improvise path ownership, Docker, service, firewall, Tailscale, or deployment
 commands.
 
-## REMOTE / Spark Storage Root Plan
+## REMOTE / Spark Storage Root Applied History
 
-Read-only storage-root checks may be reused:
+Read-only root checks may be reused from Exon:
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 'test -e /srv/drmlke && stat /srv/drmlke || true; df -h /srv / 2>/dev/null || df -h; id; groups'
 ```
 
-DRAFT - forbidden until `P3.A.APPLY.INTERACTIVE` or an equivalent apply wave
-approves it.
+`P3.A.APPLY.INTERACTIVE` approved and applied the Spark storage-root creation.
+The command history below is retained for audit and repeatable understanding.
+Do not rerun it unless a future repair wave explicitly approves that action.
 
 `LOCAL / Exon` opens the Spark session:
 
@@ -239,11 +242,9 @@ id
 pwd
 ```
 
-`REMOTE / Spark mutating` draft storage-root commands:
+`REMOTE / Spark mutating` applied storage-root commands:
 
 ```bash
-set -eu
-
 if ! getent group drmlke >/dev/null; then
   sudo groupadd --system drmlke
 fi
@@ -282,10 +283,18 @@ sudo chown -R drmlke:drmlke /srv/drmlke
 sudo find /srv/drmlke -type d -exec chmod 0750 {} +
 ```
 
-Do not create `/srv/drmlke` manually before an approved apply wave. Storage
-ownership is dedicated `drmlke:drmlke`, but no user, group, directory, `chown`,
-or permission command is approved until a future apply wave records the exact
-commands.
+Storage-root validation inside Spark:
+
+```bash
+getent group drmlke
+getent passwd drmlke
+stat -c "%U:%G %a %n" /srv/drmlke
+sudo find /srv/drmlke -mindepth 1 -maxdepth 3 -type d -print0 | sort -z | xargs -0 sudo stat -c "%U:%G %a %n"
+```
+
+The `sudo find` is intentional. `/srv/drmlke` is `0750` and owned by
+`drmlke:drmlke`, so the human SSH user cannot list child directories without
+sudo.
 
 ## REMOTE / Spark Storage Ownership Decision
 
@@ -293,11 +302,9 @@ Storage ownership policy is dedicated `drmlke:drmlke`.
 
 - The human SSH operator remains separate from the runtime owner.
 - Docker group membership is not granted by this decision.
-- Do not run user or group creation manually yet.
-- A future apply wave will provide exact `sudo` commands for user/group
-  creation, directory creation, ownership, and validation.
-- Keep draft storage-root commands labelled as forbidden until the approved
-  apply wave.
+- `P3.A.APPLY.INTERACTIVE` created or confirmed the runtime user/group and
+  storage root.
+- Future ownership or permission changes require a new explicit wave.
 
 ## LOCAL / Exon Private Service Policy Checks
 
@@ -335,6 +342,6 @@ tailscale set --accept-routes=true
 
 - Spark Docker access policy recorded: explicit owner-approved `sudo` in future
   approved Spark Docker waves.
-- `/srv/drmlke` creation pending.
+- `/srv/drmlke` exists as an empty runtime storage root.
 - Exact Spark private service bind implementation pending.
 - Provider deployment to Spark pending.

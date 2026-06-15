@@ -55,14 +55,13 @@ with a context check before mutation. A Spark interactive session must confirm
 host, user, and working directory before approved remote commands run.
 
 The current verified Spark SSH candidate is the Tailscale SSH alias `spark-vpn`.
-This verifies access only. It does not create `/srv/drmlke`, prove runtime
-readiness, or approve deployment.
+This verifies access only. It does not approve deployment.
 
-Spark has been inspected read-only through the verified SSH path. The host is
-not deployment-ready yet: `/srv/drmlke` has not been created, and Docker
-inspection is not currently available to the verified remote user without
-elevated permissions. Storage-root preparation and any Docker permission change
-belong to later reviewed waves.
+Spark has been inspected through the verified SSH path. The storage root
+`/srv/drmlke` now exists with dedicated `drmlke:drmlke` ownership and
+conservative `0750` directory permissions. Docker inspection is not currently
+available to the verified remote user without elevated permissions. Any Docker
+permission change belongs to a later reviewed wave.
 
 ## Spark Private Service Policy
 
@@ -98,8 +97,7 @@ Future internal planning ports:
 These ports are planning values only. They are not active Spark exposure and do
 not authorize any deployment.
 
-The future runtime root is `/srv/drmlke`. It must not be created before an
-approved storage-root preparation wave. Runtime data, environment files, logs,
+The runtime root is `/srv/drmlke`. Runtime data, environment files, logs,
 models, and backups must stay outside source control.
 
 Secrets policy:
@@ -174,7 +172,7 @@ Purpose:
 - Separate app source, environment files, state, analytical lake, vector data,
   model artifacts, logs, backups, runtime sockets, and runtime pids.
 
-Target future tree:
+Target tree:
 
 - `/srv/drmlke/env`
 - `/srv/drmlke/app`
@@ -202,13 +200,17 @@ The selected ownership model is a dedicated runtime user and group:
 - Docker group membership is not granted by this ownership decision.
 - Runtime data, environment files, logs, models, and backups remain outside
   source control.
-- A future apply wave must create the `drmlke` user/group and storage tree with
+- `P3.A.APPLY.INTERACTIVE` created the `drmlke` user/group and storage tree with
   explicit owner-approved sudo commands.
 
-No deploy occurs in this decision. No user, group, directory, file, or
-permission is changed by this document.
+No deploy occurs in this storage-root wave. No source copy, environment file,
+secret, model artifact, log payload, backup payload, Docker container, or
+provider runtime is created by this storage-root wave.
 
-DRAFT - do not run until `P3.A.APPLY.INTERACTIVE` is approved.
+Applied by `P3.A.APPLY.INTERACTIVE`.
+
+Interactive TTY sudo was required. The owner entered the sudo password manually
+on Spark. No password was stored, copied into chat, or written into docs.
 
 `LOCAL / Exon` opens the Spark session:
 
@@ -224,11 +226,9 @@ id
 pwd
 ```
 
-`REMOTE / Spark mutating` draft storage-root commands:
+`REMOTE / Spark mutating` applied storage-root commands:
 
 ```bash
-set -eu
-
 if ! getent group drmlke >/dev/null; then
   sudo groupadd --system drmlke
 fi
@@ -267,12 +267,27 @@ sudo chown -R drmlke:drmlke /srv/drmlke
 sudo find /srv/drmlke -type d -exec chmod 0750 {} +
 ```
 
-`REMOTE / Spark one-shot` draft validation commands for a future
-apply/validate wave:
+Storage-root result:
+
+- `drmlke` group exists.
+- `drmlke` user exists.
+- `/srv/drmlke` exists.
+- `/srv/drmlke` and expected child directories are owned by `drmlke:drmlke`.
+- `/srv/drmlke` and expected child directories use mode `0750`.
+- The verified human SSH user is separate from the runtime owner and cannot
+  list child directories without sudo. This is expected from the `0750`
+  permission model.
+- Docker group membership remains ungranted.
+- Docker socket permissions remain unchanged.
+- Provider deployment remains future work.
+
+`REMOTE / Spark interactive` validation command:
 
 ```bash
-ssh spark-vpn 'find /srv/drmlke -maxdepth 3 -type d | sort'
-ssh spark-vpn 'stat /srv/drmlke /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/logs /srv/drmlke/runtime'
+getent group drmlke
+getent passwd drmlke
+stat -c "%U:%G %a %n" /srv/drmlke
+sudo find /srv/drmlke -mindepth 1 -maxdepth 3 -type d -print0 | sort -z | xargs -0 sudo stat -c "%U:%G %a %n"
 ```
 
 Forbidden storage-root behavior:
@@ -288,9 +303,6 @@ Forbidden storage-root behavior:
 
 Execution gate:
 
-- This preflight plan does not run the commands.
-- A future `P3.A.APPLY.INTERACTIVE` or equivalent wave must explicitly approve and run
-  them.
-- The future apply wave must provide exact commands for creating the `drmlke`
-  user/group and applying `drmlke:drmlke` ownership.
+- `P3.A.APPLY.INTERACTIVE` created storage only.
 - Provider deployment remains a later runtime wave.
+- Any additional Spark mutation still requires an explicit approved wave.
