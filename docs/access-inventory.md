@@ -42,7 +42,7 @@ mutate runtime state.
 | Method | Current inventory state | Notes |
 | --- | --- | --- |
 | LAN SSH alias | known locally | SSH config contains alias `spark`; host details are redacted from repository docs. |
-| Tailscale SSH alias | known locally | SSH config contains alias `spark-vpn`; host details are redacted from repository docs. |
+| Tailscale SSH alias | verified locally | SSH config contains alias `spark-vpn`; host details are redacted from repository docs. |
 | Tailscale node name | known locally | Tailscale status shows candidate node `spark-7c3d`. |
 | Tailscale IP | known locally | Redacted from repository docs. |
 | Direct private IP | known locally through SSH config | Redacted from repository docs. |
@@ -59,8 +59,8 @@ mutate runtime state.
   local SSH configuration.
 - The SSH username, host targets, and private key path are intentionally not
   copied into this repository document.
-- No SSH login was attempted in this wave.
-- Host key verification state remains unverified by this wave.
+- No SSH login was attempted during `P2.A` or `P2.B`.
+- SSH verification results are recorded below.
 
 ## Local Tailscale Inventory
 
@@ -88,15 +88,40 @@ mutate runtime state.
   were redacted from repository documentation.
 - SSH identity and host-key verification remain separate future work.
 
+## P2.C SSH Verification Result
+
+- `spark-vpn` is recognized by local SSH configuration.
+- `spark-vpn` appears to target the Tailscale/private path.
+- `spark-vpn` has a configured SSH user, identity file, and port. The values are
+  redacted from repository documentation.
+- Host key verification with strict checking succeeds, so the host key is
+  already trusted locally.
+- SSH login through `spark-vpn` succeeds in non-interactive batch mode.
+- Only read-only remote commands were run: connection test, remote hostname,
+  kernel/architecture information, remote username, and remote working
+  directory.
+- Remote username, home directory, Tailscale address, private address, and key
+  path are redacted from repository documentation.
+- Remote facts confirmed: Spark-like hostname, Linux OS, NVIDIA kernel family,
+  aarch64 architecture, remote username availability, and remote working
+  directory availability.
+- `spark` LAN alias was not tested; `spark-vpn` succeeded and remains the
+  verified Tailscale SSH path.
+- No files were copied.
+- No directories were created.
+- No remote files were changed.
+- No `sudo`, Docker, service, package, runtime, or deployment commands were run
+  on Spark.
+
 ## Unknowns
 
-- Exact Spark SSH path to prefer for future work.
+- Whether `spark-vpn` should be the long-term preferred SSH path for all Spark
+  operations.
 - Whether `spark` over LAN is reliable enough.
-- Whether `spark-vpn` over Tailscale should become the primary SSH path after
-  host identity verification.
 - Whether the Spark Tailscale node name `spark-7c3d` is stable.
 - Whether the configured SSH username is the intended long-term runtime user.
-- Whether host key verification is already trusted and current.
+- Whether host key fingerprint documentation belongs in private operator notes
+  outside this repository.
 - Whether Linux workstation should be the primary Spark access source.
 - Whether MacBook remains the preferred private access path for remote work.
 - Whether Spark should later bind services only to localhost, a Tailscale

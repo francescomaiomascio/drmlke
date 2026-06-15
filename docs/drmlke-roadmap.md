@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.B - Tailscale Reachability`.
+- Current completed wave: `P2.C - SSH Verification`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -67,7 +67,8 @@ Current repository facts:
   - `P0.CLOSE - Phase 0 Product Core Closeout`.
   - `P2.A - Access Inventory`.
   - `P2.B - Tailscale Reachability`.
-- Next recommended wave: `P2.C - SSH Verification`.
+  - `P2.C - SSH Verification`.
+- Next recommended wave: `P2.D - Remote Preflight`.
 
 Current provider status:
 
@@ -188,7 +189,9 @@ Sequencing correction:
    testing, SSH login, Tailscale configuration, or deployment.
 14. `P2.B` confirms Tailscale reachability without SSH login, remote mutation,
    Tailscale configuration, or deployment.
-15. Tailscale and Spark remain infrastructure-only future work until they do
+15. `P2.C` verifies the preferred Tailscale SSH alias without deployment,
+   remote file mutation, sudo, Docker, or runtime changes.
+16. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2844,8 +2847,9 @@ and SSH identity is confirmed before runtime deployment begins.
   exposure.
 - P2.C - SSH verification. Purpose: confirm an explicit SSH path. Tasks: use
   selected alias or address, verify host key, verify user. Output: SSH result.
-  Acceptance: login succeeds or clear remediation exists. Non-goals: changing
-  production routing.
+  Acceptance: login succeeds or clear remediation exists. Status: completed.
+  Non-goals: changing production routing, creating runtime directories, running
+  Docker, or deploying services.
 - P2.D - Remote preflight. Purpose: inspect Spark without deploying. Tasks:
   check OS, architecture, disk, Docker, Compose, GPU visibility if appropriate.
   Output: preflight report. Acceptance: runtime blockers are known. Non-goals:
