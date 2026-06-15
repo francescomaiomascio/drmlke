@@ -46,9 +46,8 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P0.M - Paper Decision Record Boundary`
-  (legacy alias: `CORE.5`).
-- Current closeout wave: `P0.CLOSE - Phase 0 Product Core Closeout`.
+- Current completed wave: `P0.CLOSE - Phase 0 Product Core Closeout`.
+- Current wave: `P2.A - Access Inventory`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -66,8 +65,7 @@ Current repository facts:
   - `P0.K - Paper Position Boundary` (legacy alias: `CORE.3`).
   - `P0.L - Paper Portfolio Snapshot Boundary` (legacy alias: `CORE.4`).
   - `P0.M - Paper Decision Record Boundary` (legacy alias: `CORE.5`).
-- Next recommended wave after closeout: `P2.A - Access Inventory`, because the
-  historical MacBook setup path already satisfied the practical `P1` goal.
+- Next recommended wave: `P2.B - Tailscale Reachability`.
 
 Current provider status:
 
@@ -184,7 +182,9 @@ Sequencing correction:
     (legacy alias: `CORE.5`).
 12. `P0.CLOSE` verifies Phase 0 product-core coherence before moving to
    infrastructure or persistence work.
-13. Tailscale and Spark remain infrastructure-only future work until they do
+13. `P2.A` inventories candidate Spark access paths without reachability
+   testing, SSH login, Tailscale configuration, or deployment.
+14. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2821,18 +2821,18 @@ and local validation working.
   Code. Output: validation report. Acceptance: checks pass or documented
   exceptions are understood. Non-goals: Spark deployment.
 
-### Phase 2. Reserved Later: Tailscale and Spark access planning
+### Phase 2. Tailscale and Spark access planning
 
-Status: reserved until the Product Core path no longer depends on identity,
-paper treasury, market data, benchmarks, and decision records.
+Status: active access-planning phase after `P0.CLOSE`.
 
-Outcome when unblocked: Spark private access path is verified and documented
-before runtime deployment begins.
+Outcome: Spark private access path is inventoried, reachability is verified,
+and SSH identity is confirmed before runtime deployment begins.
 
-- P2.A - Access inventory. Purpose: identify available Spark addresses. Tasks:
-  inspect Tailscale status, SSH config, known aliases, and expected user.
-  Output: access inventory. Acceptance: candidate paths are documented.
-  Non-goals: runtime deployment.
+- P2.A - Access inventory. Purpose: identify available Spark access candidates.
+  Tasks: inspect local Tailscale status, SSH config, known aliases, and missing
+  access facts without logging in to Spark. Output: `docs/access-inventory.md`.
+  Acceptance: candidate paths and unknowns are documented. Non-goals:
+  reachability proof, SSH login, runtime deployment, or remote mutation.
 - P2.B - Tailscale reachability. Purpose: confirm private network reachability.
   Tasks: ping Spark over Tailscale and record address. Output: reachability
   report. Acceptance: Tailscale path works or blocker is documented. Non-goals:

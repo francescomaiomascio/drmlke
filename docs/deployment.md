@@ -19,3 +19,8 @@ The Spark/backend remains private and LAN/VPN-controlled unless explicitly chang
 Future Tailscale work is infrastructure access only. It is not provider
 activation, model serving, trading enablement, or approval to deploy runtime
 services.
+
+Access planning starts with `P2.A - Access Inventory` in
+[access-inventory.md](access-inventory.md). That inventory is read-only and
+does not prove reachability, log in to Spark, configure Tailscale, or deploy
+runtime services.
