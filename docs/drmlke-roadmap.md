@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.D.DECISION - Spark Docker Access Owner Decision`.
+- Current completed wave: `P2.F - Roadmap / Access Decision Lock`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -73,7 +73,11 @@ Current repository facts:
   - `P2.RUNBOOK.1 - Manual Command Runbook Baseline`.
   - `P2.E - Private Service Policy`.
   - `P2.D.DECISION - Spark Docker Access Owner Decision`.
-- Next recommended wave: `P2.F - Roadmap / Access Decision Lock`.
+  - `P2.F - Roadmap / Access Decision Lock`.
+- P2 access planning status: closed.
+- Next recommended wave: `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
+- P3 runtime preparation remains blocked until a future approved sudo-based
+  Spark storage/runtime wave defines exact commands.
 
 Current provider status:
 
@@ -208,7 +212,11 @@ Sequencing correction:
    services without deploying or mutating Spark.
 20. `P2.D.DECISION` records explicit owner-approved `sudo` as the Spark Docker
    access policy for future approved Docker waves.
-21. Tailscale and Spark remain infrastructure-only future work until they do
+21. `P2.F` closes Spark access planning by locking the selected access path,
+   private service policy, Docker access policy, and P3 prerequisites.
+22. `P3.A.PREFLIGHT` must define exact sudo-based storage-root commands before
+   any `/srv/drmlke` creation, file copy, Docker operation, or provider deploy.
+23. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2906,19 +2914,31 @@ and SSH identity is confirmed before runtime deployment begins.
   approved sudo-based storage or runtime wave defines the exact operation.
   Non-goals: privilege changes, container operations, provider deployment,
   market data, trading, wallet custody, exchange, or model runtime.
-- P2.F - Roadmap update. Purpose: lock the Spark access decision. Tasks: update
-  docs with chosen path and next runtime wave. Output: roadmap delta.
-  Acceptance: `SPARK.RUNTIME.1` can start with clear access. Non-goals:
-  deployment.
+- P2.F - Roadmap / Access Decision Lock. Purpose: close P2 access planning by
+  locking the selected Spark access path, private service policy, Docker access
+  policy, and prerequisites for future P3 work. Tasks: update roadmap,
+  deployment policy, access facts, and manual runbook discipline without remote
+  mutation. Output: P2 closeout. Acceptance: P2 is closed and the next P3
+  preflight is explicit. Status: completed. Non-goals: deployment, sudo,
+  `/srv/drmlke` creation, file copy, Docker operations, or provider runtime.
 
-### Phase 3. Reserved Later: Spark storage and provider runtime deployment
+### Phase 3. Spark storage and provider runtime preparation
 
-Status: reserved until the Product Core path no longer depends on identity,
-paper treasury, market data, benchmarks, and decision records.
+Status: next infrastructure phase after P2 closeout, but runtime preparation
+remains blocked until a sudo-based storage-root preflight wave defines exact
+commands for review.
 
 Outcome when unblocked: Spark has `/srv/drmlke`, a deploy copy, private
 provider runtime, and repeatable validation.
 
+- P3.A.PREFLIGHT - Spark Storage Root Sudo Plan. Purpose: define the exact
+  sudo-based storage-root commands, expected effects, verification checks, and
+  stop conditions before any Spark mutation. Tasks: prepare reviewed command
+  plan for `/srv/drmlke` ownership and layout. Output: approved or rejected
+  command plan. Acceptance: commands are explicit and reviewable. Non-goals:
+  running sudo, creating directories, copying files, deploying provider, Docker
+  operations, secrets, market data, trading, exchange, wallet custody, or model
+  runtime.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:
@@ -4251,3 +4271,7 @@ decision until the relevant wave makes and records the decision.
 - `P2.D.DECISION`: Spark Docker access policy recorded as explicit
   owner-approved `sudo` in future approved Docker waves, with no permission
   change or deployment performed.
+- `P2.F`: P2 access planning closed with `spark-vpn` as the selected operator
+  path, private service policy locked, Docker sudo policy locked, and
+  `P3.A.PREFLIGHT` identified as the next safe planning wave before any Spark
+  mutation.

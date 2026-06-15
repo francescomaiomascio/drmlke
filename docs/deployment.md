@@ -106,3 +106,36 @@ until that wave provides the exact command and context.
 No Docker permission change has been made. No runtime deployment can begin until
 the first approved sudo-based storage or runtime wave defines the exact
 operation.
+
+## P2 Access Planning Closeout
+
+P2 access planning is closed as a policy and access decision phase.
+
+Locked P2 decisions and facts:
+
+- Selected Spark operator path: `spark-vpn`.
+- `spark-vpn` uses the Tailscale/private path.
+- Spark reachability and SSH access through `spark-vpn` are verified.
+- Spark services remain private by policy.
+- No public tunnels, router port forwarding, or public exposure are approved.
+- Spark Docker access policy is explicit owner-approved `sudo` in future
+  approved waves.
+- Docker group membership has not been granted.
+- Docker socket permissions have not been changed.
+- `/srv/drmlke` does not exist and was not created during P2.
+- No Spark runtime deployment occurred during P2.
+
+P3 prerequisites:
+
+- An approved sudo-based Spark storage or runtime wave must define the exact
+  commands before any privileged operation runs.
+- The storage-root plan must be approved before `/srv/drmlke` is created.
+- Runtime data, environment files, logs, models, and backups must stay outside
+  source control.
+- No secrets may be committed or copied through docs or chat.
+- Spark services must remain private.
+- Provider deployment to Spark must wait for an approved runtime wave.
+
+The first eligible P3 step is a preflight/plan wave that writes the exact
+sudo-based storage-root commands for review. It is not direct storage creation
+and not provider deployment.

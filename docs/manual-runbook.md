@@ -165,6 +165,19 @@ Do not add destructive or mutating sudo commands here unless a future wave
 explicitly approves the operation and records the exact command. Future sudo
 commands must be copied from the approved wave.
 
+## Future P3 Command Discipline
+
+No `sudo` commands are reusable until a future approved wave records the exact
+command, purpose, expected effect, and rollback or verification step.
+
+Do not create `/srv/drmlke` manually before approval. Do not copy files to
+Spark, run Compose on Spark, or start provider services from this runbook until
+a future P3 wave explicitly approves the operation.
+
+Future sudo commands must be copied exactly from the approved wave. Do not
+improvise path ownership, Docker, service, firewall, Tailscale, or deployment
+commands.
+
 ## Private Service Policy Checks
 
 Run on the local Linux workstation. These commands inspect local planning

@@ -9,11 +9,12 @@ and remaining unknowns for future Spark access planning.
 
 ## Scope
 
-Inventory only.
+Technical access facts only.
 
-This wave does not prove reachability, does not log in to Spark, does not
-configure Tailscale, does not edit SSH configuration, and does not deploy or
-mutate runtime state.
+This document records inventory, reachability, SSH verification, remote
+preflight, and Docker access facts. It does not define current or next wave
+status, does not approve deployment, does not configure Tailscale, does not edit
+SSH configuration, and does not authorize runtime mutation.
 
 ## Local Development Node
 
@@ -177,20 +178,36 @@ Options reviewed:
    - Pros: safest until an owner policy decision exists.
    - Cons: blocks Spark runtime deployment.
 
-Recommended policy:
+Decision outcome:
 
-- Do not silently change Docker permissions.
-- Treat Docker access as privileged/root-equivalent.
-- Require an explicit owner decision before granting Docker group access, using
-  `sudo`, or creating a dedicated deployment user.
-- Keep `P3` runtime deployment blocked until that decision is made and recorded.
-- `P2.E - Private Service Policy` can proceed only as a policy/documentation
-  wave; it must not deploy or mutate Spark runtime state.
+- Docker access is privileged/root-equivalent.
+- DRMLKE does not grant Docker group access in P2.
+- Docker socket permissions remain unchanged.
+- Future Spark Docker operations use explicit owner-approved `sudo` in future
+  approved waves unless a later reviewed wave changes the policy.
+- `P3` runtime deployment remains blocked until a future approved sudo-based
+  storage or runtime wave defines the exact operation.
+
+## P2 Closeout Facts
+
+- Primary Spark operator path: `spark-vpn`.
+- `spark-vpn` uses the Tailscale/private path.
+- Tailscale reachability to Spark is verified.
+- SSH through `spark-vpn` is verified.
+- Remote preflight is complete through read-only inspection.
+- Spark OS family, architecture, Docker, Compose, GPU visibility, disk summary,
+  and `/srv/drmlke` absence are recorded above.
+- Docker access blocker is identified: the verified remote user cannot inspect
+  Docker without elevated permissions.
+- Docker access policy is recorded as explicit owner-approved `sudo` for future
+  approved Spark Docker waves.
+- Docker group membership has not been granted.
+- Docker socket permissions have not been changed.
+- No Spark files, directories, services, containers, or runtime state were
+  created or changed during P2.
 
 ## Unknowns
 
-- Whether `spark-vpn` should be the long-term preferred SSH path for all Spark
-  operations.
 - Whether `spark` over LAN is reliable enough.
 - Whether the Spark Tailscale node name `spark-7c3d` is stable.
 - Whether the configured SSH username is the intended long-term runtime user.
@@ -198,10 +215,7 @@ Recommended policy:
   outside this repository.
 - Whether Linux workstation should be the primary Spark access source.
 - Whether MacBook remains the preferred private access path for remote work.
-- Whether the remote user should be allowed to inspect Docker without sudo, or
-  whether future runtime operations should use a different operator pattern.
-- Whether the owner prefers Docker group membership, explicit `sudo`, a
-  dedicated deployment user, or keeping Docker work blocked.
-- Which wave should create `/srv/drmlke` and with what ownership model.
+- Which future approved sudo-based wave should create `/srv/drmlke` and with
+  what ownership model.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.
