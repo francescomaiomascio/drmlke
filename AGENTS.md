@@ -12,6 +12,12 @@ Wave naming rules:
 - keep reusable command blocks, run reports, validation logs, and commit
   instructions out of the master spine; manual commands belong in
   `docs/manual-runbook.md`
+- every wave that uses manual commands must state execution context explicitly:
+  `LOCAL / Exon`, `REMOTE / Spark one-shot`, `REMOTE / Spark interactive`,
+  `REMOTE mutating`, or `FORBIDDEN`
+- do not run commands from the wrong machine; code, git, tests, commits, and
+  pushes are local development work on Exon, while Spark operations happen only
+  through the approved `spark-vpn` SSH path
 
 Foundational model:
 
@@ -32,4 +38,10 @@ Hard boundaries for early development:
 - no exchange API keys in client or repository
 - no real AI model downloads during bootstrap
 
-Initial runtime target is Linux/Arch locally, with later Spark deployment.
+Machine roles:
+
+- Linux / Exon: primary development machine for Codex, git, tests, commits, and
+  pushes.
+- Spark: future runtime, storage, and provider machine reached through
+  `spark-vpn`.
+- MacBook: secondary development machine, not the primary runtime.

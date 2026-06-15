@@ -3,7 +3,8 @@
 ## Purpose
 
 This file collects manual commands for local validation, provider checks,
-access verification, and read-only Spark preflight.
+access verification, read-only Spark preflight, and future approved remote
+operations.
 
 It is for owner/operator convenience. It is not the canonical roadmap, not a
 deployment approval, and not a place for secrets.
@@ -26,7 +27,42 @@ deployment approval, and not a place for secrets.
 - MacBook: secondary development node.
 - Spark: future runtime, storage, and provider node reached through `spark-vpn`.
 
-## Local Repository Commands
+## Execution Context Doctrine
+
+Every manual command belongs to one execution context:
+
+- `LOCAL / Exon`: run directly on the Linux workstation at
+  `/home/mothx/computer-science/projects/drmlke`.
+- `REMOTE / Spark one-shot`: typed on Exon, executed on Spark through
+  `ssh spark-vpn '...'`.
+- `REMOTE / Spark interactive`: typed inside an SSH session opened with
+  `ssh -tt spark-vpn`.
+- `REMOTE mutating`: any remote command that creates, edits, deletes, copies,
+  starts, stops, changes ownership, changes permissions, or reconfigures Spark.
+- `FORBIDDEN`: not approved for the current wave.
+
+Do not run commands from the wrong machine. Code, tests, git, commits, and
+pushes are local development work on Exon. Spark storage, runtime, and provider
+operations happen only through the approved `spark-vpn` path.
+
+For interactive Spark work, open a session and confirm context before running
+approved commands:
+
+```bash
+ssh -tt spark-vpn
+```
+
+Inside Spark:
+
+```bash
+hostname
+id
+pwd
+```
+
+Exit the Spark session before returning to local git or validation work.
+
+## LOCAL / Exon Repository Commands
 
 Run on the local Linux workstation.
 
@@ -37,7 +73,7 @@ git log --oneline -8
 git diff --check
 ```
 
-## Local Validation Commands
+## LOCAL / Exon Validation Commands
 
 Run on the local Linux workstation.
 
@@ -54,7 +90,7 @@ cd /home/mothx/computer-science/projects/drmlke
 uv run pytest -q tests/test_core_contracts.py
 ```
 
-## Local Provider and Docker Commands
+## LOCAL / Exon Provider and Docker Commands
 
 Run on the local Linux workstation. These commands inspect or start the local
 provider only. They do not run on Spark.
@@ -68,7 +104,7 @@ curl -sS http://127.0.0.1:8781/health
 curl -sS http://127.0.0.1:8781/models
 ```
 
-## Local Tailscale Inventory Commands
+## LOCAL / Exon Tailscale Inventory Commands
 
 Run locally. These commands inspect local Tailscale state only.
 
@@ -81,7 +117,7 @@ tailscale ip -4 2>/dev/null || true
 Do not run `tailscale up`, `tailscale login`, or `tailscale set` unless a
 future wave explicitly approves it.
 
-## Tailscale Reachability Commands
+## LOCAL / Exon Tailscale Reachability Commands
 
 Run locally. These commands check reachability only. They do not prove SSH
 login.
@@ -91,7 +127,7 @@ tailscale ping spark-7c3d 2>/dev/null || true
 getent hosts spark-7c3d 2>/dev/null || true
 ```
 
-## SSH Config Inspection Commands
+## LOCAL / Exon SSH Config Inspection Commands
 
 Run locally.
 
@@ -103,9 +139,9 @@ ssh -G spark 2>/dev/null | sed -n '1,160p' || true
 Do not paste full output into docs. Redact user, identity file, host, IP, and
 private paths.
 
-## SSH Verification Commands
+## REMOTE / Spark One-Shot SSH Verification Commands
 
-Run locally. These commands verify the already configured SSH path without
+Run from Exon. These commands execute on Spark through `spark-vpn` without
 changing host key policy.
 
 ```bash
@@ -121,10 +157,10 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 
 Do not use `StrictHostKeyChecking=no`. Do not auto-accept unknown host keys.
 Do not run mutating remote commands.
 
-## Remote Spark Read-Only Preflight Commands
+## REMOTE / Spark One-Shot Read-Only Preflight Commands
 
-Run locally through `spark-vpn`. These commands inspect Spark without creating
-files, changing services, or deploying anything.
+Run from Exon through `spark-vpn`. These commands inspect Spark without
+creating files, changing services, or deploying anything.
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 'hostname; uname -a; cat /etc/os-release; id; pwd'
@@ -145,9 +181,9 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 
 If Docker inspection fails due to permissions, record the blocker. Do not fix
 it from this runbook.
 
-## Spark Docker Access Review Commands
+## REMOTE / Spark One-Shot Docker Access Review Commands
 
-Run locally through `spark-vpn`. This reviews Docker access state only.
+Run from Exon through `spark-vpn`. This reviews Docker access state only.
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 'id; groups; getent group docker || true; ls -l /var/run/docker.sock 2>/dev/null || true; command -v docker || true; docker --version 2>/dev/null || true; docker compose version 2>/dev/null || true'
@@ -156,7 +192,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 
 Do not modify group membership, Docker socket permissions, Docker daemon
 configuration, or service state from this runbook.
 
-## Spark Docker Sudo Policy
+## REMOTE / Spark Mutating Docker Sudo Policy
 
 Spark Docker operations use explicit owner-approved `sudo` in future approved
 waves. Sudo Docker commands are not generally reusable yet.
@@ -165,7 +201,7 @@ Do not add destructive or mutating sudo commands here unless a future wave
 explicitly approves the operation and records the exact command. Future sudo
 commands must be copied from the approved wave.
 
-## Future P3 Command Discipline
+## REMOTE / Spark Mutating Future P3 Command Discipline
 
 No `sudo` commands are reusable until a future approved wave records the exact
 command, purpose, expected effect, and rollback or verification step.
@@ -178,7 +214,7 @@ Future sudo commands must be copied exactly from the approved wave. Do not
 improvise path ownership, Docker, service, firewall, Tailscale, or deployment
 commands.
 
-## Spark Storage Root Plan
+## REMOTE / Spark Storage Root Plan
 
 Read-only storage-root checks may be reused:
 
@@ -186,12 +222,64 @@ Read-only storage-root checks may be reused:
 ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 'test -e /srv/drmlke && stat /srv/drmlke || true; df -h /srv / 2>/dev/null || df -h; id; groups'
 ```
 
-DRAFT - forbidden until `P3.A.APPLY` or an equivalent apply wave approves it:
+DRAFT - forbidden until `P3.A.APPLY.INTERACTIVE` or an equivalent apply wave
+approves it.
+
+`LOCAL / Exon` opens the Spark session:
 
 ```bash
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke'
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/vector /srv/drmlke/models /srv/drmlke/logs /srv/drmlke/backups /srv/drmlke/runtime'
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/lake/parquet /srv/drmlke/lake/duckdb /srv/drmlke/vector/lancedb /srv/drmlke/models/embeddings /srv/drmlke/models/llm /srv/drmlke/models/timeseries /srv/drmlke/logs/api /srv/drmlke/logs/worker /srv/drmlke/logs/provider /srv/drmlke/backups/daily /srv/drmlke/backups/weekly /srv/drmlke/runtime/sockets /srv/drmlke/runtime/pids'
+ssh -tt spark-vpn
+```
+
+`REMOTE / Spark interactive` confirms context:
+
+```bash
+hostname
+id
+pwd
+```
+
+`REMOTE / Spark mutating` draft storage-root commands:
+
+```bash
+set -eu
+
+if ! getent group drmlke >/dev/null; then
+  sudo groupadd --system drmlke
+fi
+
+if ! getent passwd drmlke >/dev/null; then
+  sudo useradd --system --gid drmlke --home-dir /srv/drmlke --shell /usr/sbin/nologin drmlke
+fi
+
+sudo install -d -m 0750 -o drmlke -g drmlke /srv/drmlke
+
+sudo install -d -m 0750 -o drmlke -g drmlke \
+  /srv/drmlke/env \
+  /srv/drmlke/app \
+  /srv/drmlke/state \
+  /srv/drmlke/lake \
+  /srv/drmlke/lake/parquet \
+  /srv/drmlke/lake/duckdb \
+  /srv/drmlke/vector \
+  /srv/drmlke/vector/lancedb \
+  /srv/drmlke/models \
+  /srv/drmlke/models/embeddings \
+  /srv/drmlke/models/llm \
+  /srv/drmlke/models/timeseries \
+  /srv/drmlke/logs \
+  /srv/drmlke/logs/api \
+  /srv/drmlke/logs/worker \
+  /srv/drmlke/logs/provider \
+  /srv/drmlke/backups \
+  /srv/drmlke/backups/daily \
+  /srv/drmlke/backups/weekly \
+  /srv/drmlke/runtime \
+  /srv/drmlke/runtime/sockets \
+  /srv/drmlke/runtime/pids
+
+sudo chown -R drmlke:drmlke /srv/drmlke
+sudo find /srv/drmlke -type d -exec chmod 0750 {} +
 ```
 
 Do not create `/srv/drmlke` manually before an approved apply wave. Storage
@@ -199,7 +287,7 @@ ownership is dedicated `drmlke:drmlke`, but no user, group, directory, `chown`,
 or permission command is approved until a future apply wave records the exact
 commands.
 
-## Spark Storage Ownership Decision
+## REMOTE / Spark Storage Ownership Decision
 
 Storage ownership policy is dedicated `drmlke:drmlke`.
 
@@ -211,7 +299,7 @@ Storage ownership policy is dedicated `drmlke:drmlke`.
 - Keep draft storage-root commands labelled as forbidden until the approved
   apply wave.
 
-## Private Service Policy Checks
+## LOCAL / Exon Private Service Policy Checks
 
 Run on the local Linux workstation. These commands inspect local planning
 references only.
@@ -224,7 +312,7 @@ docker compose ps
 
 These commands do not inspect Spark and do not change service exposure.
 
-## Forbidden Commands Until Explicit Future Approval
+## FORBIDDEN Commands Until Explicit Future Approval
 
 These command patterns remain forbidden unless a future wave explicitly approves
 them. Values in angle brackets are placeholders, not real values. The Spark SSH

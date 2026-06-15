@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.A.OWNER - Spark Storage Ownership Decision`.
+- Current completed wave: `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -76,8 +76,10 @@ Current repository facts:
   - `P2.F - Roadmap / Access Decision Lock`.
   - `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
   - `P3.A.OWNER - Spark Storage Ownership Decision`.
+  - `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.A.APPLY - Spark Storage Root Creation`.
+- Next recommended wave: `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation
+  With TTY Sudo`.
 - P3 runtime preparation remains blocked until an approved apply wave runs exact
   commands.
 
@@ -221,7 +223,10 @@ Sequencing correction:
 23. `P3.A.PREFLIGHT` records draft storage-root commands before mutation.
 24. `P3.A.OWNER` records dedicated `drmlke:drmlke` ownership for the future
    Spark storage root while keeping the human SSH operator separate.
-25. Tailscale and Spark remain infrastructure-only future work until they do
+25. `P3.OPERATING.1` formalizes multi-machine execution contexts: `LOCAL /
+   Exon`, `REMOTE / Spark one-shot`, `REMOTE / Spark interactive`, `REMOTE
+   mutating`, and `FORBIDDEN`.
+26. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2951,8 +2956,16 @@ provider runtime, and repeatable validation.
   completed with dedicated `drmlke:drmlke` runtime ownership selected.
   Non-goals: running sudo, creating users or groups, creating directories,
   copying files, Docker operations, or provider deployment.
-- P3.A.APPLY - Spark Storage Root Creation. Purpose: run the approved
-  storage-root creation commands after ownership policy is decided. Tasks:
+- P3.OPERATING.1 - Multi-Machine Execution Context Doctrine. Purpose: make
+  every future manual command explicit about where it runs. Tasks: document
+  `LOCAL / Exon`, `REMOTE / Spark one-shot`, `REMOTE / Spark interactive`,
+  `REMOTE mutating`, and `FORBIDDEN` command classes in the runbook, deployment
+  policy, and agent guidance. Output: execution context doctrine. Status:
+  completed. Non-goals: remote mutation, sudo, storage creation, Docker,
+  provider deployment, or runtime changes.
+- P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo. Purpose:
+  run the approved storage-root creation commands from an explicit Spark
+  interactive session. Tasks: open `ssh -tt spark-vpn`, confirm remote context,
   create the `drmlke` user/group, create `/srv/drmlke` and target directories,
   apply `drmlke:drmlke` ownership, and validate using the approved sudo plan.
   Output: storage root exists and validates. Non-goals: provider deployment,
@@ -4300,3 +4313,6 @@ decision until the relevant wave makes and records the decision.
 - `P3.A.OWNER`: dedicated `drmlke:drmlke` runtime ownership selected for
   `/srv/drmlke`, with human SSH operator kept separate and no user, group,
   directory, permission, Docker, or deployment mutation performed.
+- `P3.OPERATING.1`: multi-machine execution context doctrine recorded so future
+  waves classify commands as local Exon work, remote Spark one-shot work,
+  remote Spark interactive work, remote mutation, or forbidden operations.

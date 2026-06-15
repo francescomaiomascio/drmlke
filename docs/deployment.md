@@ -29,6 +29,31 @@ verification, and read-only Spark preflight live in
 [manual-runbook.md](manual-runbook.md). Keep command blocks there instead of in
 the roadmap.
 
+## Multi-Machine Execution Context Policy
+
+DRMLKE now operates across distinct machine contexts:
+
+- Linux / Exon: local development context for Codex, git, tests, commits, and
+  pushes.
+- Spark: remote runtime, storage, and provider context reached through
+  `spark-vpn`.
+- MacBook: secondary development context, not the primary runtime.
+
+Future waves must label commands by execution context:
+
+- `LOCAL / Exon`: entered and executed on the local Linux workstation.
+- `REMOTE / Spark one-shot`: entered locally, executed remotely through
+  `ssh spark-vpn '...'`.
+- `REMOTE / Spark interactive`: entered after opening an interactive Spark
+  shell, normally with `ssh -tt spark-vpn`.
+- `REMOTE mutating`: remote command that creates, changes, deletes, starts,
+  stops, copies, or reconfigures anything on Spark.
+- `FORBIDDEN`: command pattern not approved for the current wave.
+
+Long or interactive remote operations should prefer an explicit Spark session
+with a context check before mutation. A Spark interactive session must confirm
+host, user, and working directory before approved remote commands run.
+
 The current verified Spark SSH candidate is the Tailscale SSH alias `spark-vpn`.
 This verifies access only. It does not create `/srv/drmlke`, prove runtime
 readiness, or approve deployment.
@@ -183,15 +208,67 @@ The selected ownership model is a dedicated runtime user and group:
 No deploy occurs in this decision. No user, group, directory, file, or
 permission is changed by this document.
 
-DRAFT - do not run until `P3.A.APPLY` is approved:
+DRAFT - do not run until `P3.A.APPLY.INTERACTIVE` is approved.
+
+`LOCAL / Exon` opens the Spark session:
 
 ```bash
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke'
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/vector /srv/drmlke/models /srv/drmlke/logs /srv/drmlke/backups /srv/drmlke/runtime'
-ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/lake/parquet /srv/drmlke/lake/duckdb /srv/drmlke/vector/lancedb /srv/drmlke/models/embeddings /srv/drmlke/models/llm /srv/drmlke/models/timeseries /srv/drmlke/logs/api /srv/drmlke/logs/worker /srv/drmlke/logs/provider /srv/drmlke/backups/daily /srv/drmlke/backups/weekly /srv/drmlke/runtime/sockets /srv/drmlke/runtime/pids'
+ssh -tt spark-vpn
 ```
 
-Draft validation commands for a future apply/validate wave:
+`REMOTE / Spark interactive` confirms context:
+
+```bash
+hostname
+id
+pwd
+```
+
+`REMOTE / Spark mutating` draft storage-root commands:
+
+```bash
+set -eu
+
+if ! getent group drmlke >/dev/null; then
+  sudo groupadd --system drmlke
+fi
+
+if ! getent passwd drmlke >/dev/null; then
+  sudo useradd --system --gid drmlke --home-dir /srv/drmlke --shell /usr/sbin/nologin drmlke
+fi
+
+sudo install -d -m 0750 -o drmlke -g drmlke /srv/drmlke
+
+sudo install -d -m 0750 -o drmlke -g drmlke \
+  /srv/drmlke/env \
+  /srv/drmlke/app \
+  /srv/drmlke/state \
+  /srv/drmlke/lake \
+  /srv/drmlke/lake/parquet \
+  /srv/drmlke/lake/duckdb \
+  /srv/drmlke/vector \
+  /srv/drmlke/vector/lancedb \
+  /srv/drmlke/models \
+  /srv/drmlke/models/embeddings \
+  /srv/drmlke/models/llm \
+  /srv/drmlke/models/timeseries \
+  /srv/drmlke/logs \
+  /srv/drmlke/logs/api \
+  /srv/drmlke/logs/worker \
+  /srv/drmlke/logs/provider \
+  /srv/drmlke/backups \
+  /srv/drmlke/backups/daily \
+  /srv/drmlke/backups/weekly \
+  /srv/drmlke/runtime \
+  /srv/drmlke/runtime/sockets \
+  /srv/drmlke/runtime/pids
+
+sudo chown -R drmlke:drmlke /srv/drmlke
+sudo find /srv/drmlke -type d -exec chmod 0750 {} +
+```
+
+`REMOTE / Spark one-shot` draft validation commands for a future
+apply/validate wave:
 
 ```bash
 ssh spark-vpn 'find /srv/drmlke -maxdepth 3 -type d | sort'
@@ -212,7 +289,7 @@ Forbidden storage-root behavior:
 Execution gate:
 
 - This preflight plan does not run the commands.
-- A future `P3.A.APPLY` or equivalent wave must explicitly approve and run
+- A future `P3.A.APPLY.INTERACTIVE` or equivalent wave must explicitly approve and run
   them.
 - The future apply wave must provide exact commands for creating the `drmlke`
   user/group and applying `drmlke:drmlke` ownership.
