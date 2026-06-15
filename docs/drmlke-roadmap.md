@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo`.
+- Current completed wave: `P3.B.CLOSE - Spark Environment File Baseline Closeout`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -81,9 +81,10 @@ Current repository facts:
   - `P3.A.CLOSE - Spark Storage Root Closeout`.
   - `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
   - `P3.B.APPLY.INTERACTIVE - Spark Environment File Baseline With TTY Sudo`.
+  - `P3.B.CLOSE - Spark Environment File Baseline Closeout`.
   - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.B.CLOSE - Spark Environment File Baseline Closeout`.
+- Next recommended wave: `P3.C.PREFLIGHT - Spark App Deploy Copy Plan`.
 - P3 runtime preparation has a storage root, but provider deployment has not
   started and remains blocked until later approved runtime waves.
 - Phase 4 agentic decision-intelligence architecture is documented at spine
@@ -3336,7 +3337,7 @@ runtime, and repeatable validation.
   document the completed env baseline before deploy-copy planning. Tasks:
   inspect env directory ownership, env file ownership, disabled flags,
   secret-like key scan, no Docker/deploy side effects, and no source copy.
-  Output: env baseline closeout. Status: recommended next. Non-goals: creating
+  Output: env baseline closeout. Status: completed. Non-goals: creating
   new env content, adding real secrets, provider deployment, Docker operations,
   source copy, market data, trading, exchange, wallet custody, model runtime,
   or client/API implementation.
@@ -5033,3 +5034,9 @@ decision until the relevant wave makes and records the decision.
   `root:drmlke 0640`, safe non-secret flags and paths only, no secret-like key
   names observed, and no Docker operation, provider deployment, source copy,
   market data, execution, exchange, broker, wallet, or model runtime behavior.
+- `P3.B.CLOSE`: Spark environment-file baseline verified read-only with owner
+  sudo in TTY, confirming `/srv/drmlke/env` as `root:drmlke 0750`, four env
+  files as `root:drmlke 0640`, no secret-like key scan matches, required
+  disabled flags present, and no Docker, provider deploy, source copy, env
+  edit, permission change, market data, execution, exchange, broker, wallet, or
+  model runtime behavior.

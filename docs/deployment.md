@@ -392,8 +392,16 @@ Applied baseline:
   `SECRET`, `PRIVATE_KEY`, `SEED`, or `API_KEY`.
 - Live trading remains disabled.
 - Withdrawals remain disabled.
+- Exchange connections remain disabled.
+- Broker connections remain disabled.
+- Wallet custody remains disabled.
 - Provider inference remains disabled.
+- Provider model runtime remains disabled.
+- Provider model downloads remain disabled.
+- API public exposure remains disabled.
+- API live actions remain disabled.
 - Market data remains disabled.
+- Paper execution remains disabled.
 - Live execution remains disabled.
 - Provider deployment has not started.
 - Docker was not used.

@@ -431,6 +431,54 @@ sudo grep -R -n "DRMLKE_LIVE_EXECUTION_ENABLED=false" /srv/drmlke/env/drmlke.wor
 sudo find /srv/drmlke/env -maxdepth 1 -type f -print | sort
 ```
 
+### P3.B.CLOSE - read-only closeout verification
+
+Run from Exon when closing the Spark environment-file baseline. This command is
+read-only but requires sudo because `/srv/drmlke/env` is intentionally private.
+If sudo prompts, the owner types the password manually in the real terminal. Do
+not use `sudo -S`, do not store the password, and do not paste the password into
+chat, docs, logs, or scripts.
+
+```bash
+ssh -tt spark-vpn '
+set -eu
+hostname
+id
+
+sudo stat -c "%U:%G %a %n" /srv/drmlke/env
+
+sudo stat -c "%U:%G %a %n" \
+  /srv/drmlke/env/drmlke.shared.env \
+  /srv/drmlke/env/drmlke.provider.env \
+  /srv/drmlke/env/drmlke.api.env \
+  /srv/drmlke/env/drmlke.worker.env
+
+sudo grep -R -nE "PASSWORD|TOKEN|SECRET|PRIVATE_KEY|SEED|API_KEY" /srv/drmlke/env && exit 1 || true
+
+sudo grep -R -n "DRMLKE_LIVE_TRADING_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_WITHDRAWALS_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_EXCHANGE_CONNECTIONS_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_BROKER_CONNECTIONS_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+sudo grep -R -n "DRMLKE_WALLET_CUSTODY_ENABLED=false" /srv/drmlke/env/drmlke.shared.env
+
+sudo grep -R -n "DRMLKE_PROVIDER_INFERENCE_ENABLED=false" /srv/drmlke/env/drmlke.provider.env
+sudo grep -R -n "DRMLKE_PROVIDER_MODEL_RUNTIME_ENABLED=false" /srv/drmlke/env/drmlke.provider.env
+sudo grep -R -n "DRMLKE_PROVIDER_MODEL_DOWNLOADS_ENABLED=false" /srv/drmlke/env/drmlke.provider.env
+
+sudo grep -R -n "DRMLKE_API_PUBLIC_EXPOSURE_ENABLED=false" /srv/drmlke/env/drmlke.api.env
+sudo grep -R -n "DRMLKE_API_LIVE_ACTIONS_ENABLED=false" /srv/drmlke/env/drmlke.api.env
+
+sudo grep -R -n "DRMLKE_MARKET_DATA_ENABLED=false" /srv/drmlke/env/drmlke.worker.env
+sudo grep -R -n "DRMLKE_PAPER_EXECUTION_ENABLED=false" /srv/drmlke/env/drmlke.worker.env
+sudo grep -R -n "DRMLKE_LIVE_EXECUTION_ENABLED=false" /srv/drmlke/env/drmlke.worker.env
+
+sudo find /srv/drmlke/env -maxdepth 1 -type f -print | sort
+'
+```
+
+Do not add Docker, deploy, provider, source-copy, secret-writing, ownership, or
+permission-changing commands to this closeout check.
+
 No Docker, provider deployment, source copy, real secrets, exchange keys,
 broker keys, wallet keys, live-trading enablement, or model-download
 credentials were added by `P3.B.APPLY.INTERACTIVE`.

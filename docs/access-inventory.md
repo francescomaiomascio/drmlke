@@ -256,8 +256,10 @@ Decision outcome:
 - Environment files are owned by `root:drmlke`.
 - Environment files use mode `0640`.
 - No sensitive key-like names were observed by the baseline validation scan.
-- Live trading, withdrawals, provider inference, market data, and live
-  execution are disabled in the baseline flags.
+- Live trading, withdrawals, exchange connections, broker connections, wallet
+  custody, provider inference, provider model runtime, provider model
+  downloads, API public exposure, API live actions, market data, paper
+  execution, and live execution are disabled in the baseline flags.
 - No Docker container was started or stopped.
 - No provider runtime was deployed.
 - No source copy was created under `/srv/drmlke/app`.
