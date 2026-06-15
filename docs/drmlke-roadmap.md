@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
+- Current completed wave: `P4.A - Define Agentic Decision Intelligence Spine`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -77,11 +77,16 @@ Current repository facts:
   - `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
   - `P3.A.OWNER - Spark Storage Ownership Decision`.
   - `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
+  - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
 - Next recommended wave: `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation
   With TTY Sudo`.
 - P3 runtime preparation remains blocked until an approved apply wave runs exact
   commands.
+- Phase 4 agentic decision-intelligence architecture is documented at spine
+  level only. No agent implementation, model runtime, provider inference,
+  trading, execution, Spark mutation, API route, market data, or client work is
+  introduced by `P4.A`.
 
 Current provider status:
 
@@ -144,6 +149,8 @@ What is implemented now:
   snapshots and paper position books.
 - `packages/core` paper decision record contracts for paper-only no-action,
   watch, action candidate, rejected, postponed, and risk-vetoed records.
+- The master spine now defines agentic decision-intelligence, validation, and
+  model-risk architecture at documentation level through `P4.A`.
 - Placeholder packages for storage, wallet, agents, and risk.
 - Dockerfiles for base, API, provider, and worker.
 - Docker Compose profiles for local services.
@@ -175,6 +182,9 @@ What is not implemented now:
 - No paper execution engine.
 - No news or retrieval augmented generation system.
 - No AI model download or inference.
+- No agent implementation.
+- No model-risk registry implementation.
+- No evidence bundle, validator result, or decision case implementation.
 - No Spark runtime deployment.
 
 Sequencing correction:
@@ -226,7 +236,10 @@ Sequencing correction:
 25. `P3.OPERATING.1` formalizes multi-machine execution contexts: `LOCAL /
    Exon`, `REMOTE / Spark one-shot`, `REMOTE / Spark interactive`, `REMOTE
    mutating`, and `FORBIDDEN`.
-26. Tailscale and Spark remain infrastructure-only future work until they do
+26. `P4.A` defines the agentic decision-intelligence, validation, and
+   model-risk spine as architecture only before any agent, model, provider
+   inference, or execution implementation.
+27. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -1152,21 +1165,40 @@ What does not belong there:
 
 ### `packages/agents`
 
-Purpose: agent orchestration helpers for future research, reporting,
-summarization, and controlled operator assistance.
+Purpose: future home for agent contracts, task envelopes, decision-case
+helpers, evidence-bundle helpers, validator coordination, reporting and audit
+assistants, research assistants, and owner-copilot draft flows.
+
+Agents are decision-intelligence and governance components. They can help
+collect evidence, prepare drafts, summarize, classify, critique, explain, and
+route work through validators. They are not trading authority and are not a
+runtime control plane.
 
 What belongs there later:
 
-- Agent task contracts.
-- Report generation helpers.
-- Retrieval and explanation workflows.
-- Strictly non-executing advisory agents.
+- Agent registry and authority contracts.
+- Agent task envelopes.
+- Decision case and research case helpers.
+- Evidence bundle assembly helpers.
+- Validator coordination helpers.
+- Report and audit draft helpers.
+- Research assistant workflows.
+- Owner-copilot draft and explanation flows.
+- Strictly non-executing advisory and governance agents.
 
 What does not belong there:
 
 - Autonomous order execution.
 - Risk override behavior.
 - Secret management.
+- Exchange or broker access.
+- Wallet custody.
+- Direct treasury mutation.
+- Direct portfolio mutation.
+- Direct runtime mutation.
+- Spark command execution.
+- Live action approval.
+- Provider or model runtime authority to trade.
 
 ### `packages/risk`
 
@@ -2493,6 +2525,267 @@ permanently in this document.
 - Non-goals: no automatic download, no unreviewed activation.
 - Evaluation: every model has provenance, evaluation, and approval state.
 
+## 16A. Agentic Decision Intelligence Spine
+
+DRMLKE treats agents as controlled decision-intelligence and governance
+components, not as autonomous traders, runtime operators, or secret-bearing
+assistants.
+
+Agents may produce drafts, evidence, classifications, scores, summaries,
+reviews, questions, and explanations. Agents must never execute orders, approve
+live actions, bypass risk, bypass policy, access secrets, mutate treasury
+state, mutate portfolio state, or change runtime state directly.
+
+Agents are subordinate to validators, the deterministic policy gate, the risk
+engine, audit records, and owner review. The Intelligence Plane can propose.
+The Control / Execution Plane decides.
+
+### Four-Plane Architecture
+
+Data / Evidence Plane:
+
+- Append-only paper ledger.
+- Treasury snapshot.
+- Portfolio snapshot.
+- Decision records.
+- Future market data.
+- Future news and catalyst data.
+- Future strategy specs.
+- Future audit records.
+- Future model evaluation records.
+
+Intelligence Plane:
+
+- Deterministic features.
+- Lightweight neural and statistical models.
+- Scoring and ranking models.
+- Regime classifiers.
+- Retrieval augmented news summarization.
+- Strategy research agents.
+- Risk model assistants.
+- Owner-copilot explanations.
+
+Validation / Governance Plane:
+
+- Data quality validators.
+- Feed freshness validators.
+- Benchmark validators.
+- Backtest integrity validators.
+- Strategy validators.
+- Model-risk validators.
+- Decision-record validators.
+- Audit and report validators.
+
+Control / Execution Plane:
+
+- Deterministic policy gate.
+- Risk engine.
+- Owner review.
+- Paper execution later.
+- Live gate much later.
+
+Hard rule: the Intelligence Plane can propose; the Control / Execution Plane
+decides.
+
+### Decision Case and Orchestrator Doctrine
+
+A future orchestrator is a case manager, not an executor. The suggested future
+entities are `DecisionCase` and `ResearchCase`.
+
+The orchestrator may:
+
+- open analytical cases
+- route tasks to agents
+- collect evidence
+- enforce required validators
+- build evidence bundles
+- prepare draft decision records
+- prepare no-action records
+- prepare post-mortem drafts
+- trigger reporting workflows
+
+The orchestrator may not:
+
+- execute orders
+- bypass risk
+- bypass policy
+- mutate treasury
+- mutate portfolio
+- approve live action
+- access secrets
+- change runtime state
+
+### Agent Registry
+
+Every future agent must have a purpose, allowed inputs, allowed outputs,
+forbidden actions, audit requirements, relationship to the risk engine,
+relationship to the policy gate, relationship to owner review, runtime status,
+and explicit implementation wave.
+
+Initial conceptual registry:
+
+- Data Quality Agent. Purpose: validate data availability, freshness, gaps,
+  stale state, and source health. Outputs validator-ready data quality
+  findings. It cannot repair data silently or approve decisions.
+- Universe / Instrument Capability Agent. Purpose: track asset universe,
+  tradability, broker or exchange availability, pair metadata, and later
+  restrictions. It cannot connect to exchanges or create orders.
+- Feature / Regime Agent. Purpose: classify volatility, trend, liquidity, macro
+  or market state, and regime context. It cannot force execution.
+- Strategy Research Agent. Purpose: draft and review strategy specs,
+  hypotheses, failure modes, benchmark selection, and research notes. It cannot
+  promote a strategy alone.
+- Backtest Integrity Validator. Purpose: challenge lookahead bias,
+  survivorship bias, leakage, same-candle errors, cherry-picking, overfitting,
+  missing costs, and weak benchmark comparison. It cannot approve execution.
+- Signal Review Agent. Purpose: turn signals into candidate decision objects or
+  no-action candidates. It cannot create orders.
+- Risk Model Agent. Purpose: estimate probabilistic risk such as drawdown,
+  volatility, liquidity stress, model confidence, and uncertainty. It cannot
+  make final approval.
+- Policy Gate. Status: explicitly not an agent. It is deterministic control
+  logic and belongs to the control boundary.
+- Decision Journal Agent. Purpose: prepare decision records, no-action records,
+  reasons not to act, later outcome notes, and post-mortem drafts. It cannot
+  rewrite historical decisions.
+- News / Catalyst Agent. Purpose: summarize news, catalyst events, future
+  watchlist context, and classify catalyst quality and severity. It cannot
+  create headline-driven orders.
+- Portfolio / Treasury Analyst. Purpose: analyze exposure, cash reserve,
+  concentration, turnover, fee drag, cost basis, and structural risk. It cannot
+  mutate cash or positions.
+- Reporting / Audit Agent. Purpose: generate weekly report drafts, audit
+  digests, evidence summaries, and lessons learned. It cannot hide losses,
+  vetoes, or negative results.
+- Owner Copilot. Purpose: provide conversational operator assistance,
+  explanations, review prompts, draft actions, and source-referenced summaries.
+  It cannot mutate critical state directly.
+
+All entries are future-only until their explicit implementation waves define
+typed contracts and tests.
+
+### Validator Layer
+
+Validators are first-class architecture, not optional checks. A candidate
+action cannot advance unless required validators have explicit `pass`, `fail`,
+`blocked`, or `not_applicable` states.
+
+Required validator families:
+
+- data freshness validator
+- missing data validator
+- source health validator
+- cost model validator
+- benchmark validator
+- backtest leakage validator
+- overfitting/cherry-pick validator
+- strategy completeness validator
+- risk policy validator
+- decision completeness validator
+- no-action completeness validator
+- post-mortem validator
+- model drift validator, future
+- model calibration validator, future
+
+Validators can block progression. Validators do not execute, approve, mutate
+state, or replace the deterministic policy gate.
+
+### EvidenceBundle
+
+`EvidenceBundle` is the future object passed from intelligence to validation,
+risk, and owner review.
+
+Required future fields:
+
+- bundle id
+- decision case id
+- data sources
+- source timestamps
+- freshness state
+- missing data state
+- feature state
+- regime state
+- strategy hypothesis
+- candidate action or no-action state
+- benchmark comparison
+- cost assumptions
+- fee, spread, and slippage assumptions
+- risk state
+- validator outputs
+- reasons to act
+- reasons not to act
+- uncertainty
+- model ids and versions used, if any
+- owner notes
+- audit references
+
+Reasons not to act, stale data, missing data, uncertainty, and negative
+evidence are first-class bundle content. No candidate may proceed in future
+implementation without the required evidence bundle fields.
+
+### Lightweight Neural Model Policy
+
+Allowed future uses:
+
+- volatility regime classification
+- drawdown probability estimation
+- liquidity stress scoring
+- anomaly detection
+- news severity classification
+- sentiment and catalyst classification
+- feature representation learning
+- confidence and uncertainty scoring
+
+Forbidden uses:
+
+- direct order execution
+- final trade approval
+- policy override
+- risk-limit expansion
+- hidden black-box authority
+- training on untracked data
+- model promotion without benchmark, evaluation, and audit
+- treasury, portfolio, runtime, secret, exchange, broker, or wallet mutation
+
+Rule: ML may tighten risk or request review. ML may not loosen hard policy.
+
+### Model Risk Management
+
+Every future model must have:
+
+- model id
+- version
+- provenance
+- training and evaluation dataset reference
+- allowed scope
+- forbidden scope
+- evaluation record
+- benchmark record
+- calibration record, where applicable
+- drift-monitoring plan, where applicable
+- disabled-by-default runtime status
+- promotion gate
+- rollback or deprecation condition
+
+Negative model results are preserved. A model cannot become production authority
+without explicit promotion. A model cannot bypass deterministic risk policy,
+trade, or access secrets.
+
+### Canonical Decision Flow
+
+1. Data enters the Data / Evidence Plane.
+2. Data quality validators run.
+3. Features and regime state are generated.
+4. Strategy or research agents propose a candidate or no-action.
+5. Validators challenge the candidate.
+6. Risk model agent scores probabilistic risk.
+7. Deterministic policy gate applies hard limits.
+8. Risk engine allows, reduces, delays, or vetoes.
+9. Decision Journal Agent prepares the decision record.
+10. Owner reviews.
+11. Paper execution may occur only in a later phase and only after risk allows.
+12. Audit and reporting record everything.
+
 ## 17. Data, Storage, and Schema Spine
 
 Primary stores:
@@ -2992,476 +3285,803 @@ provider runtime, and repeatable validation.
   Docker status, git status, and update docs. Output: completion report.
   Acceptance: provider stub runs privately. Non-goals: live trading.
 
-### Phase 4. Provider contract and backend adapter boundary
+### Phase 4 — Agentic Decision Intelligence, Validation, and Model-Risk Spine
+
+Global doctrine: Phase 4 defines the intelligence and governance layer above
+data and below control. It does not create execution authority.
+
+Phase 4 owns:
+
+- agent role boundaries
+- decision-case model
+- evidence-bundle model
+- validator result model
+- model-risk registry doctrine
+- audit and report agent boundary
+- owner-copilot draft-only boundary
+- relationship between agents, validation, risk, policy, audit, and owner
+  review
+
+Phase 4 does not own Spark storage creation, Spark runtime deployment, provider
+deployment, Docker operations, market data ingestion, strategy implementation,
+backtest implementation, paper execution, live execution, broker or exchange
+integration, wallet custody, secret handling, or UI implementation.
+
+- P4.A - Define Agentic Decision Intelligence Spine.
+  Purpose: define the complete agentic decision-intelligence architecture in
+  the master spine before any agent or model implementation.
+  Why it matters: without this spine, future agent code can become uncontrolled
+  assistant logic instead of a governed decision system.
+  Owned architecture: agentic doctrine, four-plane architecture, agent registry
+  concept, validator layer concept, evidence bundle concept, decision
+  case/orchestrator concept, lightweight neural model policy, model-risk
+  management doctrine, canonical decision flow, Phase 4 wave map, and
+  architecture gap register entries for agentic/model-risk work.
+  Allowed outputs: roadmap architecture sections, architecture summary, and
+  agent implementation guardrails.
+  Forbidden scope: agent implementation, model implementation, provider
+  inference, runtime serving, API routes, market data, trading, execution, or
+  Spark mutation.
+  Dependencies: Phase 0 product-core contracts complete; Phase 2 access
+  planning complete; Phase 3 operating doctrine complete.
+  Acceptance: the roadmap contains the canonical agentic spine, no parallel
+  agentic namespace exists, Phase 4 is inserted cleanly, old future phases are
+  shifted forward, and validation passes.
+  Relationship to risk/policy/owner: defines that agents propose, validators
+  challenge, policy and risk control, and the owner reviews critical decisions.
+  Implementation status: documentation only in this wave.
+  Non-goals now: no contracts or runtime behavior.
+- P4.B - Agent Registry and Authority Contracts.
+  Purpose: define typed authority for every future agent before agent code
+  exists.
+  Why it matters: the system must know what an agent may read, what it may
+  produce, what it may never do, and how its output is audited.
+  Owned architecture / future contracts: `AgentId`, `AgentRole`,
+  `AgentAuthority`, `AgentTaskType`, `AgentInputScope`, `AgentOutputType`,
+  `AgentForbiddenAction`, `AgentAuditRequirement`, `AgentRuntimeStatus`, and
+  `AgentCapabilityBoundary`.
+  Required registry entries: Data Quality Agent, Universe / Instrument
+  Capability Agent, Feature / Regime Agent, Strategy Research Agent, Backtest
+  Integrity Validator, Signal Review Agent, Risk Model Agent, Decision Journal
+  Agent, News / Catalyst Agent, Portfolio / Treasury Analyst, Reporting / Audit
+  Agent, Owner Copilot, and Policy Gate explicitly marked as not an agent.
+  Allowed outputs: future typed contracts, registry fixtures, and architecture
+  docs; pure contracts only if a later wave explicitly allows implementation.
+  Forbidden scope: autonomous trading, order or fill creation, exchange/broker
+  access, wallet access, secret access, treasury mutation, portfolio mutation,
+  runtime mutation, risk override, or policy override.
+  Dependencies: P4.A complete.
+  Acceptance: every conceptual agent has an authority contract, forbidden
+  actions, audit requirements, and no execution authority; Policy Gate remains
+  deterministic control logic.
+  Relationship to risk/policy/owner: every agent is subordinate to risk,
+  policy, validators, audit, and owner review.
+  Implementation status: future contract wave only.
+  Non-goals now: no agent implementation.
+- P4.C - Evidence Bundle Contract.
+  Purpose: define the canonical object that moves facts, assumptions, model
+  outputs, validator outputs, and uncertainty from intelligence to risk and
+  owner review.
+  Why it matters: without an evidence bundle, the system cannot explain why a
+  candidate exists, which data it used, whether data was stale, which validators
+  passed, which model version was used, or why no-action may be better.
+  Owned architecture / future contracts: `EvidenceBundle`, `EvidenceSourceRef`,
+  `EvidenceTimestamp`, `EvidenceFreshnessState`, `EvidenceMissingDataState`,
+  `EvidenceFeatureState`, `EvidenceRegimeState`,
+  `EvidenceStrategyHypothesis`, `EvidenceCostAssumption`,
+  `EvidenceValidatorRef`, `EvidenceRiskState`, `EvidenceUncertainty`,
+  `EvidenceOwnerNote`, and `EvidenceAuditRef`.
+  Required bundle fields: bundle id, decision case id, source ids, source
+  timestamps, freshness state, missing data state, feature state, regime state,
+  strategy hypothesis, candidate action or no-action state, benchmark
+  comparison, fee/spread/slippage assumptions, risk state, validator outputs,
+  reasons to act, reasons not to act, uncertainty, model ids and versions,
+  owner notes, and audit references.
+  Allowed outputs: future contract definition, schema examples, fixtures, and
+  bundle lifecycle docs.
+  Forbidden scope: secrets, hidden source references, dropped negative evidence,
+  model output without version, or candidate progression without required
+  fields.
+  Dependencies: P4.A complete; P4.B informs agent input/output references.
+  Acceptance: evidence bundle is the handoff object from intelligence to
+  validation/risk/owner review, stale and missing data are explicit, reasons not
+  to act are first-class, model versions are traceable, and validator outputs
+  are embedded or referenced.
+  Relationship to risk/policy/owner: risk and owner review consume the bundle;
+  the bundle itself does not approve action.
+  Implementation status: future contract wave only.
+  Non-goals now: no persistence or runtime assembly.
+- P4.D - Validator Result Contract.
+  Purpose: define validator outputs as first-class explicit objects, not loose
+  booleans or logs.
+  Why it matters: the system must know which validators ran, what they checked,
+  what they blocked, and why.
+  Owned architecture / future contracts: `ValidatorId`, `ValidatorFamily`,
+  `ValidatorInputRef`, `ValidatorResult`, `ValidatorSeverity`,
+  `ValidatorDecision`, `ValidatorBlockReason`, `ValidatorEvidenceRef`, and
+  `ValidatorAuditRef`.
+  Required result states: `pass`, `fail`, `blocked`, `not_applicable`,
+  `needs_owner_review`, `needs_data_repair`, and `needs_model_review`.
+  Required validator families: data freshness, missing data, source health,
+  cost model, benchmark, backtest leakage, overfitting/cherry-pick, strategy
+  completeness, risk policy, decision completeness, no-action completeness,
+  post-mortem, future model drift, and future model calibration.
+  Allowed outputs: future validator result contracts, fixture examples, and
+  validator lifecycle documentation.
+  Forbidden scope: silent validation, optional validation for required gates,
+  unauditable results, replacing policy gate with validator opinion, or allowing
+  model output to pass without traceable validation.
+  Dependencies: P4.A complete; P4.C should exist before full implementation.
+  Acceptance: candidates can require validators by family, validators can block
+  progression, output is auditable, and validator result is separate from final
+  risk decision.
+  Relationship to risk/policy/owner: validators challenge and block; risk and
+  policy decide control state; owner review remains explicit.
+  Implementation status: future contract wave only.
+  Non-goals now: no validator engine.
+- P4.E - Decision Case and Orchestrator Contract.
+  Purpose: define the orchestrator as a case manager that coordinates evidence,
+  agents, validators, risk review, and owner review without becoming an
+  executor.
+  Why it matters: a durable case spine preserves why a case exists, what
+  evidence was collected, which validators ran, what risk said, what the owner
+  decided, and how it closed.
+  Owned architecture / future contracts: `DecisionCase`, `ResearchCase`,
+  `CaseType`, `CaseState`, `CaseTrigger`, `CaseActor`, `CaseEvidenceRef`,
+  `CaseValidatorRequirement`, `CaseRiskReviewState`, `CaseOwnerReviewState`,
+  `CaseDisposition`, and `CaseAuditRef`.
+  Required future fields: case id, type, created timestamp, actor or trigger,
+  asset or universe scope, timeframe, hypothesis, data requirements, required
+  validators, evidence bundle id, candidate decision id if any, risk state,
+  policy state, owner review state, final disposition, and audit references.
+  Case states: `opened`, `collecting_evidence`, `validation_required`,
+  `validation_blocked`, `risk_review_required`, `owner_review_required`,
+  `paper_action_candidate`, `no_action`, `rejected`, `postponed`, `vetoed`, and
+  `closed`.
+  Allowed outputs: future case contracts, orchestration lifecycle docs, and
+  owner review packet shape.
+  Forbidden scope: executing orders, creating fills, bypassing validators,
+  bypassing risk, bypassing policy, bypassing owner review, mutating treasury,
+  mutating portfolio, approving live action, accessing secrets, changing
+  runtime state, starting services, or running Spark commands.
+  Dependencies: P4.A complete; P4.B informs routing; P4.C informs evidence;
+  P4.D informs progression.
+  Acceptance: orchestrator is explicitly not an executor, lifecycle is defined,
+  states are auditable, progression requires evidence and validation, and owner
+  review state is first-class.
+  Relationship to risk/policy/owner: orchestrator prepares and routes; risk,
+  policy, and owner review control progression.
+  Implementation status: future contract wave only.
+  Non-goals now: no orchestration runtime.
+- P4.F - Model Risk Registry.
+  Purpose: define governance for every future neural, statistical, LLM, and
+  embedding model before any model can influence decisions.
+  Why it matters: a model without provenance, evaluation, calibration, scope,
+  and promotion status is not acceptable in a financial decision system.
+  Owned architecture / future contracts: `ModelId`, `ModelVersion`,
+  `ModelFamily`, `ModelScope`, `ModelProvenance`, `TrainingDataRef`,
+  `EvaluationDataRef`, `BenchmarkRecord`, `CalibrationRecord`, `DriftPolicy`,
+  `PromotionState`, `RollbackCondition`, and `RuntimeEnablementState`.
+  Allowed future model uses: volatility regime classification, drawdown
+  probability estimation, liquidity stress scoring, anomaly detection, news
+  severity classification, sentiment/catalyst classification, feature
+  representation learning, confidence/uncertainty scoring, and source-referenced
+  report summarization.
+  Forbidden scope: direct order execution, final trade approval, policy
+  override, risk-limit expansion, hidden black-box authority, training on
+  untracked data, model promotion without benchmark/evaluation/audit, mutation
+  of treasury, portfolio, runtime, secrets, exchange, broker, or wallet state,
+  and treating model output as source truth.
+  Required future model record: model id, version, provenance,
+  training/evaluation dataset reference, allowed scope, forbidden scope,
+  evaluation record, benchmark record, calibration record where applicable,
+  drift-monitoring plan where applicable, disabled-by-default runtime status,
+  promotion gate, and rollback/deprecation condition.
+  Dependencies: P4.A complete; P4.C carries model refs; P4.D includes
+  model-risk validators.
+  Acceptance: model-risk registry doctrine is explicit, no model has implicit
+  authority, every model output is traceable, every model has allowed and
+  forbidden scope, and no model can trade or bypass policy.
+  Relationship to risk/policy/owner: model output can tighten risk or request
+  review; it cannot loosen hard policy or approve action.
+  Implementation status: future contract wave only.
+  Non-goals now: no model runtime or downloads.
+- P4.G - Reporting and Audit Agent Boundary.
+  Purpose: define reporting/audit agents as draft/report generators that
+  summarize evidence, decisions, risk events, and lessons without altering
+  truth.
+  Why it matters: weekly reports, audit digests, decision reviews, risk
+  summaries, and lessons learned must be derived from source records, not
+  invented narratives.
+  Owned architecture / future contracts: `ReportDraft`, `AuditDigest`,
+  `WeeklyReview`, `DecisionReviewSummary`, `RiskEventSummary`,
+  `ModelEvaluationSummary`, `LessonLearned`, `UnresolvedIssue`, and
+  `ReportSourceRef`.
+  Allowed inputs: decision records, audit events, risk decisions, validator
+  results, evidence bundles, portfolio/treasury snapshots, model evaluation
+  records, and owner notes.
+  Allowed outputs: weekly report draft, audit digest, unresolved issue list,
+  lesson summary, decision quality summary, risk event summary, and model
+  evaluation summary.
+  Forbidden scope: editing historical records, hiding losses, hiding vetoes,
+  rewriting negative results as positive, changing decision outcomes,
+  fabricating source references, approving actions, or execution.
+  Dependencies: P4.A complete; P4.C evidence bundle; P4.D validator results;
+  P4.E case lifecycle.
+  Acceptance: reports derive from source references, unresolved issues remain
+  visible, negative results remain preserved, and reporting cannot mutate
+  decisions or risk state.
+  Relationship to risk/policy/owner: reports inform owner review and audit;
+  they do not control decisions.
+  Implementation status: future contract wave only.
+  Non-goals now: no report generation.
+- P4.H - Owner Copilot Draft-Only Boundary.
+  Purpose: define the owner-facing conversational assistant as a
+  draft/review/explanation surface, not an operator with authority.
+  Why it matters: the copilot may become the main way to ask what happened, why
+  something is blocked, what should be reviewed, or to draft a no-action note;
+  it must never become hidden execution.
+  Owned architecture / future contracts: `OwnerCopilotRequest`,
+  `OwnerCopilotResponse`, `CopilotDraftAction`, `CopilotExplanation`,
+  `CopilotReviewPrompt`, `CopilotLockReason`, `CopilotSourceRef`, and
+  `CopilotEscalation`.
+  Allowed inputs: evidence bundles, decision cases, decision records, risk
+  decisions, validator results, reports, owner notes, and source-referenced
+  summaries.
+  Allowed outputs: explanations, review prompts, draft decision notes, draft
+  no-action records, draft post-mortems, lock reason explanations, questions
+  for owner review, and source-referenced summaries.
+  Forbidden scope: direct action execution, order creation, fill creation, live
+  approval, policy override, risk override, secret access, runtime mutation,
+  Spark command execution, exchange/broker/wallet access, or silent state
+  changes.
+  Dependencies: P4.A complete; P4.B agent registry; P4.C evidence bundle; P4.E
+  decision case/orchestrator.
+  Acceptance: owner copilot is draft-only, answers are source-grounded where
+  applicable, proposed actions remain pending risk/policy/owner gates, critical
+  state cannot be mutated, and lock reasons cannot be bypassed.
+  Relationship to risk/policy/owner: copilot assists the owner, but risk and
+  policy remain authoritative.
+  Implementation status: future contract wave only.
+  Non-goals now: no conversational runtime.
+
+### Phase 5. Provider contract and backend adapter boundary
 
 Outcome: provider and API have explicit contracts for health, capabilities, and
 future compute without hidden execution authority.
 
-- P4.A - Contract spec. Purpose: define provider requests and responses. Tasks:
+- P5.A - Contract spec. Purpose: define provider requests and responses. Tasks:
   write schemas for health, capabilities, model list, and errors. Output:
   provider contract. Acceptance: schemas are documented. Non-goals: real models.
-- P4.B - API adapter. Purpose: let API query provider safely. Tasks: add client
+- P5.B - API adapter. Purpose: let API query provider safely. Tasks: add client
   wrapper, timeouts, and safe errors. Output: provider adapter. Acceptance:
   tests cover success and failure. Non-goals: model inference.
-- P4.C - Capability endpoint. Purpose: expose what provider can do. Tasks:
+- P5.C - Capability endpoint. Purpose: expose what provider can do. Tasks:
   return stub capabilities and no active models. Output: capability response.
   Acceptance: live execution is absent. Non-goals: downloads.
-- P4.D - Runtime config. Purpose: configure provider URL and timeouts. Tasks:
+- P5.D - Runtime config. Purpose: configure provider URL and timeouts. Tasks:
   add settings and env docs. Output: config entries. Acceptance: defaults are
   local and safe. Non-goals: secrets.
-- P4.E - Error and audit hooks. Purpose: make failures inspectable. Tasks:
+- P5.E - Error and audit hooks. Purpose: make failures inspectable. Tasks:
   define error shape and audit hook points. Output: typed failures. Acceptance:
   no raw stack leaks to clients. Non-goals: full audit store.
-- P4.F - Validation. Purpose: prove boundary behavior. Tasks: run unit tests,
+- P5.F - Validation. Purpose: prove boundary behavior. Tasks: run unit tests,
   API health, provider health. Output: validation report. Acceptance: contract
   stable. Non-goals: strategy logic.
 
-### Phase 5. Identity, accounts, roles, capability model
+### Phase 6. Identity, accounts, roles, capability model
 
 Outcome: API can represent users, roles, sessions, devices, and capabilities
 with server-side enforcement.
 
-- P5.A - Capability definitions. Purpose: define all initial capabilities.
+- P6.A - Capability definitions. Purpose: define all initial capabilities.
   Tasks: add enums and role defaults. Output: capability module. Acceptance:
   owner and viewer mappings match this spine. Non-goals: UI.
-- P5.B - User schema. Purpose: store users and roles. Tasks: add storage schema
+- P6.B - User schema. Purpose: store users and roles. Tasks: add storage schema
   and seed records for Francesco, Padre, and Zio. Output: user store.
   Acceptance: one owner and two viewers exist. Non-goals: public signup.
-- P5.C - Session skeleton. Purpose: represent authenticated sessions. Tasks:
+- P6.C - Session skeleton. Purpose: represent authenticated sessions. Tasks:
   define session model and simple dev auth path. Output: session state.
   Acceptance: tests verify role resolution. Non-goals: final auth.
-- P5.D - Permission guard. Purpose: enforce capabilities server-side. Tasks:
+- P6.D - Permission guard. Purpose: enforce capabilities server-side. Tasks:
   add reusable guard and denial response. Output: permission boundary.
   Acceptance: forbidden viewer action is denied. Non-goals: relying on UI lock.
-- P5.E - Audit permission denials. Purpose: record security-relevant denials.
+- P6.E - Audit permission denials. Purpose: record security-relevant denials.
   Tasks: write audit records for denied actions. Output: denial audit.
   Acceptance: denial is inspectable. Non-goals: full audit UI.
-- P5.F - Validation. Purpose: prove corrected account model. Tasks: unit tests
+- P6.F - Validation. Purpose: prove corrected account model. Tasks: unit tests
   for owner, viewer, emergency, technical roles. Output: test report.
   Acceptance: no per-person trading portfolio exists. Non-goals: ledger.
 
-### Phase 6. Treasury and paper ledger
+### Phase 7. Treasury and paper ledger
 
 Outcome: one simulated 200 EUR treasury, ledger entries, positions, and PnL are
 represented safely.
 
-- P6.A - Treasury schema. Purpose: define one paper treasury. Tasks: create
+- P7.A - Treasury schema. Purpose: define one paper treasury. Tasks: create
   treasury table or model with mode and currency. Output: treasury record.
   Acceptance: exactly one active treasury. Non-goals: real funds.
-- P6.B - Ledger entries. Purpose: record immutable accounting events. Tasks:
+- P7.B - Ledger entries. Purpose: record immutable accounting events. Tasks:
   define entry types, amounts, asset, source, and audit reference. Output:
   ledger model. Acceptance: entries are append-only. Non-goals: withdrawals.
-- P6.C - Position accounting. Purpose: derive holdings from ledger and fills.
+- P7.C - Position accounting. Purpose: derive holdings from ledger and fills.
   Tasks: implement position summaries. Output: positions view. Acceptance:
   known examples reconcile. Non-goals: exchange balances.
-- P6.D - PnL accounting. Purpose: show realized and unrealized results. Tasks:
+- P7.D - PnL accounting. Purpose: show realized and unrealized results. Tasks:
   calculate PnL with fees and slippage. Output: PnL summary. Acceptance:
   tests cover fee effects. Non-goals: tax reporting.
-- P6.E - Treasury API. Purpose: expose read-only treasury state. Tasks: add
+- P7.E - Treasury API. Purpose: expose read-only treasury state. Tasks: add
   endpoints guarded by capabilities. Output: treasury read API. Acceptance:
   viewer can read permitted data. Non-goals: mutating UI.
-- P6.F - Validation. Purpose: prove paper ledger safety. Tasks: run unit tests
+- P7.F - Validation. Purpose: prove paper ledger safety. Tasks: run unit tests
   and API tests. Output: validation report. Acceptance: live capital remains 0
   EUR. Non-goals: exchange integration.
 
-### Phase 7. Mobile public client shell with permission-locked UI
+### Phase 8. Mobile public client shell with permission-locked UI
 
 Outcome: shared client shell exists with login, navigation, role-aware state,
 and locked controls, without trading implementation.
 
-- P7.A - Framework decision. Purpose: choose SvelteKit or React. Tasks: compare
+- P8.A - Framework decision. Purpose: choose SvelteKit or React. Tasks: compare
   fit for mobile packaging and shared UI. Output: decision record. Acceptance:
   choice is documented. Non-goals: scaffold before decision.
-- P7.B - Client scaffold. Purpose: create app shell. Tasks: initialize project,
+- P8.B - Client scaffold. Purpose: create app shell. Tasks: initialize project,
   wire lint and build. Output: client app. Acceptance: build passes. Non-goals:
   trading logic.
-- P7.C - Auth shell. Purpose: represent session and role. Tasks: add login view
+- P8.C - Auth shell. Purpose: represent session and role. Tasks: add login view
   and mock or API-backed session. Output: login flow. Acceptance: owner and
   viewer states render. Non-goals: final auth.
-- P7.D - Navigation and screens. Purpose: create listed mobile screens. Tasks:
+- P8.D - Navigation and screens. Purpose: create listed mobile screens. Tasks:
   add Home, Treasury, Positions, PnL, Signals, News, Runtime, Risk, Alerts,
   Settings, Emergency. Output: navigable shell. Acceptance: screens fit mobile.
   Non-goals: real data.
-- P7.E - Capability locks. Purpose: communicate permissions. Tasks: render
+- P8.E - Capability locks. Purpose: communicate permissions. Tasks: render
   disabled or hidden actions from API capability state. Output: locked UI.
   Acceptance: viewer cannot trigger mutating actions. Non-goals: treating UI as
   security.
-- P7.F - Validation. Purpose: verify shell quality. Tasks: run client tests,
+- P8.F - Validation. Purpose: verify shell quality. Tasks: run client tests,
   responsive checks, and API permission checks. Output: validation report.
   Acceptance: one shared app for roles. Non-goals: packaging release.
 
-### Phase 8. Web admin console shell
+### Phase 9. Web admin console shell
 
 Outcome: private owner console shell exists for dense runtime inspection.
 
-- P8.A - Admin route plan. Purpose: define sections and layout. Tasks: map left
+- P9.A - Admin route plan. Purpose: define sections and layout. Tasks: map left
   rail, top status bar, workspace, inspector, event strip. Output: UI plan.
   Acceptance: all required sections covered. Non-goals: public landing page.
-- P8.B - Shell implementation. Purpose: create admin console frame. Tasks: add
+- P9.B - Shell implementation. Purpose: create admin console frame. Tasks: add
   layout and routing. Output: admin shell. Acceptance: owner navigation works.
   Non-goals: full data.
-- P8.C - Status bar. Purpose: show runtime essentials. Tasks: display mode,
+- P9.C - Status bar. Purpose: show runtime essentials. Tasks: display mode,
   runtime, provider, risk, emergency state. Output: status bar. Acceptance:
   stale and loading states exist. Non-goals: live controls.
-- P8.D - Inspector pattern. Purpose: support detailed entity review. Tasks:
+- P9.D - Inspector pattern. Purpose: support detailed entity review. Tasks:
   create right inspector for selected rows or cards. Output: inspector
   component. Acceptance: works with placeholder entities. Non-goals: nested
   card clutter.
-- P8.E - Permission handling. Purpose: enforce owner-only surfaces. Tasks:
+- P9.E - Permission handling. Purpose: enforce owner-only surfaces. Tasks:
   guard admin routes and show safe denial. Output: admin guard. Acceptance:
   viewer cannot access admin actions. Non-goals: client-only security.
-- P8.F - Validation. Purpose: test console shell. Tasks: run frontend and API
+- P9.F - Validation. Purpose: test console shell. Tasks: run frontend and API
   checks. Output: validation report. Acceptance: console remains private.
   Non-goals: public deployment.
 
-### Phase 9. Runtime control and event bus
+### Phase 10. Runtime control and event bus
 
 Outcome: runtime state, commands, jobs, and events have a safe operational
 foundation.
 
-- P9.A - Runtime state model. Purpose: represent stopped, running, paused, and
+- P10.A - Runtime state model. Purpose: represent stopped, running, paused, and
   emergency states. Tasks: add state schema and transitions. Output: runtime
   model. Acceptance: invalid transitions are rejected. Non-goals: trading.
-- P9.B - Command API. Purpose: expose pause, resume, and emergency stop. Tasks:
+- P10.B - Command API. Purpose: expose pause, resume, and emergency stop. Tasks:
   add guarded endpoints. Output: runtime API. Acceptance: viewer denied,
   owner audited. Non-goals: live execution.
-- P9.C - Event table. Purpose: store runtime events. Tasks: define event schema
+- P10.C - Event table. Purpose: store runtime events. Tasks: define event schema
   and writer. Output: event store. Acceptance: events are typed. Non-goals:
   distributed streaming.
-- P9.D - Worker job model. Purpose: represent scheduled jobs. Tasks: define job
+- P10.D - Worker job model. Purpose: represent scheduled jobs. Tasks: define job
   states and heartbeat. Output: job records. Acceptance: worker heartbeat is
   visible. Non-goals: market collection.
-- P9.E - Client updates. Purpose: show runtime state in UI. Tasks: wire API
+- P10.E - Client updates. Purpose: show runtime state in UI. Tasks: wire API
   reads to mobile and admin shells. Output: runtime views. Acceptance: pause
   state is visible. Non-goals: real-time sockets unless needed.
-- P9.F - Validation. Purpose: prove command safety. Tasks: tests for state
+- P10.F - Validation. Purpose: prove command safety. Tasks: tests for state
   transitions, permissions, audit. Output: validation report. Acceptance:
   emergency stop is auditable. Non-goals: resume after live lock.
 
-### Phase 10. Market data collector
+### Phase 11. Market data collector
 
 Outcome: approved public market data can be collected, normalized, stored, and
 monitored without exchange trading keys.
 
-- P10.A - Source decision. Purpose: choose first public data source. Tasks:
+- P11.A - Source decision. Purpose: choose first public data source. Tasks:
   evaluate source reliability, symbols, rate limits, and terms. Output:
   decision record. Acceptance: source is approved. Non-goals: private exchange
   keys.
-- P10.B - Symbol model. Purpose: normalize asset notation. Tasks: define BTC/EUR
+- P11.B - Symbol model. Purpose: normalize asset notation. Tasks: define BTC/EUR
   or BTC/USDT notation and mapping. Output: symbol schema. Acceptance: notation
   is consistent. Non-goals: all assets.
-- P10.C - Collector job. Purpose: fetch market data. Tasks: implement scheduled
+- P11.C - Collector job. Purpose: fetch market data. Tasks: implement scheduled
   public data collection. Output: collector. Acceptance: stores candles.
   Non-goals: trading.
-- P10.D - Normalization. Purpose: produce stable candle schema. Tasks: validate
+- P11.D - Normalization. Purpose: produce stable candle schema. Tasks: validate
   timestamps, price fields, volume, source metadata. Output: normalized candles.
   Acceptance: malformed data is rejected. Non-goals: predictions.
-- P10.E - Feed health. Purpose: detect stale data. Tasks: add feed status and
+- P11.E - Feed health. Purpose: detect stale data. Tasks: add feed status and
   stale thresholds. Output: feed health records. Acceptance: stale source is
   visible. Non-goals: risk engine integration yet.
-- P10.F - Validation. Purpose: prove data collection. Tasks: unit tests, sample
+- P11.F - Validation. Purpose: prove data collection. Tasks: unit tests, sample
   fetch, storage checks. Output: validation report. Acceptance: no exchange keys
   required. Non-goals: live order book trading.
 
-### Phase 11. Feature and regime engine
+### Phase 12. Feature and regime engine
 
 Outcome: deterministic features and rule-based regimes are generated from stored
 market data.
 
-- P11.A - Feature schema. Purpose: define feature rows and metadata. Tasks: add
+- P12.A - Feature schema. Purpose: define feature rows and metadata. Tasks: add
   feature table or parquet schema. Output: schema. Acceptance: asset/timeframe
   keys are stable. Non-goals: ML model.
-- P11.B - Feature functions. Purpose: calculate transparent indicators. Tasks:
+- P12.B - Feature functions. Purpose: calculate transparent indicators. Tasks:
   implement returns, volatility, ATR, RSI, MACD, moving average slope,
   Bollinger distance, volume z-score. Output: feature library. Acceptance:
   known-value tests pass. Non-goals: prediction.
-- P11.C - Feature job. Purpose: generate features on schedule. Tasks: add worker
+- P12.C - Feature job. Purpose: generate features on schedule. Tasks: add worker
   job from candles to features. Output: feature pipeline. Acceptance: idempotent
   reruns. Non-goals: trading.
-- P11.D - Regime rules. Purpose: classify market state. Tasks: implement calm,
+- P12.D - Regime rules. Purpose: classify market state. Tasks: implement calm,
   trend, chop, volatile, panic, stale, illiquid labels. Output: regime labels.
   Acceptance: reason codes are present. Non-goals: HMM first.
-- P11.E - API and views. Purpose: expose feature and regime summaries. Tasks:
+- P12.E - API and views. Purpose: expose feature and regime summaries. Tasks:
   add read endpoints and UI summaries. Output: inspectable state. Acceptance:
   owner can inspect calculations. Non-goals: strategy approval.
-- P11.F - Validation. Purpose: prevent leakage and instability. Tasks: tests for
+- P12.F - Validation. Purpose: prevent leakage and instability. Tasks: tests for
   windows, timestamps, missing data. Output: validation report. Acceptance: no
   future data is used. Non-goals: backtest engine.
 
-### Phase 12. Strategy lab and backtesting
+### Phase 13. Strategy lab and backtesting
 
 Outcome: strategies can be specified, backtested, compared to benchmarks, and
 kept out of execution until promoted.
 
-- P12.A - Strategy spec model. Purpose: define strategy metadata and parameters.
+- P13.A - Strategy spec model. Purpose: define strategy metadata and parameters.
   Tasks: add strategy definitions and states. Output: strategy registry.
   Acceptance: promotion pipeline states exist. Non-goals: live trading.
-- P12.B - Benchmark backtests. Purpose: implement buy-and-hold and scheduled
+- P13.B - Benchmark backtests. Purpose: implement buy-and-hold and scheduled
   accumulation. Tasks: run deterministic simulations. Output: benchmark
   results. Acceptance: reproducible reports. Non-goals: complex ML.
-- P12.C - Strategy backtest engine. Purpose: test candidate signals over
+- P13.C - Strategy backtest engine. Purpose: test candidate signals over
   history. Tasks: implement chronological runner with fees and slippage. Output:
   backtest engine. Acceptance: no lookahead. Non-goals: real orders.
-- P12.D - Strategy families. Purpose: specify trend, mean reversion, breakout,
+- P13.D - Strategy families. Purpose: specify trend, mean reversion, breakout,
   and news avoidance. Tasks: implement paper signal logic or specs. Output:
   strategy candidates. Acceptance: outputs include reason codes. Non-goals:
   promotion without review.
-- P12.E - Reports. Purpose: compare strategy to benchmarks. Tasks: produce PnL,
+- P13.E - Reports. Purpose: compare strategy to benchmarks. Tasks: produce PnL,
   drawdown, expectancy, profit factor, and regime breakdown. Output: report.
   Acceptance: costs included. Non-goals: public claims.
-- P12.F - Validation. Purpose: prove backtest integrity. Tasks: tests for
+- P13.F - Validation. Purpose: prove backtest integrity. Tasks: tests for
   splits, costs, signal timing, and metrics. Output: validation report.
   Acceptance: strategy remains paper-only. Non-goals: exchange adapter.
 
-### Phase 13. Paper trading engine
+### Phase 14. Paper trading engine
 
 Outcome: candidate actions can become simulated paper orders and fills that
 update the single treasury ledger.
 
-- P13.A - Paper order model. Purpose: represent simulated order intent. Tasks:
+- P14.A - Paper order model. Purpose: represent simulated order intent. Tasks:
   add order fields, source signal, status, and audit link. Output: paper order
   schema. Acceptance: no real venue fields imply execution. Non-goals: exchange
   order.
-- P13.B - Fill simulator. Purpose: simulate fills realistically. Tasks: model
+- P14.B - Fill simulator. Purpose: simulate fills realistically. Tasks: model
   mark price, slippage, fee, partial fill policy if needed. Output: simulated
   fills. Acceptance: fill math is tested. Non-goals: live order book.
-- P13.C - Ledger integration. Purpose: update treasury from fills. Tasks: write
+- P14.C - Ledger integration. Purpose: update treasury from fills. Tasks: write
   ledger entries and positions. Output: paper accounting. Acceptance: cash and
   position reconcile. Non-goals: withdrawal.
-- P13.D - Order lifecycle. Purpose: model created, filled, cancelled, rejected.
+- P14.D - Order lifecycle. Purpose: model created, filled, cancelled, rejected.
   Tasks: implement state transitions and audit. Output: lifecycle logic.
   Acceptance: invalid transitions fail. Non-goals: broker integration.
-- P13.E - UI inspection. Purpose: show orders and fills. Tasks: add mobile and
+- P14.E - UI inspection. Purpose: show orders and fills. Tasks: add mobile and
   admin read views. Output: paper trading views. Acceptance: viewer read rules
   apply. Non-goals: viewer actions.
-- P13.F - Validation. Purpose: prove paper safety. Tasks: run unit, integration,
+- P14.F - Validation. Purpose: prove paper safety. Tasks: run unit, integration,
   and permission tests. Output: validation report. Acceptance: no live path.
   Non-goals: shadow exchange.
 
-### Phase 14. News, retrieval, and sentiment engine
+### Phase 15. News, retrieval, and sentiment engine
 
 Outcome: news can be collected, normalized, scored, stored, and used for risk
 context without creating autonomous trades.
 
-- P14.A - News source decision. Purpose: choose initial source. Tasks: evaluate
+- P15.A - News source decision. Purpose: choose initial source. Tasks: evaluate
   RSS, APIs, rate limits, and terms. Output: source decision. Acceptance:
   source is approved. Non-goals: paid integrations unless decided.
-- P14.B - News ingestion. Purpose: collect and normalize news. Tasks: fetch,
+- P15.B - News ingestion. Purpose: collect and normalize news. Tasks: fetch,
   deduplicate, store source and timestamp. Output: news items. Acceptance:
   duplicates collapse. Non-goals: trading.
-- P14.C - Severity rules. Purpose: classify risk severity. Tasks: implement
+- P15.C - Severity rules. Purpose: classify risk severity. Tasks: implement
   deterministic rules and affected asset extraction. Output: severity labels.
   Acceptance: severe items are visible. Non-goals: LLM first.
-- P14.D - Sentiment candidate. Purpose: evaluate financial sentiment. Tasks:
+- P15.D - Sentiment candidate. Purpose: evaluate financial sentiment. Tasks:
   define model candidate and offline evaluation plan. Output: candidate record.
   Acceptance: no download without approval. Non-goals: model runtime now.
-- P14.E - Retrieval memory. Purpose: plan or implement embedding storage after
+- P15.E - Retrieval memory. Purpose: plan or implement embedding storage after
   approval. Tasks: store source text and retrieval metadata. Output: retrieval
   ready data. Acceptance: source traceability. Non-goals: secret indexing.
-- P14.F - Validation. Purpose: prove news blocks risk safely. Tasks: test
+- P15.F - Validation. Purpose: prove news blocks risk safely. Tasks: test
   severity, dedupe, and risk context handoff. Output: validation report.
   Acceptance: news creates veto context, not buy orders. Non-goals: autonomous
   LLM.
 
-### Phase 15. Baseline and time-series model lab
+### Phase 16. Baseline and time-series model lab
 
 Outcome: model candidates can be evaluated offline against baselines without
 runtime authority.
 
-- P15.A - Model registry metadata. Purpose: track candidates before artifacts.
+- P16.A - Model registry metadata. Purpose: track candidates before artifacts.
   Tasks: define registry schema and statuses. Output: registry. Acceptance:
   inactive by default. Non-goals: downloads.
-- P15.B - Evaluation dataset. Purpose: create leakage-safe windows. Tasks:
+- P16.B - Evaluation dataset. Purpose: create leakage-safe windows. Tasks:
   build chronological splits and labels. Output: dataset builder. Acceptance:
   tests prevent future leakage. Non-goals: production inference.
-- P15.C - Classical baseline. Purpose: test simple models first. Tasks: train or
+- P16.C - Classical baseline. Purpose: test simple models first. Tasks: train or
   evaluate logistic regression or tree baselines. Output: baseline metrics.
   Acceptance: cost-aware comparison. Non-goals: live decisions.
-- P15.D - Time-series candidates. Purpose: evaluate TTM, TimesFM, PatchTST, or
+- P16.D - Time-series candidates. Purpose: evaluate TTM, TimesFM, PatchTST, or
   N-BEATS later. Tasks: document requirements and run only approved candidates.
   Output: candidate evaluation. Acceptance: no unapproved downloads. Non-goals:
   permanent model choice.
-- P15.E - Provider integration plan. Purpose: define how evaluated models become
+- P16.E - Provider integration plan. Purpose: define how evaluated models become
   provider capabilities. Tasks: map registry status to provider response.
   Output: integration plan. Acceptance: inactive models cannot run. Non-goals:
   execution.
-- P15.F - Validation. Purpose: prove governance. Tasks: verify registry,
+- P16.F - Validation. Purpose: prove governance. Tasks: verify registry,
   metrics, and approval state. Output: validation report. Acceptance: no model
   can trade. Non-goals: risk override.
 
-### Phase 16. Decision matrix and risk integration
+### Phase 17. Decision matrix and risk integration
 
 Outcome: signals, models, news, treasury state, and risk policy combine into
 auditable candidate decisions and final paper-only risk outcomes.
 
-- P16.A - Decision schema. Purpose: define candidate action record. Tasks: add
+- P17.A - Decision schema. Purpose: define candidate action record. Tasks: add
   fields for signal, score, reason codes, confidence, and audit refs. Output:
   decision model. Acceptance: explainable record. Non-goals: order execution.
-- P16.B - Matrix rules. Purpose: combine evidence. Tasks: implement
+- P17.B - Matrix rules. Purpose: combine evidence. Tasks: implement
   deterministic weights or rules. Output: matrix function. Acceptance:
   reproducible output. Non-goals: black box.
-- P16.C - Risk policy. Purpose: enforce hard safety. Tasks: implement exposure,
+- P17.C - Risk policy. Purpose: enforce hard safety. Tasks: implement exposure,
   stale data, liquidity, news, volatility, drawdown, and emergency checks.
   Output: risk engine. Acceptance: veto tests pass. Non-goals: live enable.
-- P16.D - Paper handoff. Purpose: allow approved paper decisions to create
+- P17.D - Paper handoff. Purpose: allow approved paper decisions to create
   paper orders. Tasks: connect decision to paper engine. Output: paper handoff.
   Acceptance: risk decision is required. Non-goals: exchange handoff.
-- P16.E - UI and audit. Purpose: show decision and risk reasons. Tasks: add
+- P17.E - UI and audit. Purpose: show decision and risk reasons. Tasks: add
   detail views and audit records. Output: inspectable decisions. Acceptance:
   owner can see why. Non-goals: hidden scoring.
-- P16.F - Validation. Purpose: prove risk cannot be bypassed. Tasks: permission,
+- P17.F - Validation. Purpose: prove risk cannot be bypassed. Tasks: permission,
   scenario, and integration tests. Output: validation report. Acceptance: all
   candidate actions pass through risk. Non-goals: live gate.
 
-### Phase 17. Reporting, audit, and evaluation
+### Phase 18. Reporting, audit, and evaluation
 
 Outcome: owner can review performance, risk, events, permission denials, and
 strategy promotion evidence.
 
-- P17.A - Audit schema. Purpose: define immutable audit records. Tasks: include
+- P18.A - Audit schema. Purpose: define immutable audit records. Tasks: include
   actor, action, target, result, reason, and timestamp. Output: audit store.
   Acceptance: critical actions audited. Non-goals: editable audit.
-- P17.B - Report jobs. Purpose: generate daily and weekly summaries. Tasks:
+- P18.B - Report jobs. Purpose: generate daily and weekly summaries. Tasks:
   compute treasury, PnL, risk, signals, news, and runtime summaries. Output:
   reports. Acceptance: report job is repeatable. Non-goals: public advice.
-- P17.C - Evaluation reports. Purpose: compare strategy and model performance.
+- P18.C - Evaluation reports. Purpose: compare strategy and model performance.
   Tasks: produce benchmark and regime-aware reports. Output: evaluation view.
   Acceptance: costs included. Non-goals: metric-only promotion.
-- P17.D - Audit API. Purpose: expose records by capability. Tasks: add filters
+- P18.D - Audit API. Purpose: expose records by capability. Tasks: add filters
   and pagination. Output: audit endpoint. Acceptance: viewer sees only allowed
   summary. Non-goals: sensitive logs to viewers.
-- P17.E - UI surfaces. Purpose: show reports and audit. Tasks: add mobile
+- P18.E - UI surfaces. Purpose: show reports and audit. Tasks: add mobile
   summary and admin detail views. Output: report UI. Acceptance: owner can
   inspect evidence. Non-goals: public dashboard.
-- P17.F - Validation. Purpose: prove audit and report integrity. Tasks: tests
+- P18.F - Validation. Purpose: prove audit and report integrity. Tasks: tests
   for critical events, filters, and report math. Output: validation report.
   Acceptance: emergency and permission denials are auditable. Non-goals:
   compliance claims.
 
-### Phase 18. Viewer experience hardening
+### Phase 19. Viewer experience hardening
 
 Outcome: Padre and Zio have a calm, clear observer experience without access to
 controls that mutate state.
 
-- P18.A - Viewer journey review. Purpose: map daily viewer use. Tasks: inspect
+- P19.A - Viewer journey review. Purpose: map daily viewer use. Tasks: inspect
   Home, Treasury, PnL, News, Alerts, and Runtime. Output: journey checklist.
   Acceptance: viewers can understand status. Non-goals: owner controls.
-- P18.B - Lock copy. Purpose: make locked actions understandable. Tasks: write
+- P19.B - Lock copy. Purpose: make locked actions understandable. Tasks: write
   clear reasons such as viewer account, live disabled, risk locked. Output:
   copy system. Acceptance: no confusing dead buttons. Non-goals: security by
   copy.
-- P18.C - Sensitive data filter. Purpose: prevent accidental exposure. Tasks:
+- P19.C - Sensitive data filter. Purpose: prevent accidental exposure. Tasks:
   audit API responses and UI fields. Output: viewer-safe data map. Acceptance:
   sensitive logs hidden. Non-goals: hiding permitted data.
-- P18.D - Alert tuning. Purpose: show useful alerts without noise. Tasks:
+- P19.D - Alert tuning. Purpose: show useful alerts without noise. Tasks:
   categorize alerts for viewer relevance. Output: alert policy. Acceptance:
   severe states visible. Non-goals: notification spam.
-- P18.E - Device and session UX. Purpose: make access reliable. Tasks: review
+- P19.E - Device and session UX. Purpose: make access reliable. Tasks: review
   login, trusted device, session expiry. Output: UX fixes. Acceptance: viewer
   access is predictable. Non-goals: public signup.
-- P18.F - Validation. Purpose: prove viewer cannot mutate. Tasks: permission
+- P19.F - Validation. Purpose: prove viewer cannot mutate. Tasks: permission
   tests and UI tests. Output: validation report. Acceptance: every mutating API
   denies viewer. Non-goals: new roles.
 
-### Phase 19. Shadow exchange mode
+### Phase 20. Shadow exchange mode
 
 Outcome: drmlke can read or mirror exchange-like market/account context without
 placing real orders.
 
-- P19.A - Exchange decision. Purpose: choose first exchange or data venue.
+- P20.A - Exchange decision. Purpose: choose first exchange or data venue.
   Tasks: review public data, account read needs, pairs, and fees. Output:
   decision record. Acceptance: no secret committed. Non-goals: live trading.
-- P19.B - Read-only adapter. Purpose: connect safely if approved. Tasks:
+- P20.B - Read-only adapter. Purpose: connect safely if approved. Tasks:
   implement public or read-only calls with env-only secrets if needed. Output:
   adapter. Acceptance: no withdrawal scope. Non-goals: order placement.
-- P19.C - Shadow mapping. Purpose: map paper orders to hypothetical venue
+- P20.C - Shadow mapping. Purpose: map paper orders to hypothetical venue
   behavior. Tasks: compare fills to venue prices and fees. Output: shadow
   records. Acceptance: no real orders sent. Non-goals: trading.
-- P19.D - Secret handling. Purpose: protect credentials if read-only keys are
+- P20.D - Secret handling. Purpose: protect credentials if read-only keys are
   used. Tasks: env outside repo, redaction, no client exposure. Output: secret
   policy. Acceptance: scans find no keys. Non-goals: custody.
-- P19.E - Risk comparison. Purpose: compare paper assumptions to venue reality.
+- P20.E - Risk comparison. Purpose: compare paper assumptions to venue reality.
   Tasks: analyze spread, slippage, availability. Output: comparison report.
   Acceptance: differences are visible. Non-goals: promotion to live.
-- P19.F - Validation. Purpose: prove shadow cannot trade. Tasks: tests and
+- P20.F - Validation. Purpose: prove shadow cannot trade. Tasks: tests and
   adapter scope checks. Output: validation report. Acceptance: no order endpoint
   exists. Non-goals: live gate.
 
-### Phase 20. Manual micro-live gate, future only
+### Phase 21. Manual micro-live gate, future only
 
 Outcome: a future reviewed path may allow manual, tiny, explicitly approved
 live actions after legal, risk, and safety review.
 
-- P20.A - Legal and scope review. Purpose: confirm private family boundary.
+- P21.A - Legal and scope review. Purpose: confirm private family boundary.
   Tasks: review intended behavior and regulatory implications. Output: review
   record. Acceptance: approval exists before work. Non-goals: public service.
-- P20.B - Gate design. Purpose: define live enable conditions. Tasks: specify
+- P21.B - Gate design. Purpose: define live enable conditions. Tasks: specify
   global locks, owner confirmations, capital ceiling, and rollback. Output:
   gate spec. Acceptance: disabled by default. Non-goals: automation.
-- P20.C - Adapter design. Purpose: design minimal order adapter. Tasks: define
+- P21.C - Adapter design. Purpose: design minimal order adapter. Tasks: define
   order types, venue, limits, and error handling. Output: adapter spec.
   Acceptance: no withdrawals. Non-goals: margin.
-- P20.D - Manual approval UI. Purpose: owner-only approval. Tasks: design
+- P21.D - Manual approval UI. Purpose: owner-only approval. Tasks: design
   confirmation, risk summary, and audit. Output: approval flow. Acceptance:
   viewer denied. Non-goals: autonomous approval.
-- P20.E - Dry-run and kill switch. Purpose: prove safety before real use.
+- P21.E - Dry-run and kill switch. Purpose: prove safety before real use.
   Tasks: simulate live path, emergency stop, disable controls. Output: dry-run
   report. Acceptance: kill switch works. Non-goals: repeated live trading.
-- P20.F - Validation. Purpose: prove gate discipline. Tasks: tests, secrets
+- P21.F - Validation. Purpose: prove gate discipline. Tasks: tests, secrets
   scan, audit review, owner signoff. Output: validation report. Acceptance:
   capital ceiling enforced. Non-goals: auto-live.
 
-### Phase 21. Desktop console / Tauri Studio, future
+### Phase 22. Desktop console / Tauri Studio, future
 
 Outcome: a richer desktop owner console may exist after core runtime and web
 surfaces are mature.
 
-- P21.A - Timing review. Purpose: decide whether desktop is worth building.
+- P22.A - Timing review. Purpose: decide whether desktop is worth building.
   Tasks: review web console gaps and operator needs. Output: decision record.
   Acceptance: clear reason to proceed. Non-goals: premature app.
-- P21.B - Tauri scaffold. Purpose: create lightweight desktop shell. Tasks:
+- P22.B - Tauri scaffold. Purpose: create lightweight desktop shell. Tasks:
   initialize Tauri and TypeScript UI. Output: desktop app. Acceptance: opens and
   talks to API. Non-goals: local secrets.
-- P21.C - Strategy lab UI. Purpose: improve research workflow. Tasks: build
+- P22.C - Strategy lab UI. Purpose: improve research workflow. Tasks: build
   richer charts, tables, and inspectors. Output: lab surface. Acceptance:
   owner can inspect backtests. Non-goals: trading.
-- P21.D - Data lake browser. Purpose: inspect stored data. Tasks: add safe
+- P22.D - Data lake browser. Purpose: inspect stored data. Tasks: add safe
   browser for candles, features, reports. Output: browser. Acceptance:
   read-only by default. Non-goals: direct DB mutation.
-- P21.E - Packaging. Purpose: package for local machine. Tasks: sign or package
+- P22.E - Packaging. Purpose: package for local machine. Tasks: sign or package
   as appropriate. Output: desktop build. Acceptance: no secrets included.
   Non-goals: public app store.
-- P21.F - Validation. Purpose: verify desktop safety. Tasks: API permission
+- P22.F - Validation. Purpose: verify desktop safety. Tasks: API permission
   tests and packaged build checks. Output: validation report. Acceptance:
   desktop cannot bypass API. Non-goals: mobile replacement.
 
-### Phase 22. Limited auto-live, future only
+### Phase 23. Limited auto-live, future only
 
 Outcome: only after extensive evidence and review, a limited automated live path
 could be considered. This is intentionally far away.
 
-- P22.A - Evidence review. Purpose: decide whether auto-live is even justified.
+- P23.A - Evidence review. Purpose: decide whether auto-live is even justified.
   Tasks: review paper history, shadow history, drawdown, risk, and legal scope.
   Output: go or no-go record. Acceptance: explicit approval required.
   Non-goals: assuming this will happen.
-- P22.B - Live policy. Purpose: define strict automatic limits. Tasks: set
+- P23.B - Live policy. Purpose: define strict automatic limits. Tasks: set
   capital ceiling, asset universe, frequency, max loss, and kill switch. Output:
   policy. Acceptance: safer than manual path. Non-goals: leverage.
-- P22.C - Adapter hardening. Purpose: make execution robust. Tasks: handle
+- P23.C - Adapter hardening. Purpose: make execution robust. Tasks: handle
   idempotency, retries, exchange errors, reconciliation. Output: hardened
   adapter. Acceptance: failures are safe. Non-goals: withdrawals.
-- P22.D - Monitoring. Purpose: watch live behavior constantly. Tasks: add
+- P23.D - Monitoring. Purpose: watch live behavior constantly. Tasks: add
   alerts, logs, metrics, and emergency paths. Output: monitoring. Acceptance:
   severe issues stop runtime. Non-goals: silent automation.
-- P22.E - Phased rollout. Purpose: start with tiny limits if approved. Tasks:
+- P23.E - Phased rollout. Purpose: start with tiny limits if approved. Tasks:
   run controlled sessions and review after each. Output: rollout records.
   Acceptance: owner review after every session. Non-goals: unattended growth.
-- P22.F - Validation. Purpose: prove strict controls. Tasks: scenario tests,
+- P23.F - Validation. Purpose: prove strict controls. Tasks: scenario tests,
   failure injection, audit review, secret scan. Output: validation report.
   Acceptance: auto-live can be disabled instantly. Non-goals: public fund
   management.
 
-## 22. DOCS.SPINE.3 Wave Detail
+## 22. Architecture Gap Register
+
+Purpose: track major missing architecture areas so they are not discovered
+randomly during implementation.
+
+- Agentic decision intelligence. Status: partially documented by `P4.A`;
+  implementation contracts remain future work. Why it matters: agents need
+  authority, validation, evidence, and audit boundaries before code. Future
+  wave: `P4.B` through `P4.H`. Non-goals now: no agent implementation.
+- Data source and market data integrity. Status: open. Why it matters:
+  decisions cannot rely on stale, missing, or unauditable market data. Future
+  wave: future canonical market data phase after storage/persistence planning.
+  Non-goals now: no market data ingestion.
+- Persistence and migration architecture. Status: open. Why it matters:
+  operational state, analytical data, migrations, repositories, and backups
+  need explicit contracts. Future wave: future storage/persistence phase.
+  Non-goals now: no database implementation.
+- Audit/event store. Status: open. Why it matters: decisions, denials, risk
+  vetoes, model evaluations, runtime changes, and operator actions must be
+  append-only and reviewable. Future wave: future audit/event contract phase.
+  Non-goals now: no event store implementation.
+- Evidence bundle and decision case contracts. Status: future Phase 4
+  contracts. Why it matters: evidence, validation, risk, and owner review need
+  a durable handoff object and case lifecycle. Future wave: `P4.C` and `P4.E`.
+  Non-goals now: no code.
+- Risk engine contract. Status: partially specified by the existing risk policy
+  draft; implementation is still open. Why it matters: risk must produce
+  deterministic allow/reduce/delay/veto states with audit output. Future wave:
+  future canonical risk phase. Non-goals now: no risk engine implementation.
+- Model registry and model-risk management. Status: documented by `P4.A` at
+  doctrine level; contract remains future work. Why it matters: models need
+  provenance, evaluation, promotion, drift, rollback, and disabled-by-default
+  runtime policy. Future wave: `P4.F`. Non-goals now: no model runtime.
+- Backtest and strategy lab integrity. Status: documented at doctrine level;
+  implementation remains open. Why it matters: strategy claims are invalid
+  without leakage-safe backtests, benchmark enforcement, cost modeling, and
+  negative-result preservation. Future wave: future strategy/backtest phase.
+  Non-goals now: no backtest engine.
+- Multi-asset universe and instrument capability model. Status: open. Why it
+  matters: asset universe, availability, tradability, restrictions, and
+  watch-only states must be explicit before expansion. Future wave: future
+  canonical universe/instrument phase. Non-goals now: no broker or exchange
+  integration.
+- Security and secrets model. Status: partially documented by safety rules;
+  threat model remains open. Why it matters: credentials, environment files,
+  redaction, secret scanning, and client-secret boundaries require explicit
+  policy. Future wave: future security/secrets phase. Non-goals now: no
+  secrets implementation.
+- Reporting and review artifacts. Status: partially documented; contracts are
+  future work. Why it matters: weekly reports, audit digests, owner review, and
+  post-mortems must be source-grounded. Future wave: `P4.G` plus future
+  reporting phase. Non-goals now: no report generation.
+- Spark operations and recovery. Status: partially documented in `P2` and
+  `P3`; recovery remains open. Why it matters: backups, logs, runtime health,
+  restart policy, and recovery drills are needed before durable operations.
+  Future wave: future Spark operations/recovery phase. Non-goals now: no deploy
+  or recovery automation.
+- Product cockpit and UX architecture. Status: open. Why it matters: owner
+  cockpit, viewer surface, lock reasons, risk explanations, evidence review,
+  and decision history need a coherent product shell. Future wave: future
+  client/cockpit phase. Non-goals now: no UI implementation.
+- Legal/private-family boundary. Status: documented as a safety boundary;
+  future legal review is required before public, advisory, brokerage-like,
+  fund-management, or live execution behavior. Future wave: future legal/live
+  gate review phase. Non-goals now: no public, advisory, or live product
+  behavior.
+
+## 23. DOCS.SPINE.3 Wave Detail
 
 Previous spine wave:
 
@@ -3532,7 +4152,7 @@ Expected final report:
 - whether `docs/drmlke-roadmap.md` was fully expanded
 - historical next wave at the time of `DOCS.SPINE.3`: `MAC.SETUP.1`
 
-## 23. Historical Closeout and Review Records
+## 24. Historical Closeout and Review Records
 
 Historical closeout:
 
@@ -4203,7 +4823,7 @@ Acceptance criteria:
 - No forbidden runtime, trading, storage, API, or UI behavior is introduced.
 - The next recommended canonical wave is documented as roadmap-derived.
 
-## 24. Open Decisions
+## 25. Open Decisions
 
 Current open decisions:
 
@@ -4244,7 +4864,7 @@ Open decision rule:
 If a detail is not decided, keep it here. Do not write it elsewhere as a final
 decision until the relevant wave makes and records the decision.
 
-## 25. Change Log
+## 26. Change Log
 
 - `BOOTSTRAP.0`: repo skeleton and provider stub.
 - `DOCS.SPINE.2`: treasury model correction and initial expanded spine.
@@ -4316,3 +4936,7 @@ decision until the relevant wave makes and records the decision.
 - `P3.OPERATING.1`: multi-machine execution context doctrine recorded so future
   waves classify commands as local Exon work, remote Spark one-shot work,
   remote Spark interactive work, remote mutation, or forbidden operations.
+- `P4.A`: agentic decision-intelligence spine defined in the master roadmap,
+  with Phase 4 expanded into concrete future waves for agent authority,
+  evidence bundles, validator results, decision cases, model-risk registry,
+  reporting/audit agents, and owner-copilot draft-only boundaries.

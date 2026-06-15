@@ -45,3 +45,15 @@ Machine roles:
 - Spark: future runtime, storage, and provider machine reached through
   `spark-vpn`.
 - MacBook: secondary development machine, not the primary runtime.
+
+Future-agent guardrails:
+
+- future agents must follow the master spine
+- do not create autonomous trading agents
+- do not create agents that bypass validators, risk, policy, audit, or owner
+  review
+- do not create agents that access secrets
+- do not create agents that mutate treasury, portfolio, runtime, exchange,
+  broker, wallet, or Spark state directly
+- any future agent implementation must be tied to an explicit canonical
+  roadmap wave

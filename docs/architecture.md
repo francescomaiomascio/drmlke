@@ -44,8 +44,36 @@ drmlke bootstrap modules:
 - `packages/storage`: storage placeholder
 - `packages/wallet`: future wallet, account-tracking, and execution-adjacent
   placeholder
-- `packages/agents`: agent placeholder
+- `packages/agents`: future agentic decision-intelligence contracts, task
+  envelopes, evidence-bundle helpers, validator coordination, reporting/audit
+  assistants, research assistants, and owner-copilot draft flows
 - `packages/risk`: risk placeholder
+
+## Agentic Decision Intelligence Architecture
+
+Canonical details live in [drmlke-roadmap.md](drmlke-roadmap.md), especially
+the Agentic Decision Intelligence Spine and Phase 4 delivery map.
+
+Phase 4 owns the future agentic decision-intelligence architecture. Agents are
+advisory and governance components: they may draft, summarize, classify,
+review, explain, collect evidence, and prepare owner-review packets. They are
+not trading authority.
+
+The Policy Gate is not an agent. It is deterministic control logic. The Risk
+Engine remains the hard boundary for allow, reduce, delay, and veto outcomes.
+Owner review remains mandatory for critical decisions.
+
+Lightweight neural, statistical, embedding, and LLM components are future
+model-risk-managed scoring or explanation components. They must be versioned,
+evaluated, disabled by default until promoted, and subordinate to deterministic
+policy.
+
+`packages/agents` must not contain order execution authority, direct treasury
+or portfolio mutation, exchange/broker access, wallet access, secret handling,
+runtime mutation, Spark command execution, or risk/policy bypass behavior.
+
+`packages/risk` remains the deterministic hard boundary. Provider or model
+runtime cannot trade, approve live actions, or bypass policy.
 
 Bootstrap safety boundaries:
 
