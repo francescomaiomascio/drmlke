@@ -156,27 +156,41 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 
 Do not modify group membership, Docker socket permissions, Docker daemon
 configuration, or service state from this runbook.
 
-## Forbidden Commands Until Explicit Future Approval
+## Private Service Policy Checks
 
-These are examples of currently forbidden operations unless a future wave
-explicitly approves them.
+Run on the local Linux workstation. These commands inspect local planning
+references only.
 
 ```bash
-ssh spark-vpn 'sudo usermod -aG docker ...'
+cd /home/mothx/computer-science/projects/drmlke
+grep -R "8780\\|8781\\|8782\\|8783" -n compose.yaml apps docs 2>/dev/null || true
+docker compose ps
+```
+
+These commands do not inspect Spark and do not change service exposure.
+
+## Forbidden Commands Until Explicit Future Approval
+
+These are currently forbidden command patterns unless a future wave explicitly
+approves them. Values in angle brackets are placeholders, not real values. The
+Spark SSH username is written explicitly because this is a private repository.
+Do not run these by filling placeholders during an access-planning wave.
+
+```bash
+ssh spark-vpn 'sudo usermod -aG docker dgmothx'
 ssh spark-vpn 'sudo mkdir -p /srv/drmlke'
-ssh spark-vpn 'sudo chown ... /srv/drmlke'
-ssh spark-vpn 'docker compose up -d'
-scp ...
-rsync ...
+ssh spark-vpn 'sudo chown -R dgmothx:<spark-runtime-group> /srv/drmlke'
+ssh spark-vpn 'cd /srv/drmlke/app && docker compose --profile provider up -d provider'
+scp -r /home/mothx/computer-science/projects/drmlke spark-vpn:/srv/drmlke/app
+rsync -av /home/mothx/computer-science/projects/drmlke/ spark-vpn:/srv/drmlke/app/
 tailscale up
 tailscale login
-tailscale set ...
+tailscale set --accept-routes=true
 ```
 
 ## Manual Decision Placeholders
 
 - Spark Docker access policy decision pending.
 - `/srv/drmlke` creation pending.
-- Spark private service bind policy pending.
+- Exact Spark private service bind implementation pending.
 - Provider deployment to Spark pending.
-

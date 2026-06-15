@@ -39,6 +39,57 @@ inspection is not currently available to the verified remote user without
 elevated permissions. Storage-root preparation and any Docker permission change
 belong to later reviewed waves.
 
+## Spark Private Service Policy
+
+Spark-hosted drmlke services must remain private by default. There must be no
+public internet exposure, router port forwarding, public tunnel, public
+marketing endpoint, or public product endpoint unless a future reviewed wave
+explicitly changes that boundary.
+
+Default future service exposure:
+
+- Provider: bind only to loopback or a private interface. It must not be
+  exposed publicly.
+- API: bind only to a private interface, preferably the Tailscale/private
+  network when remote clients are needed.
+- Worker: no public bind. Metrics and logs remain private.
+- Client preview: private only. It is not a public web deployment.
+
+Access path policy:
+
+- Primary admin/operator path: SSH through `spark-vpn`.
+- Service access path: Tailscale/private network only unless a future wave
+  selects another private route.
+- LAN access may remain a secondary fallback, but it is not the primary path
+  unless explicitly selected later.
+
+Future internal planning ports:
+
+- API: `8780`.
+- Provider: `8781`.
+- Client preview: `8782`.
+- Worker metrics: `8783`.
+
+These ports are planning values only. They are not active Spark exposure and do
+not authorize any deployment.
+
+The future runtime root is `/srv/drmlke`. It must not be created before an
+approved storage-root preparation wave. Runtime data, environment files, logs,
+models, and backups must stay outside source control.
+
+Secrets policy:
+
+- No secrets in the repository.
+- Environment files live outside the repository.
+- No exchange keys.
+- No wallet custody keys.
+- No seed phrase or private key handling.
+- No secrets copied through chat or docs.
+
+This policy wave defines exposure rules only. It does not deploy services,
+create directories, change firewall or router rules, change Tailscale
+configuration, or modify Spark runtime state.
+
 ## Spark Docker Access Policy
 
 Docker access on Spark requires an explicit owner-approved policy before runtime

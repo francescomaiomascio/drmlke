@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.D.REMEDIATION - Spark Docker Access Review`.
+- Current completed wave: `P2.E - Private Service Policy`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -70,9 +70,11 @@ Current repository facts:
   - `P2.C - SSH Verification`.
   - `P2.D - Remote Preflight`.
   - `P2.D.REMEDIATION - Spark Docker Access Review`.
+  - `P2.RUNBOOK.1 - Manual Command Runbook Baseline`.
+  - `P2.E - Private Service Policy`.
 - Next recommended action: owner decision on Spark Docker access policy.
-- Next eligible wave after Docker access policy decision: `P2.E - Private
-  Service Policy`.
+- Next eligible wave after Docker access policy decision: `P2.F - Roadmap /
+  Access Decision Lock`.
 
 Current provider status:
 
@@ -201,7 +203,11 @@ Sequencing correction:
 17. `P2.D.REMEDIATION` reviews Docker access options and requires an explicit
    owner decision before Docker permissions, `sudo`, runtime users, or Spark
    deployment work proceed.
-18. Tailscale and Spark remain infrastructure-only future work until they do
+18. `P2.RUNBOOK.1` creates a dedicated manual command runbook so reusable
+   commands stay out of the roadmap.
+19. `P2.E` defines private service exposure policy for future Spark-hosted
+   services without deploying or mutating Spark.
+20. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2693,6 +2699,10 @@ Freeze rules:
 - Do not treat UI locks as security.
 - Do not convert open decisions into fake decisions.
 - Do not implement public service behavior without legal and regulatory review.
+- If a wave introduces, changes, or relies on reusable manual commands, update
+  `docs/manual-runbook.md`.
+- Do not put command dumps, terminal logs, validation output, commit commands,
+  Codex reports, or transient run reports in this roadmap.
 
 ## 21. Full Phase Roadmap
 
@@ -2807,7 +2817,7 @@ deployment, wallet custody, or UI implementation.
   fields. Status: completed.
 - P0.CLOSE - Phase 0 Product Core Closeout. Purpose: verify that `P0.H`
   through `P0.M` remain coherent together before infrastructure, persistence,
-  API, market data, strategy, execution, or UI work. Status: current closeout.
+  API, market data, strategy, execution, or UI work. Status: completed.
 
 ### Phase 1. MacBook development setup
 
@@ -2874,10 +2884,18 @@ and SSH identity is confirmed before runtime deployment begins.
   completed as review; manual owner decision required. Non-goals: provider
   deployment, market data, trading, wallet custody, model runtime, or
   unreviewed privilege changes.
+- P2.RUNBOOK.1 - Manual Command Runbook Baseline. Purpose: keep reusable manual
+  commands in a dedicated runbook instead of the roadmap. Tasks: document local
+  validation, provider, Tailscale, SSH, remote read-only preflight, and Docker
+  access review commands. Output: `docs/manual-runbook.md`. Acceptance: command
+  blocks belong in the runbook, not the spine. Status: completed. Non-goals:
+  runtime deployment or Spark mutation.
 - P2.E - Private service policy. Purpose: define how services stay private.
   Tasks: document bind addresses, firewall expectations, VPN route, and no
   public tunnels. Output: access policy. Acceptance: no public internet exposure
-  is required. Non-goals: firewall changes unless explicitly approved.
+  is required. Status: completed as policy; Docker access owner decision remains
+  required before runtime deployment. Non-goals: firewall changes, Docker
+  permission changes, Spark mutation, or deployment unless explicitly approved.
 - P2.F - Roadmap update. Purpose: lock the Spark access decision. Tasks: update
   docs with chosen path and next runtime wave. Output: roadmap delta.
   Acceptance: `SPARK.RUNTIME.1` can start with clear access. Non-goals:
@@ -4154,8 +4172,8 @@ Current open decisions:
 - Backup cadence.
 - Paper treasury initial strategy order.
 - Whether the Linux workstation also needs Tailscale as a first-class path.
-- Whether Spark provider ports bind to localhost behind a private proxy or bind
-  directly to a Tailscale interface.
+- Exact Spark service bind implementation per service within the private
+  service policy.
 - Whether analytical feature storage starts in SQLite, DuckDB, Parquet, or a
   staged combination.
 
@@ -4206,3 +4224,18 @@ decision until the relevant wave makes and records the decision.
 - `P0.CLOSE`: Phase 0 product-core closeout confirming coherence of `P0.H`
   through `P0.M` before moving toward infrastructure, persistence, API, market
   data, strategy, execution, or UI work.
+- `P2.A`: Spark access inventory recorded candidate access methods and unknowns
+  without reachability testing, SSH login, deployment, or remote mutation.
+- `P2.B`: Tailscale reachability to the candidate Spark node verified without
+  SSH login, deployment, or remote mutation.
+- `P2.C`: preferred Spark SSH path verified through the private Tailscale route
+  without deployment or remote mutation.
+- `P2.D`: Spark remote preflight recorded OS, architecture, Docker, Compose,
+  GPU, disk, and `/srv/drmlke` state through read-only inspection only.
+- `P2.D.REMEDIATION`: Spark Docker access policy options documented, with
+  owner decision required before Docker permission changes or runtime deploy.
+- `P2.RUNBOOK.1`: manual command runbook created so reusable command blocks
+  stay out of the master spine.
+- `P2.E`: Spark private service policy documented; future services remain
+  private, and runtime deployment remains blocked until Docker access policy is
+  resolved.
