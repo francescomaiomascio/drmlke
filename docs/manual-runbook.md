@@ -178,6 +178,25 @@ Future sudo commands must be copied exactly from the approved wave. Do not
 improvise path ownership, Docker, service, firewall, Tailscale, or deployment
 commands.
 
+## Spark Storage Root Plan
+
+Read-only storage-root checks may be reused:
+
+```bash
+ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 'test -e /srv/drmlke && stat /srv/drmlke || true; df -h /srv / 2>/dev/null || df -h; id; groups'
+```
+
+DRAFT - forbidden until `P3.A.APPLY` or an equivalent apply wave approves it:
+
+```bash
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke'
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/vector /srv/drmlke/models /srv/drmlke/logs /srv/drmlke/backups /srv/drmlke/runtime'
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/lake/parquet /srv/drmlke/lake/duckdb /srv/drmlke/vector/lancedb /srv/drmlke/models/embeddings /srv/drmlke/models/llm /srv/drmlke/models/timeseries /srv/drmlke/logs/api /srv/drmlke/logs/worker /srv/drmlke/logs/provider /srv/drmlke/backups/daily /srv/drmlke/backups/weekly /srv/drmlke/runtime/sockets /srv/drmlke/runtime/pids'
+```
+
+Do not create `/srv/drmlke` manually before an approved apply wave. Ownership
+policy is unresolved; no `chown` command is approved yet.
+
 ## Private Service Policy Checks
 
 Run on the local Linux workstation. These commands inspect local planning

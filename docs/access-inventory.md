@@ -203,6 +203,8 @@ Decision outcome:
   approved Spark Docker waves.
 - Docker group membership has not been granted.
 - Docker socket permissions have not been changed.
+- Storage-root creation commands are draft-only and have not been run.
+- `/srv/drmlke` ownership policy is unresolved.
 - No Spark files, directories, services, containers, or runtime state were
   created or changed during P2.
 

@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.F - Roadmap / Access Decision Lock`.
+- Current completed wave: `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -74,10 +74,14 @@ Current repository facts:
   - `P2.E - Private Service Policy`.
   - `P2.D.DECISION - Spark Docker Access Owner Decision`.
   - `P2.F - Roadmap / Access Decision Lock`.
+  - `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.A.PREFLIGHT - Spark Storage Root Sudo Plan`.
-- P3 runtime preparation remains blocked until a future approved sudo-based
-  Spark storage/runtime wave defines exact commands.
+- Next recommended action: owner decision on Spark storage-root ownership
+  policy.
+- Next eligible wave after ownership decision: `P3.A.APPLY - Spark Storage Root
+  Creation`.
+- P3 runtime preparation remains blocked until ownership policy is decided and
+  an approved apply wave runs exact commands.
 
 Current provider status:
 
@@ -216,7 +220,10 @@ Sequencing correction:
    private service policy, Docker access policy, and P3 prerequisites.
 22. `P3.A.PREFLIGHT` must define exact sudo-based storage-root commands before
    any `/srv/drmlke` creation, file copy, Docker operation, or provider deploy.
-23. Tailscale and Spark remain infrastructure-only future work until they do
+23. `P3.A.PREFLIGHT` records draft storage-root commands and leaves ownership
+   policy unresolved until an owner decision selects verified user, dedicated
+   `drmlke` user, or root-plus-group ownership.
+24. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2938,7 +2945,20 @@ provider runtime, and repeatable validation.
   command plan. Acceptance: commands are explicit and reviewable. Non-goals:
   running sudo, creating directories, copying files, deploying provider, Docker
   operations, secrets, market data, trading, exchange, wallet custody, or model
-  runtime.
+  runtime. Status: completed as plan; ownership policy remains unresolved and
+  blocks apply.
+- P3.A.OWNER - Spark Storage Ownership Decision. Purpose: choose the ownership
+  model for `/srv/drmlke` before storage-root creation. Tasks: decide between
+  verified remote user ownership, dedicated `drmlke` runtime user ownership, or
+  root-owned directories with group access. Output: ownership decision. Non-goals:
+  running sudo, creating directories, copying files, Docker operations, or
+  provider deployment.
+- P3.A.APPLY - Spark Storage Root Creation. Purpose: run the approved
+  storage-root creation commands after ownership policy is decided. Tasks:
+  create `/srv/drmlke` and target directories using the approved sudo plan.
+  Output: storage root exists and validates. Non-goals: provider deployment,
+  source copy, Docker containers, secrets, market data, trading, exchange,
+  wallet custody, or model runtime.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:

@@ -139,3 +139,76 @@ P3 prerequisites:
 The first eligible P3 step is a preflight/plan wave that writes the exact
 sudo-based storage-root commands for review. It is not direct storage creation
 and not provider deployment.
+
+## Spark Storage Root Sudo Plan
+
+Purpose:
+
+- Create the future runtime root under `/srv/drmlke`.
+- Keep runtime state outside git.
+- Separate app source, environment files, state, analytical lake, vector data,
+  model artifacts, logs, backups, runtime sockets, and runtime pids.
+
+Target future tree:
+
+- `/srv/drmlke/env`
+- `/srv/drmlke/app`
+- `/srv/drmlke/state`
+- `/srv/drmlke/lake/parquet`
+- `/srv/drmlke/lake/duckdb`
+- `/srv/drmlke/vector/lancedb`
+- `/srv/drmlke/models/embeddings`
+- `/srv/drmlke/models/llm`
+- `/srv/drmlke/models/timeseries`
+- `/srv/drmlke/logs/api`
+- `/srv/drmlke/logs/worker`
+- `/srv/drmlke/logs/provider`
+- `/srv/drmlke/backups/daily`
+- `/srv/drmlke/backups/weekly`
+- `/srv/drmlke/runtime/sockets`
+- `/srv/drmlke/runtime/pids`
+
+Ownership policy:
+
+The storage-root ownership policy is unresolved and blocks execution. The owner
+must choose one of these before any apply wave runs:
+
+- verified remote user owns `/srv/drmlke`
+- dedicated `drmlke` runtime user owns `/srv/drmlke`
+- root-owned directories with group access
+
+Until that decision is recorded, no `chown` command is approved.
+
+DRAFT - do not run until `P3.A.APPLY` is approved:
+
+```bash
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke'
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/vector /srv/drmlke/models /srv/drmlke/logs /srv/drmlke/backups /srv/drmlke/runtime'
+ssh spark-vpn 'sudo install -d -m 0750 /srv/drmlke/lake/parquet /srv/drmlke/lake/duckdb /srv/drmlke/vector/lancedb /srv/drmlke/models/embeddings /srv/drmlke/models/llm /srv/drmlke/models/timeseries /srv/drmlke/logs/api /srv/drmlke/logs/worker /srv/drmlke/logs/provider /srv/drmlke/backups/daily /srv/drmlke/backups/weekly /srv/drmlke/runtime/sockets /srv/drmlke/runtime/pids'
+```
+
+Draft validation commands for a future apply/validate wave:
+
+```bash
+ssh spark-vpn 'find /srv/drmlke -maxdepth 3 -type d | sort'
+ssh spark-vpn 'stat /srv/drmlke /srv/drmlke/env /srv/drmlke/app /srv/drmlke/state /srv/drmlke/lake /srv/drmlke/logs /srv/drmlke/runtime'
+```
+
+Forbidden storage-root behavior:
+
+- No secrets in `/srv/drmlke/app`.
+- No environment files in git.
+- No model artifacts in git.
+- No logs in git.
+- No backups in git.
+- No exchange keys.
+- No wallet keys.
+- No seed phrases.
+
+Execution gate:
+
+- This preflight plan does not run the commands.
+- A future `P3.A.APPLY` or equivalent wave must explicitly approve and run
+  them.
+- Owner must decide directory ownership policy first.
+- Provider deployment remains a later runtime wave.
