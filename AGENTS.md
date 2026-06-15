@@ -9,6 +9,9 @@ Wave naming rules:
 - use canonical roadmap wave IDs from `docs/drmlke-roadmap.md`
 - do not create new naming tracks without updating the master spine
 - legacy aliases are allowed only for traceability
+- keep reusable command blocks, run reports, validation logs, and commit
+  instructions out of the master spine; manual commands belong in
+  `docs/manual-runbook.md`
 
 Foundational model:
 

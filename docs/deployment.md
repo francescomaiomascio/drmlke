@@ -24,6 +24,11 @@ Spark access facts are recorded in
 [access-inventory.md](access-inventory.md). The roadmap remains the canonical
 source for current and next wave status.
 
+Reusable copy-paste commands for local validation, access checks, SSH
+verification, and read-only Spark preflight live in
+[manual-runbook.md](manual-runbook.md). Keep command blocks there instead of in
+the roadmap.
+
 The current verified Spark SSH candidate is the Tailscale SSH alias `spark-vpn`.
 This verifies access only. It does not create `/srv/drmlke`, prove runtime
 readiness, or approve deployment.
