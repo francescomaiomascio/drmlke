@@ -232,6 +232,18 @@ Decision outcome:
 - Docker socket permissions have not been changed.
 - No Docker container was started or stopped as part of storage-root creation.
 
+## P3.B.PREFLIGHT Environment Directory Facts
+
+- `/srv/drmlke/env` exists as part of the storage-root tree.
+- Current `/srv/drmlke/env` ownership and mode were verified during
+  storage-root closeout as `drmlke:drmlke 0750`.
+- No environment files exist yet; storage-root closeout recorded total file
+  payload count `0`.
+- No DRMLKE secrets are present on Spark.
+- Target environment-file policy is planned in `docs/deployment.md`.
+- No environment file was created during `P3.B.PREFLIGHT`.
+- No Spark ownership or permission change was made during `P3.B.PREFLIGHT`.
+
 ## Unknowns
 
 - Whether `spark` over LAN is reliable enough.

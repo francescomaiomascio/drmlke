@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P3.A.CLOSE - Spark Storage Root Closeout`.
+- Current completed wave: `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -79,9 +79,10 @@ Current repository facts:
   - `P3.OPERATING.1 - Multi-Machine Execution Context Doctrine`.
   - `P3.A.APPLY.INTERACTIVE - Spark Storage Root Creation With TTY Sudo`.
   - `P3.A.CLOSE - Spark Storage Root Closeout`.
+  - `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
   - `P4.A - Define Agentic Decision Intelligence Spine`.
 - P2 access planning status: closed.
-- Next recommended wave: `P3.B.PREFLIGHT - Spark Environment File Setup Plan`.
+- Next recommended wave: `P3.B.APPLY - Spark Environment File Baseline`.
 - P3 runtime preparation has a storage root, but provider deployment has not
   started and remains blocked until later approved runtime waves.
 - Phase 4 agentic decision-intelligence architecture is documented at spine
@@ -127,6 +128,12 @@ Current Spark status:
 - The approved storage-root tree exists under `/srv/drmlke`.
 - Storage-root closeout verified the expected tree, ownership, mode, and empty
   file payload state. File payload count is `0`.
+- `/srv/drmlke/env` exists as an empty directory from the storage-root baseline.
+- `P3.B.PREFLIGHT` selects future env boundary policy: `/srv/drmlke/env`
+  should become `root:drmlke 0750`, and future env files should be
+  `root:drmlke 0640`.
+- That env ownership exception has not been applied yet. No env file exists and
+  no secret has been added.
 - No source deploy copy, provider runtime, Docker container, environment file,
   secret, model artifact, log, backup, market data, API, trading, exchange, or
   wallet behavior has been added to Spark.
@@ -254,7 +261,11 @@ Sequencing correction:
 28. `P3.A.CLOSE` verifies and documents the completed storage root without
    Spark mutation, permission loosening, Docker use, deploy work, or payload
    creation.
-29. Tailscale and Spark remain infrastructure-only future work until they do
+29. `P3.B.PREFLIGHT` defines Spark environment-file policy, target env file
+   names, and the planned `root:drmlke 0750` env boundary without creating env
+   files, writing secrets, changing Spark permissions, running Docker, or
+   deploying services.
+30. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -3294,9 +3305,17 @@ runtime, and repeatable validation.
   environment-file setup before any env file is created on Spark. Tasks:
   define target paths, template source, disabled-live defaults, backup behavior,
   secret redaction, verification checks, and stop conditions. Output: approved
-  or rejected env-file plan. Status: recommended next. Non-goals: creating env
+  env-file plan. Status: completed. Non-goals: creating env
   files, adding secrets, copying source, running Docker, deploying provider,
   market data, trading, exchange, wallet custody, or model runtime.
+- P3.B.APPLY - Spark Environment File Baseline. Purpose: apply the approved
+  env boundary and create empty baseline env files only after explicit owner
+  approval. Tasks: change `/srv/drmlke/env` to `root:drmlke 0750` if still
+  approved, create empty baseline env files with `root:drmlke 0640`, and
+  validate ownership and mode. Output: Spark env baseline. Status: recommended
+  next. Non-goals: real secret values, exchange/broker/wallet/live-trading
+  credentials, provider deployment, Docker operations, source copy, market
+  data, trading, model runtime, or client/API implementation.
 - P3.A - Storage root preparation. Purpose: create persistent runtime layout.
   Tasks: create `/srv/drmlke` tree, set ownership, document permissions. Output:
   storage tree. Acceptance: directories exist with correct owner. Non-goals:
@@ -4981,3 +5000,7 @@ decision until the relevant wave makes and records the decision.
   `drmlke:drmlke` ownership, `0750` directory permissions, file payload count
   `0`, and no Spark mutation, Docker operation, deploy work, secrets, models,
   env files, log payloads, market data, trading, exchange, or wallet behavior.
+- `P3.B.PREFLIGHT`: Spark environment-file policy planned with target env files
+  under `/srv/drmlke/env`, preferred env boundary `root:drmlke 0750`, future env
+  file mode `root:drmlke 0640`, no Spark mutation, no env file creation, no
+  secrets, no Docker, and no provider deployment.

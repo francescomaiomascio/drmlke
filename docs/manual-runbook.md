@@ -331,6 +331,59 @@ Storage ownership policy is dedicated `drmlke:drmlke`.
   storage root.
 - Future ownership or permission changes require a new explicit wave.
 
+## P3.B.PREFLIGHT - Spark Environment File Plan
+
+`P3.B.PREFLIGHT` is a planning wave only. It does not create environment
+files, write secrets, change ownership, change permissions, deploy services, or
+run Docker.
+
+Read-only verification from Exon:
+
+```bash
+ssh -tt spark-vpn '
+hostname
+id
+sudo stat -c "%U:%G %a %n" /srv/drmlke/env
+sudo find /srv/drmlke/env -maxdepth 1 -print0 | xargs -0 sudo stat -c "%F %U:%G %a %n"
+'
+```
+
+This command may prompt for the owner sudo password on Spark because
+`/srv/drmlke` is `0750`. Do not store or paste the password.
+
+Target policy selected by `P3.B.PREFLIGHT`:
+
+- `/srv/drmlke/env`: `root:drmlke 0750`.
+- Environment files: `root:drmlke 0640`.
+- Future file names:
+  - `/srv/drmlke/env/drmlke.shared.env`
+  - `/srv/drmlke/env/drmlke.provider.env`
+  - `/srv/drmlke/env/drmlke.api.env`
+  - `/srv/drmlke/env/drmlke.worker.env`
+
+No real environment values, secrets, exchange keys, broker keys, wallet keys,
+live-trading enablement, or model-download credentials belong in this runbook.
+
+### DRAFT - forbidden until P3.B.APPLY or equivalent approved wave
+
+The following commands are a future apply sketch only. Do not run them until a
+future approved wave explicitly authorizes environment-file baseline creation.
+
+```bash
+sudo install -d -m 0750 -o root -g drmlke /srv/drmlke/env
+
+sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.shared.env
+sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.provider.env
+sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.api.env
+sudo install -m 0640 -o root -g drmlke /dev/null /srv/drmlke/env/drmlke.worker.env
+
+sudo stat -c "%F %U:%G %a %n" /srv/drmlke/env /srv/drmlke/env/drmlke.*.env
+```
+
+These draft commands create empty files only. Any future wave that writes
+actual environment content must define safe values, redaction rules, backup
+behavior, validation checks, and stop conditions.
+
 ## LOCAL / Exon Private Service Policy Checks
 
 Run on the local Linux workstation. These commands inspect local planning

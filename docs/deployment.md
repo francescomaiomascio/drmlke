@@ -310,3 +310,55 @@ Execution gate:
 - `P3.A.CLOSE` verified storage only.
 - Provider deployment remains a later runtime wave.
 - Any additional Spark mutation still requires an explicit approved wave.
+
+## Spark Environment File Policy
+
+Environment files are a Spark-only operator-managed configuration and secret
+boundary.
+
+Rules:
+
+- Environment files live only on Spark under `/srv/drmlke/env`.
+- Environment files are never committed to the repository.
+- Environment file contents are never pasted into docs, chat, roadmap, commit
+  messages, issues, or run reports.
+- Environment file contents are never copied into the master roadmap.
+- Future environment files may contain secrets only after an explicit approved
+  wave.
+- No exchange, broker, wallet, withdrawal, custody, or live-trading secrets are
+  allowed now.
+- Provider, API, and worker environment files are future runtime configuration.
+  They are not permission to deploy services.
+- Provider deployment remains future work.
+
+Target future environment files:
+
+- `/srv/drmlke/env/drmlke.shared.env`
+- `/srv/drmlke/env/drmlke.provider.env`
+- `/srv/drmlke/env/drmlke.api.env`
+- `/srv/drmlke/env/drmlke.worker.env`
+
+Intended split:
+
+- `drmlke.shared.env`: common storage root, environment mode, safety flags,
+  live trading disabled flag, and shared path configuration.
+- `drmlke.provider.env`: provider bind and port, provider mode, future
+  model-runtime disabled/enabled flags, and no model download secrets.
+- `drmlke.api.env`: API bind and port, private service mode, future auth or
+  session settings, and no public exposure by default.
+- `drmlke.worker.env`: worker mode, future job scheduling flags, storage/log
+  roots, and no trading or execution enablement.
+
+Target ownership and mode policy:
+
+- `/srv/drmlke/env`: `root:drmlke 0750`.
+- Environment files: `root:drmlke 0640`.
+
+This is an intentional exception to the broader `/srv/drmlke` runtime tree
+ownership. The runtime group can read future environment files, while the
+runtime user cannot casually rewrite its own configuration. The human operator
+uses approved sudo in a future apply wave for changes.
+
+`P3.B.PREFLIGHT` defines this policy only. It does not change
+`/srv/drmlke/env`, create environment files, write secrets, deploy the provider,
+run Docker, or copy application code to Spark.
