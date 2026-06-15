@@ -4,8 +4,8 @@
 
 Read-only inventory for future Spark access planning.
 
-This document supports `P2.A - Access Inventory`. It records known local access
-facts and unknowns before reachability or SSH verification work.
+This document records known local access facts, Tailscale reachability results,
+and remaining unknowns for future Spark access planning.
 
 ## Scope
 
@@ -44,8 +44,8 @@ mutate runtime state.
 | LAN SSH alias | known locally | SSH config contains alias `spark`; host details are redacted from repository docs. |
 | Tailscale SSH alias | known locally | SSH config contains alias `spark-vpn`; host details are redacted from repository docs. |
 | Tailscale node name | known locally | Tailscale status shows candidate node `spark-7c3d`. |
-| Tailscale IP | known locally | Redacted from repository docs; verify in `P2.B`. |
-| Direct private IP | known locally through SSH config | Redacted from repository docs; verify in `P2.C` if chosen. |
+| Tailscale IP | known locally | Redacted from repository docs. |
+| Direct private IP | known locally through SSH config | Redacted from repository docs. |
 | MacBook path | known as future/secondary path | MacBook is a secondary development node; private access path still needs confirmation. |
 | Linux workstation path | current inventory source | Linux workstation can see local SSH aliases and Tailscale state. |
 
@@ -72,11 +72,28 @@ mutate runtime state.
 - No Tailscale configuration command was run.
 - No reachability test was run in this wave.
 
+## P2.B Reachability Result
+
+- Candidate node `spark-7c3d` appears in local Tailscale status.
+- Tailscale reachability to `spark-7c3d` succeeds.
+- Local name resolution for `spark-7c3d` appears usable through the tailnet
+  name. The resolved address is intentionally not recorded here.
+- `spark-vpn` does not appear as a normal system DNS name. It remains a local
+  SSH config alias that appears intended for the Tailscale path.
+- Reachability was tested without SSH.
+- No remote command was run.
+- No remote state was changed.
+- No Tailscale configuration was changed.
+- Tailscale addresses, private addresses, SSH username, and private key path
+  were redacted from repository documentation.
+- SSH identity and host-key verification remain separate future work.
+
 ## Unknowns
 
 - Exact Spark SSH path to prefer for future work.
 - Whether `spark` over LAN is reliable enough.
-- Whether `spark-vpn` over Tailscale should become the primary path.
+- Whether `spark-vpn` over Tailscale should become the primary SSH path after
+  host identity verification.
 - Whether the Spark Tailscale node name `spark-7c3d` is stable.
 - Whether the configured SSH username is the intended long-term runtime user.
 - Whether host key verification is already trusted and current.
@@ -84,17 +101,3 @@ mutate runtime state.
 - Whether MacBook remains the preferred private access path for remote work.
 - Whether Spark should later bind services only to localhost, a Tailscale
   interface, or another private interface.
-
-## Next Wave
-
-`P2.B - Tailscale Reachability`
-
-Purpose: verify private network reachability to the candidate Spark Tailscale
-node without deployment and without remote mutation.
-
-## Later Wave
-
-`P2.C - SSH Verification`
-
-Purpose: verify SSH login path and host identity without deployment, without
-creating runtime directories, and without changing remote state.

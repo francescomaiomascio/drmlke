@@ -46,8 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P0.CLOSE - Phase 0 Product Core Closeout`.
-- Current wave: `P2.A - Access Inventory`.
+- Current completed wave: `P2.B - Tailscale Reachability`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -65,7 +64,10 @@ Current repository facts:
   - `P0.K - Paper Position Boundary` (legacy alias: `CORE.3`).
   - `P0.L - Paper Portfolio Snapshot Boundary` (legacy alias: `CORE.4`).
   - `P0.M - Paper Decision Record Boundary` (legacy alias: `CORE.5`).
-- Next recommended wave: `P2.B - Tailscale Reachability`.
+  - `P0.CLOSE - Phase 0 Product Core Closeout`.
+  - `P2.A - Access Inventory`.
+  - `P2.B - Tailscale Reachability`.
+- Next recommended wave: `P2.C - SSH Verification`.
 
 Current provider status:
 
@@ -184,7 +186,9 @@ Sequencing correction:
    infrastructure or persistence work.
 13. `P2.A` inventories candidate Spark access paths without reachability
    testing, SSH login, Tailscale configuration, or deployment.
-14. Tailscale and Spark remain infrastructure-only future work until they do
+14. `P2.B` confirms Tailscale reachability without SSH login, remote mutation,
+   Tailscale configuration, or deployment.
+15. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2835,8 +2839,9 @@ and SSH identity is confirmed before runtime deployment begins.
   reachability proof, SSH login, runtime deployment, or remote mutation.
 - P2.B - Tailscale reachability. Purpose: confirm private network reachability.
   Tasks: ping Spark over Tailscale and record address. Output: reachability
-  report. Acceptance: Tailscale path works or blocker is documented. Non-goals:
-  public exposure.
+  result. Acceptance: Tailscale path works or blocker is documented. Status:
+  completed. Non-goals: SSH login, remote mutation, deployment, or public
+  exposure.
 - P2.C - SSH verification. Purpose: confirm an explicit SSH path. Tasks: use
   selected alias or address, verify host key, verify user. Output: SSH result.
   Acceptance: login succeeds or clear remediation exists. Non-goals: changing
@@ -3423,9 +3428,9 @@ Expected final report:
 - whether `docs/drmlke-roadmap.md` was fully expanded
 - historical next wave at the time of `DOCS.SPINE.3`: `MAC.SETUP.1`
 
-## 23. Current Closeouts and Next Wave Detail
+## 23. Historical Closeout and Review Records
 
-Current closeout:
+Historical closeout:
 
 `MAC.SETUP.1-CLOSE - finalize MacBook development node`
 
@@ -3479,7 +3484,7 @@ Closeout acceptance:
 - Local provider models returns an empty list.
 - Spark remains intentionally untouched.
 
-Current Linux closeout:
+Historical Linux closeout:
 
 `LINUX.SETUP.1 - Canonical Linux Development Node`
 
@@ -3579,7 +3584,7 @@ Closeout acceptance:
 - Spark remains untouched.
 - No application code changes are required.
 
-Current review wave:
+Completed review wave:
 
 `DOCS.REVIEW.2 - MVP, Promotion Gates, and Risk Policy Numeric Draft`
 
@@ -4040,7 +4045,7 @@ Acceptance criteria:
   attribution fields.
 - Existing `P0.H`, `P0.I`, `P0.J`, and `P0.K` tests still pass.
 
-Current closeout wave:
+Completed closeout wave:
 
 `P0.CLOSE - Phase 0 Product Core Closeout`
 
