@@ -92,17 +92,17 @@ configuration, or modify Spark runtime state.
 
 ## Spark Docker Access Policy
 
-Docker access on Spark requires an explicit owner-approved policy before runtime
-deployment.
+Docker access on Spark uses explicit owner-approved `sudo` for future Spark
+Docker operations unless a later reviewed wave changes the policy.
 
-Docker group membership is effectively root-equivalent. Do not add users to the
-Docker group, change Docker socket permissions, or use `sudo` for Docker
-operations without a reviewed owner decision.
+Docker group membership is effectively root-equivalent. DRMLKE does not grant
+Docker group membership in this policy decision. Docker socket permissions
+remain unchanged.
+
+Future `sudo` use for Spark Docker operations must appear in an approved wave
+and in the manual runbook. Sudo-based Docker commands are not generally reusable
+until that wave provides the exact command and context.
 
 No Docker permission change has been made. No runtime deployment can begin until
-the project decides one of these paths:
-
-- owner-approved Docker group membership for the verified runtime user
-- explicit owner-approved `sudo` use in later Docker waves
-- a separate deployment/runtime user with a documented policy
-- keeping Spark Docker work blocked
+the first approved sudo-based storage or runtime wave defines the exact
+operation.

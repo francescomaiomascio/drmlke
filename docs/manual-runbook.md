@@ -156,6 +156,15 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes spark-vpn 
 Do not modify group membership, Docker socket permissions, Docker daemon
 configuration, or service state from this runbook.
 
+## Spark Docker Sudo Policy
+
+Spark Docker operations use explicit owner-approved `sudo` in future approved
+waves. Sudo Docker commands are not generally reusable yet.
+
+Do not add destructive or mutating sudo commands here unless a future wave
+explicitly approves the operation and records the exact command. Future sudo
+commands must be copied from the approved wave.
+
 ## Private Service Policy Checks
 
 Run on the local Linux workstation. These commands inspect local planning
@@ -171,10 +180,10 @@ These commands do not inspect Spark and do not change service exposure.
 
 ## Forbidden Commands Until Explicit Future Approval
 
-These are currently forbidden command patterns unless a future wave explicitly
-approves them. Values in angle brackets are placeholders, not real values. The
-Spark SSH username is written explicitly because this is a private repository.
-Do not run these by filling placeholders during an access-planning wave.
+These command patterns remain forbidden unless a future wave explicitly approves
+them. Values in angle brackets are placeholders, not real values. The Spark SSH
+username is written explicitly because this is a private repository. Do not run
+these by filling placeholders during an access-planning wave.
 
 ```bash
 ssh spark-vpn 'sudo usermod -aG docker dgmothx'
@@ -188,9 +197,10 @@ tailscale login
 tailscale set --accept-routes=true
 ```
 
-## Manual Decision Placeholders
+## Manual Decision Notes
 
-- Spark Docker access policy decision pending.
+- Spark Docker access policy recorded: explicit owner-approved `sudo` in future
+  approved Spark Docker waves.
 - `/srv/drmlke` creation pending.
 - Exact Spark private service bind implementation pending.
 - Provider deployment to Spark pending.

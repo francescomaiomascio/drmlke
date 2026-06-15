@@ -46,7 +46,7 @@ Current repository facts:
 - Master spine commit: `82f8fae DOCS.SPINE.3: complete master spine and correct next sequence`.
 - `82f8fae` has been pushed to `origin/main`.
 - Current canonical file: `docs/drmlke-roadmap.md`.
-- Current completed wave: `P2.E - Private Service Policy`.
+- Current completed wave: `P2.D.DECISION - Spark Docker Access Owner Decision`.
 - Completed waves:
   - `P0.A - Repository Bootstrap` (legacy output: `BOOTSTRAP.0`).
   - `P0.B - Provider Stub`.
@@ -72,9 +72,8 @@ Current repository facts:
   - `P2.D.REMEDIATION - Spark Docker Access Review`.
   - `P2.RUNBOOK.1 - Manual Command Runbook Baseline`.
   - `P2.E - Private Service Policy`.
-- Next recommended action: owner decision on Spark Docker access policy.
-- Next eligible wave after Docker access policy decision: `P2.F - Roadmap /
-  Access Decision Lock`.
+  - `P2.D.DECISION - Spark Docker Access Owner Decision`.
+- Next recommended wave: `P2.F - Roadmap / Access Decision Lock`.
 
 Current provider status:
 
@@ -207,7 +206,9 @@ Sequencing correction:
    commands stay out of the roadmap.
 19. `P2.E` defines private service exposure policy for future Spark-hosted
    services without deploying or mutating Spark.
-20. Tailscale and Spark remain infrastructure-only future work until they do
+20. `P2.D.DECISION` records explicit owner-approved `sudo` as the Spark Docker
+   access policy for future approved Docker waves.
+21. Tailscale and Spark remain infrastructure-only future work until they do
    not delay the decision core.
 
 ## 2. Product Definition
@@ -2881,8 +2882,8 @@ and SSH identity is confirmed before runtime deployment begins.
   account, or defer Docker work to a privileged setup wave. Output: access
   remediation decision. Acceptance: Docker access options are documented and an
   explicit owner decision is required before permissions change. Status:
-  completed as review; manual owner decision required. Non-goals: provider
-  deployment, market data, trading, wallet custody, model runtime, or
+  completed as review; decision recorded later in `P2.D.DECISION`. Non-goals:
+  provider deployment, market data, trading, wallet custody, model runtime, or
   unreviewed privilege changes.
 - P2.RUNBOOK.1 - Manual Command Runbook Baseline. Purpose: keep reusable manual
   commands in a dedicated runbook instead of the roadmap. Tasks: document local
@@ -2893,9 +2894,18 @@ and SSH identity is confirmed before runtime deployment begins.
 - P2.E - Private service policy. Purpose: define how services stay private.
   Tasks: document bind addresses, firewall expectations, VPN route, and no
   public tunnels. Output: access policy. Acceptance: no public internet exposure
-  is required. Status: completed as policy; Docker access owner decision remains
-  required before runtime deployment. Non-goals: firewall changes, Docker
+  is required. Status: completed as policy. Non-goals: firewall changes, Docker
   permission changes, Spark mutation, or deployment unless explicitly approved.
+- P2.D.DECISION - Spark Docker Access Owner Decision. Purpose: record the
+  owner-approved Docker access policy before any runtime deployment wave.
+  Tasks: document that future Spark Docker operations use explicit
+  owner-approved `sudo` unless a later reviewed wave changes the policy. Output:
+  Docker access decision. Acceptance: no Docker group membership, socket
+  permission change, sudo execution, `/srv/drmlke` creation, or deployment is
+  performed. Status: completed as decision; P3 remains blocked until a later
+  approved sudo-based storage or runtime wave defines the exact operation.
+  Non-goals: privilege changes, container operations, provider deployment,
+  market data, trading, wallet custody, exchange, or model runtime.
 - P2.F - Roadmap update. Purpose: lock the Spark access decision. Tasks: update
   docs with chosen path and next runtime wave. Output: roadmap delta.
   Acceptance: `SPARK.RUNTIME.1` can start with clear access. Non-goals:
@@ -4232,10 +4242,12 @@ decision until the relevant wave makes and records the decision.
   without deployment or remote mutation.
 - `P2.D`: Spark remote preflight recorded OS, architecture, Docker, Compose,
   GPU, disk, and `/srv/drmlke` state through read-only inspection only.
-- `P2.D.REMEDIATION`: Spark Docker access policy options documented, with
-  owner decision required before Docker permission changes or runtime deploy.
+- `P2.D.REMEDIATION`: Spark Docker access policy options documented before a
+  separate owner decision wave.
 - `P2.RUNBOOK.1`: manual command runbook created so reusable command blocks
   stay out of the master spine.
 - `P2.E`: Spark private service policy documented; future services remain
-  private, and runtime deployment remains blocked until Docker access policy is
-  resolved.
+  private and no runtime deployment is authorized.
+- `P2.D.DECISION`: Spark Docker access policy recorded as explicit
+  owner-approved `sudo` in future approved Docker waves, with no permission
+  change or deployment performed.
